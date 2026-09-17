@@ -3,6 +3,15 @@ const routeLinks = [...document.querySelectorAll('[data-route-link]')];
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const scrollBehavior = reducedMotion ? 'auto' : 'smooth';
 const defaultRoute = 'home';
+function observeLayoutResize(target, callback) {
+  let pendingFrame = 0;
+  const observer = new ResizeObserver(() => {
+    cancelAnimationFrame(pendingFrame);
+    pendingFrame = requestAnimationFrame(callback);
+  });
+  observer.observe(target);
+  return observer;
+}
 let replayHomeTitle = () => {};
 const caseChapters = {
   workflow: [
@@ -15,7 +24,7 @@ const caseChapters = {
     ['10-companion-state', '10', '伴随态'], ['11-cross-device', '11', '各端全景'], ['12-in-context', '12', '原位伴随']
   ],
   legion: [
-    ['01', '01', '设计推导'], ['02', '02', '设计推导'], ['03', '03', '设计推导'], ['04', '04', '设计推导'], ['05', '05', '设计推导'], ['06', '06', '设计推导'], ['08', '08', '设计推导'], ['07', '07', '设计推导'], ['09', '09', '设计推导'], ['10', '10', '设计推导'], ['11', '11', '设计推导'], ['12', '12', '设计推导'], ['13', '13', '最终方案']
+    ['01', '01', '设计推导'], ['02', '02', '设计推导'], ['03', '03', '设计推导'], ['04', '04', '设计推导'], ['05', '05', '设计推导'], ['06', '06', '设计推导'], ['08', '08', '设计推导'], ['07', '07', '设计推导'], ['09', '09', '设计推导'], ['10', '10', '设计推导'], ['11', '11', '设计推导'], ['12', '12', '最终方案']
   ]
 };
 const principleDetails = { boundaryless: '服务不被设备与页面边界截断；同一条意图可以从 Phone 延续到 Pad 与 PC。', anticipatory: '主动服务提前半步，但不越过用户；先让用户看见，再由用户确认执行。', adaptive: '内容决定界面；简单任务原位完成，复杂任务才升级为完整工作空间。' };
@@ -251,6 +260,7 @@ function parseHash() {
   const requestedRoute = parts[0] || defaultRoute;
   if (requestedRoute === 'index') return { route: 'home', chapter: 'works' };
   if (requestedRoute === 'career') return { route: 'home', chapter: 'career' };
+  if (requestedRoute === 'contact') return { route: 'home', chapter: 'contact' };
   if (requestedRoute === 'about') return { route: 'home', chapter: '' };
   return { route: views.some((view) => view.dataset.view === requestedRoute) ? requestedRoute : defaultRoute, chapter: parts[1] || '' };
 }
@@ -307,6 +317,7 @@ function jumpToPageTop() {
 }
 
 function setRoute() {
+  if (document.querySelector('#image-lightbox')?.classList.contains('is-open')) closeLightbox();
   const { route, chapter } = parseHash();
   const target = views.find((view) => view.dataset.view === route) || views[0];
   document.title = route.startsWith('case-') ? `${target.dataset.caseTheme === 'blue' ? 'Tianxi AUI 1.0 Experience Design' : target.dataset.caseTheme === 'purple' ? 'Tianxi Generative UI' : target.dataset.caseTheme === 'legion' ? 'Legion Zone Gaming Experience' : 'Tianxi AUI'} · Bill Wang` : 'Bill Wang · AI Native Experience Design';
@@ -315,14 +326,21 @@ function setRoute() {
   if (route === 'home') setHomeNavState(homeSection);
   else routeLinks.forEach((link) => setNavLinkState(link, (route.startsWith('case-') || route === 'archive') && link.dataset.routeLink === 'index'));
   document.body.dataset.route = route;
+  document.querySelectorAll('[data-view] video').forEach((video) => {
+    if (video.closest('[data-view]') !== target) video.pause();
+  });
+  const legionHero = target.querySelector('.legion-cover-media video');
+  if (legionHero && !reducedMotion && !document.hidden) legionHero.play()?.catch(() => {});
+  if (route !== 'case-legion') document.querySelector('.legion-supplement-video video')?.pause();
   syncAuiFilmPlayback();
-  let actualChapter = chapter;
+  let actualChapter = route === 'case-legion' && chapter === '13' ? '12' : chapter;
   if (target.classList.contains('case-view')) {
     const navKey = target.querySelector('[data-case-nav]')?.dataset.caseNav;
     const bodyKey = target.querySelector('[data-case-body]')?.dataset.caseBody;
     const caseKey = navKey || bodyKey;
     const chapters = caseChapters[caseKey] || [];
-    if (!chapters.some(([id]) => id === actualChapter)) actualChapter = target.dataset.caseStart || chapters[0]?.[0];
+    const legionSections = ['overview', 'pc', 'motion', 'phone'];
+    if (!chapters.some(([id]) => id === actualChapter) && !(caseKey === 'legion' && legionSections.includes(actualChapter))) actualChapter = target.dataset.caseStart || chapters[0]?.[0];
     const isScrollCase = target.classList.contains('case-scroll');
     target.querySelectorAll('.chapter-panel').forEach((panel) => panel.classList.toggle('is-current', isScrollCase || panel.dataset.chapter === actualChapter));
     renderCaseNav(target, caseKey, actualChapter);
@@ -331,7 +349,7 @@ function setRoute() {
     else delete target.dataset.scrollTarget;
   }
   const embeddedTarget = route === 'home'
-    ? (chapter === 'works' ? document.querySelector('#selected-works') : chapter === 'career' ? document.querySelector('#career') : chapter === 'archive' ? document.querySelector('#visual-archive') : null)
+    ? (chapter === 'works' ? document.querySelector('#selected-works') : chapter === 'career' ? document.querySelector('#career') : ['contact', 'archive'].includes(chapter) ? document.querySelector('#contact') : null)
     : null;
   if (!embeddedTarget) jumpToPageTop();
   requestAnimationFrame(() => {
@@ -339,10 +357,9 @@ function setRoute() {
       embeddedTarget.scrollIntoView({ block: 'start', behavior: 'auto' });
       setTimeout(() => embeddedTarget.scrollIntoView({ block: 'start', behavior: 'auto' }), 80);
     } else if (target.classList.contains('case-scroll') && target.dataset.scrollTarget) {
-      const cylinder = target.querySelector('[data-legion-cylinder]');
       const section = target.querySelector(`[data-scroll-chapter="${target.dataset.scrollTarget}"]`);
-      const destination = cylinder || section;
-      if (destination) requestAnimationFrame(() => destination.scrollIntoView({ block: 'start', behavior: 'auto' }));
+      const destination = section?.closest('[data-legion-cylinder]') || section;
+      if (destination) requestAnimationFrame(() => destination.scrollIntoView({ block: 'start', behavior: 'instant' }));
       delete target.dataset.scrollTarget;
     }
     target.querySelectorAll('.reveal').forEach((node, index) => {
@@ -544,7 +561,7 @@ function initScrollCaseNavigation() {
   const caseViews = [...document.querySelectorAll('.case-scroll')];
   caseViews.forEach((view) => {
     view.addEventListener('click', (event) => {
-      const link = event.target.closest('[data-case-nav] a');
+      const link = event.target.closest('[data-case-nav] a, .legion-contents a');
       if (!link || !view.contains(link)) return;
       const chapterId = link.getAttribute('href')?.split('/')[1];
       const section = chapterId && view.querySelector(`[data-scroll-chapter="${chapterId}"]`);
@@ -554,11 +571,11 @@ function initScrollCaseNavigation() {
       if (accordion) {
         setScrollCaseNavActive(view, chapterId, false);
         section.focus({ preventScroll: true });
-        accordion.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
+        accordion.scrollIntoView({ behavior: link.closest('.legion-contents') ? 'instant' : scrollBehavior, block: 'start' });
         return;
       }
       setScrollCaseNavActive(view, chapterId);
-      section.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
+      section.scrollIntoView({ behavior: link.closest('.legion-contents') ? 'instant' : scrollBehavior, block: 'start' });
     });
 
     const accordion = view.querySelector('[data-legion-cylinder]');
@@ -885,6 +902,8 @@ function wireInteractiveStates() {
     if (companion) { activateWithin(companion.closest('.companion-list'), companion); const asset = companionAssets[companion.dataset.companion]; const image = document.querySelector('#companion-visual'); if (image && asset) { image.src = asset[0]; image.alt = asset[1]; } return; }
     const mode = event.target.closest('[data-device-mode]');
     if (mode) { activateWithin(mode.closest('.device-mode-grid'), mode); const out = document.querySelector('#mode-output'); if (out) out.textContent = modeDetails[mode.dataset.deviceMode]; return; }
+    const supplementButton = event.target.closest('.legion-supplement-zoom');
+    if (supplementButton) { openLightbox(supplementButton.querySelector('img')); return; }
     const image = event.target.closest('.chapter-image img, .aui-figma-frame img, .proof-image img, .large-proof img, .presence-visual img, .about-focus img, .legion-figure img, .mobile-system-slide-board, .gen-component-translation-stage img, .gen-component-library-stage img, .gen-implementation-output img');
     if (image) openLightbox(image);
   });
@@ -1512,6 +1531,9 @@ function initWarpText() {
         glyph.style.setProperty('--char-index', charIndex++);
         line.appendChild(glyph);
       });
+      const baseline = document.createElement('span');
+      baseline.className = 'warp-text-baseline';
+      line.appendChild(baseline);
     });
   }
 
@@ -1660,6 +1682,33 @@ function initWarpText() {
   };
 
   const measureLine = (ctx, text, spacing) => Array.from(text).reduce((width, char, index, chars) => width + ctx.measureText(char).width + (index < chars.length - 1 ? spacing : 0), 0);
+  const boundsContext = document.createElement('canvas').getContext('2d');
+  const reserveTextBounds = () => {
+    if (!fallback || !boundsContext || window.matchMedia('(max-width: 620px)').matches) {
+      container.style.removeProperty('--warp-bottom-padding');
+      return;
+    }
+    const computed = getComputedStyle(container);
+    const fontSize = parseFloat(computed.fontSize);
+    boundsContext.font = `${computed.fontWeight} ${fontSize}px ${computed.fontFamily}`;
+    boundsContext.textBaseline = 'alphabetic';
+    const fallbackRect = fallback.getBoundingClientRect();
+    let inkBottom = 0;
+    let lineBottom = 0;
+    for (const line of fallback.children) {
+      const marker = line.querySelector('.warp-text-baseline');
+      if (!marker) continue;
+      const baseline = marker.getBoundingClientRect().top - fallbackRect.top;
+      const descent = Math.max(...Array.from(line.textContent, char => boundsContext.measureText(char).actualBoundingBoxDescent));
+      inkBottom = Math.max(inkBottom, baseline + descent);
+      lineBottom = Math.max(lineBottom, line.getBoundingClientRect().bottom - fallbackRect.top);
+    }
+    const safety = fontSize * .195 + 2;
+    const padding = Math.ceil(Math.max(fontSize * .12, inkBottom + safety - lineBottom));
+    if (Math.abs(parseFloat(getComputedStyle(fallback).paddingBottom) - padding) > .5) {
+      container.style.setProperty('--warp-bottom-padding', `${padding}px`);
+    }
+  };
   const drawLine = (ctx, text, x, y, spacing) => {
     let cursor = x;
     Array.from(text).forEach((char, index, chars) => {
@@ -1691,7 +1740,7 @@ function initWarpText() {
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
+    ctx.textBaseline = 'alphabetic';
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     const setFont = () => { ctx.font = `${weight} ${fontSize}px ${family}`; };
@@ -1702,13 +1751,16 @@ function initWarpText() {
     // DOM line width. The previous global metricScale could only shrink the
     // canvas, which caused a visible size drop at the end of the intro.
     const domLines = fallback ? [...fallback.children] : [];
+    const containerTop = container.getBoundingClientRect().top;
     const lineMetrics = lines.map((line, index) => {
       const domLine = domLines[index];
       const domText = (domLine?.textContent || '').replace(/ /g, ' ');
       const domRect = domLine?.getBoundingClientRect();
       const measuredWidth = measureLine(ctx, line, spacing);
       const domWidth = domText === line ? (domRect?.width || domLine?.scrollWidth || 0) : 0;
-      return { measuredWidth, targetWidth: domWidth > 0 ? domWidth : measuredWidth };
+      const baselineRect = domLine?.querySelector('.warp-text-baseline')?.getBoundingClientRect();
+      const baseline = domText === line && baselineRect ? baselineRect.top - containerTop : null;
+      return { measuredWidth, targetWidth: domWidth > 0 ? domWidth : measuredWidth, baseline };
     });
 
     const widest = Math.max(...lineMetrics.map(({ targetWidth }) => targetWidth));
@@ -1724,9 +1776,15 @@ function initWarpText() {
     lineHeight *= fit;
     spacing *= fit;
     setFont();
+    const fontMetrics = ctx.measureText('Hg');
+    const ascent = fontMetrics.fontBoundingBoxAscent ?? fontMetrics.actualBoundingBoxAscent;
+    const descent = fontMetrics.fontBoundingBoxDescent ?? fontMetrics.actualBoundingBoxDescent;
+    const baselineOffset = (lineHeight - ascent - descent) / 2 + ascent;
 
     lines.forEach((line, index) => {
       const y = top + index * lineHeight;
+      const baseline = lineMetrics[index].baseline;
+      const baselineY = baseline === null ? y + baselineOffset : top + (baseline - top) * fit;
       const measuredWidth = measureLine(ctx, line, spacing);
       const targetWidth = lineMetrics[index].targetWidth * fit;
       const lineScaleX = measuredWidth > 0 ? targetWidth / measuredWidth : 1;
@@ -1745,7 +1803,7 @@ function initWarpText() {
       ctx.shadowBlur = fontSize * .08;
       ctx.shadowOffsetY = fontSize * .035;
       ctx.save();
-      ctx.translate(left, y);
+      ctx.translate(left, baselineY);
       ctx.scale(lineScaleX, 1);
       drawLine(ctx, line, 0, 0, spacing);
       ctx.restore();
@@ -1767,6 +1825,7 @@ function initWarpText() {
 
     const resizeFallback = async () => {
       if (document.fonts?.ready) { try { await document.fonts.ready; } catch {} }
+      reserveTextBounds();
       const rect = container.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
       const dpr = Math.min(devicePixelRatio || 1, coarsePointer ? 1.25 : 1.5);
@@ -1814,8 +1873,7 @@ function initWarpText() {
     };
     canvas.addEventListener('pointermove', onFallbackMove, { passive: true });
     canvas.addEventListener('pointerleave', () => { fallbackPointer.target = 0; });
-    const fallbackResizeObserver = new ResizeObserver(resizeFallback);
-    fallbackResizeObserver.observe(container);
+    const fallbackResizeObserver = observeLayoutResize(container, resizeFallback);
     const fallbackIntersectionObserver = new IntersectionObserver(([entry]) => { fallbackVisible = entry.isIntersecting; });
     fallbackIntersectionObserver.observe(container);
     resizeFallback();
@@ -1891,6 +1949,7 @@ function initWarpText() {
   const rasterize = async () => {
     if (document.fonts?.ready) { try { await document.fonts.ready; } catch {} }
     if (disposed || contextLost) return;
+    reserveTextBounds();
     const rect = container.getBoundingClientRect();
     if (rect.width <= 0 || rect.height <= 0) return;
     const dpr = Math.min(devicePixelRatio || 1, coarsePointer ? 1.35 : 1.75);
@@ -1948,8 +2007,7 @@ function initWarpText() {
     frame = requestAnimationFrame(loop);
   };
 
-  resizeObserver = new ResizeObserver(rasterize);
-  resizeObserver.observe(container);
+  resizeObserver = observeLayoutResize(container, rasterize);
   intersectionObserver = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
     if (visible && pageVisible && !frame) frame = requestAnimationFrame(loop);
@@ -2094,7 +2152,7 @@ function initLegionPrologue() {
   panels.forEach((panel) => observer.observe(panel));
 }
 
-const lightboxState = { items: [], index: 0, zoomed: false };
+const lightboxState = { items: [], index: 0, zoomed: false, previousFocus: null };
 function resetLightboxZoom() {
   const box = document.querySelector('#image-lightbox');
   const button = document.querySelector('[data-lightbox-zoom]');
@@ -2155,12 +2213,18 @@ function stepLightbox(direction) {
 function openLightbox(image) {
   const box = document.querySelector('#image-lightbox');
   if (!box) return;
+  lightboxState.previousFocus = image.closest('button, a, [tabindex]') || document.activeElement;
+  box.setAttribute('role', 'dialog');
+  box.setAttribute('aria-modal', 'true');
+  box.setAttribute('aria-label', '作品图片预览');
   lightboxState.items = getLightboxItems(image);
   lightboxState.index = Math.max(0, lightboxState.items.findIndex((item) => item.image === image));
   renderLightboxItem(lightboxState.index);
   box.classList.add('is-open');
   box.setAttribute('aria-hidden', 'false');
   document.body.classList.add('lightbox-open');
+  document.querySelector('#app').inert = true;
+  box.querySelector('.lightbox-close').focus({ preventScroll: true });
 }
 function closeLightbox() {
   const box = document.querySelector('#image-lightbox');
@@ -2168,6 +2232,9 @@ function closeLightbox() {
   box.classList.remove('is-open');
   box.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('lightbox-open');
+  document.querySelector('#app').inert = false;
+  lightboxState.previousFocus?.focus({ preventScroll: true });
+  lightboxState.previousFocus = null;
   lightboxState.items = [];
   lightboxState.index = 0;
   resetLightboxZoom();
@@ -2181,6 +2248,13 @@ function wireLightbox() {
   document.addEventListener('keydown', (event) => {
     const box = document.querySelector('#image-lightbox');
     if (!box?.classList.contains('is-open')) return;
+    if (event.key === 'Tab') {
+      const buttons = [...box.querySelectorAll('button')].filter((button) => !button.disabled && button.getClientRects().length);
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !box.contains(document.activeElement))) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && (document.activeElement === last || !box.contains(document.activeElement))) { event.preventDefault(); first?.focus(); }
+    }
     if (event.key === 'Escape') closeLightbox();
     if (event.key === 'ArrowLeft') { event.preventDefault(); stepLightbox(-1); }
     if (event.key === 'ArrowRight') { event.preventDefault(); stepLightbox(1); }
@@ -2202,6 +2276,17 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 window.addEventListener('hashchange', setRoute);
+document.querySelector('.skip-content')?.addEventListener('click', (event) => {
+  event.preventDefault();
+  const main = document.querySelector('#app');
+  main.setAttribute('tabindex', '-1');
+  main.focus({ preventScroll: true });
+});
+document.addEventListener('visibilitychange', () => {
+  const hero = document.querySelector('.legion-cover-media video');
+  if (document.hidden) document.querySelectorAll('video').forEach((video) => video.pause());
+  else if (hero && document.body.dataset.route === 'case-legion' && !reducedMotion) hero.play()?.catch(() => {});
+});
 window.addEventListener('mousemove', (event) => { document.documentElement.style.setProperty('--pointer-x', `${event.clientX}px`); document.documentElement.style.setProperty('--pointer-y', `${event.clientY}px`); });
 function initCaseBorderGlow() {
   const cards = [...document.querySelectorAll('.home-works .case-entry')];
