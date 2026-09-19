@@ -13,9 +13,9 @@
   <meta property="og:type" content="website" />
   <link rel="icon" href="data:," />
   <title>Bill Wang · AI Native Experience Design</title>
-  <link rel="stylesheet" href="fonts.css?v=279" />
-  <link rel="stylesheet" href="study.css?v=279" />
-  <link rel="stylesheet" href="release.css?v=279" />
+  <link rel="stylesheet" href="fonts.css?v=300" />
+  <link rel="stylesheet" href="study.css?v=300" />
+  <link rel="stylesheet" href="release.css?v=300" />
 </head>
 <body>
   <a class="skip-content" href="#app">跳至主要内容</a>
@@ -194,7 +194,6 @@
           <p class="eyebrow accent-blue">LENOVO TIANXI / AUI 1.0</p>
           <h2 class="case-title">让我们从问题开始，<br /><em>探索 AI 如何融入系统。</em></h2>
           <p class="case-dek">从 AUI 定义、交互范式与设计原则，到伴随态和跨端形态：不是给传统界面叠加一个 AI 入口，而是让服务围绕用户意图自然抵达。</p>
-          <p class="case-core-decision"><span>CORE DECISION</span>让 AI 进入当前任务，而不是把用户带离任务。</p>
           <div class="case-evidence case-evidence-blue" aria-label="AUI 项目概览">
             <div class="case-evidence-grid">
               <div class="case-evidence-item"><span class="case-evidence-label">CHALLENGE</span><strong>让系统从被动响应走向理解上下文后的主动服务。</strong><p>回答 AI 何时介入、以什么形态出现，以及如何在不打断用户的前提下完成协作。</p></div>
@@ -400,13 +399,14 @@
         <span class="gen-hero-wisp gen-hero-wisp-b"></span>
         <span class="gen-hero-wisp gen-hero-wisp-c"></span>
       </div>
-      <div class="page-wrap case-wrap">
+      <div class="page-wrap gen-case-nav-wrap">
         <div class="case-topbar reveal">
           <a href="#index" class="back-link">← 返回目录</a>
           <span class="case-current-label">02 / 03 · 生成式 UI / AGENT-TO-UI</span>
           <span>STREAMING / DECLARATIVE / NATIVE</span>
         </div>
-
+      </div>
+      <div class="page-wrap case-wrap">
         <div class="case-hero gen-case-hero reveal">
           <p class="eyebrow accent-purple">TIANXI / 生成式 UI · AGENT-TO-UI</p>
           <h2 class="case-title"><span>联想天禧</span><br />为什么要做<br /><em>生成式 UI？</em></h2>
@@ -429,8 +429,6 @@
         <div class="case-layout gen-reading-layout">
           <div class="case-body" data-case-body="paradigm">
             <article class="chapter-panel gen-why-page gen-story-page" id="05-why-generative-ui" data-chapter="05-why-generative-ui" data-scroll-chapter="05-why-generative-ui">
-              <div class="chapter-kicker">01 / WHY GENERATIVE UI</div>
-
               <section class="gen-overview-map" aria-label="生成式 UI 总览逻辑">
                 <header>
                   <p class="gen-overline">THE SIMPLE LOGIC</p>
@@ -494,7 +492,6 @@
                     <h3>先把设计能力，<br /><em>转译成 AI 能执行的规则。</em></h3>
                   </div>
                   <p>设计师不是把页面交给 AI 自由绘制，而是将组件、Token、字号、间距、Grid、内容权重与安全边界整理成 design.md，明确什么可以生成、如何组合，以及不同状态下如何调整。</p>
-                  <p class="gen-plain-note"><b>DESIGN.MD 不是普通文档</b>，而是把设计判断转译成 AI 可执行的规则层。</p>
                 </header>
                 <figure class="gen-story-design-md">
                   <div class="gen-design-md-stage">
@@ -553,8 +550,6 @@
 
               </section>
 
-              <p class="gen-bridge-note"><span>02 → 03</span>规则和组件准备好之后，AI 才能在边界内动态组织一次真实的首页体验。</p>
-
               <section class="gen-story-result" aria-label="生成式 UI 首页结果">
                 <header class="gen-story-head">
                   <div>
@@ -583,12 +578,9 @@
                       <span class="gen-story-focus-edge gen-story-focus-edge-left"></span>
                     </span>
                   </div>
-                  <figcaption><span>HOME EXPERIENCE RESULT</span><span>搜索 · 点击 · 关注 → 内容与 UI 生成</span></figcaption>
                 </figure>
               </section>
             </article>
-
-            <p class="gen-bridge-note gen-bridge-case-transition"><span>FROM OUTPUT TO SYSTEM</span>看见一次生成结果之后，继续追问：它如何被设计、校验，并稳定地交付到不同设备？</p>
 
             <article class="chapter-panel gen-implementation-page" id="gen-06-aui-definition" data-chapter="06-aui-definition" data-scroll-chapter="06-aui-definition">
               <div class="chapter-kicker">02 / CORE TENSION</div>
@@ -607,7 +599,6 @@
             </article>
 
             <article class="chapter-panel" data-chapter="07-generation-flow" data-scroll-chapter="07-generation-flow">
-              <div class="chapter-kicker">03 / HOW IT GENERATES</div>
               <header class="gen-runtime-intro">
                 <div>
                   <p class="gen-overline">RUNTIME PROTOCOL / SAFE UI EXECUTION</p>
@@ -625,18 +616,9 @@
                 <i>→</i>
                 <div class="role-frontend"><small>04 / NATIVE UI</small><b>原生组件渲染</b><span>按设备能力与客户端主题输出真实界面</span></div>
               </div>
-              <div class="gen-role-summary">
-                <span><b>设计师与客户端预先定义</b>组件目录、语义、Tokens 与状态边界</span>
-                <span><b>Agent 动态发送</b>流式 JSON 消息，描述内容、数据与操作</span>
-                <span><b>客户端 Renderer 执行</b>校验消息，将数据绑定到可信原生组件并完成多端渲染</span>
-              </div>
-
             </article>
 
-            <p class="gen-bridge-note"><span>03 → 04</span>当客户端掌握了渲染边界，同一套任务语义就可以在不同设备上用各自合适的方式继续。</p>
-
             <article class="chapter-panel" data-chapter="08-cross-device-rendering" data-scroll-chapter="08-cross-device-rendering">
-              <div class="chapter-kicker">04 / CROSS-DEVICE RENDERING</div>
               <div class="gen-simple-intro">
                 <div>
                   <p class="gen-overline">ONE SYSTEM, MULTIPLE DEVICES</p>
@@ -645,7 +627,6 @@
                 <div class="gen-simple-copy">
                   <p>一套生成式 UI 规范，定义内容、组件、状态与主题；Phone、Pad、PC 依据自己的设备能力，原生表达同一条任务。</p>
                   <p>不是为每个端重复设计业务页面，而是共享任务语义、数据与动作协议，让生成式 UI 真正落地到各端。</p>
-                <p class="gen-scenario-example"><b>具体场景</b> 同一个“整理旅行计划”任务：Phone 负责即时确认，Pad 负责浏览与比较，PC 负责完整规划与资料整理。</p>
                 </div>
               </div>
               <div class="gen-delivery-summary">
@@ -707,7 +688,7 @@
         <div class="case-topbar reveal">
           <a href="#index" class="back-link">← 返回目录</a>
           <span class="case-current-label">03 / 03 · LEGION ZONE</span>
-          <span>12 PAGES + PC / PHONE</span>
+          <span>PC / PHONE + 8 SECTIONS</span>
         </div>
       </div>
 
@@ -745,140 +726,21 @@
         <div class="case-layout legion-reading-layout">
           <div class="case-body case-scroll-body legion-pages" data-case-body="legion">
             <nav class="legion-contents" data-scroll-chapter="overview" aria-labelledby="legion-contents-title">
-              <header><p class="chapter-kicker">IN THIS CASE / 3 PROJECTS</p><h3 id="legion-contents-title"><span>核心项目展示</span></h3><p>从设计推导，到 PC 与 Phone 的体验呈现。</p></header>
+              <header><p class="chapter-kicker">IN THIS CASE / 3 PROJECTS</p><h3 id="legion-contents-title"><span>核心项目展示</span></h3><p>先看视觉结果，再进入游戏中心的设计推导。</p></header>
               <ol>
-                <li><a href="#case-legion/01"><span>01</span><strong><span>Legion Zone</span>游戏中心改版</strong><small>设计推导 · 最终方案</small><b aria-hidden="true">↗</b></a></li>
-                <li><a href="#case-legion/pc"><span>02</span><strong><span>Legion Zone</span>PC 首页改版</strong><small>设计推导 · 界面展示 · 动态演示</small><b aria-hidden="true">↗</b></a></li>
-                <li><a href="#case-legion/phone"><span>03</span><strong><span>Legion Zone</span>移动端设备操控方案设计</strong><small>游戏手机操控台</small><b aria-hidden="true">↗</b></a></li>
+                <li><a href="#case-legion/pc"><span>01</span><strong><span>Legion Zone</span>PC 首页改版</strong><small>设计推导 · 界面展示 · 动态演示</small><b aria-hidden="true">↗</b></a></li>
+                <li><a href="#case-legion/phone"><span>02</span><strong><span>Legion Zone</span>移动端设备操控方案设计</strong><small>游戏手机操控台</small><b aria-hidden="true">↗</b></a></li>
+                <li><a href="#case-legion/01"><span>03</span><strong><span>Legion Zone</span>游戏中心改版</strong><small>设计推导 · 最终方案</small><b aria-hidden="true">↗</b></a></li>
               </ol>
             </nav>
-            <section class="legion-cylinder" data-legion-cylinder aria-label="Legion Zone 设计推导 01 至 04">
-              <div class="legion-cylinder-sticky">
-                <div class="legion-cylinder-ambient" aria-hidden="true"></div>
-                <div class="legion-cylinder-status" aria-live="polite">
-                  <h3 class="legion-cylinder-title">设计方案推导</h3>
-                  <div class="legion-cylinder-status-meta">
-                    <p data-cylinder-label>01 / DESIGN REASONING</p>
-                    <nav aria-label="设计推导 01 至 04 快速导航">
-                    <a class="is-active" href="#case-legion/01" aria-label="查看设计推导第 1 页">01</a>
-                    <a href="#case-legion/02" aria-label="查看设计推导第 2 页">02</a>
-                    <a href="#case-legion/03" aria-label="查看设计推导第 3 页">03</a>
-                    <a href="#case-legion/04" aria-label="查看设计推导第 4 页">04</a>
-                    </nav>
-                  </div>
-                </div>
-                <div class="legion-cylinder-scene" role="list" aria-label="Legion Zone 设计推导手风琴画廊">
-                  <article class="legion-cylinder-card is-active" id="legion-01" data-cylinder-card="0" data-chapter="01" data-scroll-chapter="01" aria-label="Legion Zone 设计推导第 1 页" aria-current="true" role="listitem" tabindex="0">
-                    <figure class="legion-figure legion-cylinder-front">
-                      <img src="assets/legion-zone/pages/01.webp" alt="Legion Zone 设计推导第 1 页" width="1920" height="1080" decoding="async" draggable="false" />
-                    </figure>
-                    <div class="legion-cylinder-card-overlay" aria-hidden="true"></div>
-                    <div class="legion-cylinder-card-label" aria-hidden="true"><i></i><span>01</span><b>DESIGN REASONING</b></div>
-                  </article>
-                  <article class="legion-cylinder-card" id="legion-02" data-cylinder-card="1" data-chapter="02" data-scroll-chapter="02" aria-label="Legion Zone 设计推导第 2 页" role="listitem" tabindex="0">
-                    <figure class="legion-figure legion-cylinder-front">
-                      <img src="assets/legion-zone/pages/02.webp" alt="Legion Zone 设计推导第 2 页" width="1920" height="1080" loading="lazy" decoding="async" draggable="false" />
-                    </figure>
-                    <div class="legion-cylinder-card-overlay" aria-hidden="true"></div>
-                    <div class="legion-cylinder-card-label" aria-hidden="true"><i></i><span>02</span><b>DESIGN REASONING</b></div>
-                  </article>
-                  <article class="legion-cylinder-card" id="legion-03" data-cylinder-card="2" data-chapter="03" data-scroll-chapter="03" aria-label="Legion Zone 设计推导第 3 页" role="listitem" tabindex="0">
-                    <figure class="legion-figure legion-cylinder-front">
-                      <img src="assets/legion-zone/pages/03.webp" alt="Legion Zone 设计推导第 3 页" width="1920" height="1080" loading="lazy" decoding="async" draggable="false" />
-                    </figure>
-                    <div class="legion-cylinder-card-overlay" aria-hidden="true"></div>
-                    <div class="legion-cylinder-card-label" aria-hidden="true"><i></i><span>03</span><b>DESIGN REASONING</b></div>
-                  </article>
-                  <article class="legion-cylinder-card" id="legion-04" data-cylinder-card="3" data-chapter="04" data-scroll-chapter="04" aria-label="Legion Zone 设计推导第 4 页" role="listitem" tabindex="0">
-                    <figure class="legion-figure legion-cylinder-front">
-                      <img src="assets/legion-zone/pages/04.webp" alt="Legion Zone 设计推导第 4 页" width="1920" height="1080" loading="lazy" decoding="async" draggable="false" />
-                    </figure>
-                    <div class="legion-cylinder-card-overlay" aria-hidden="true"></div>
-                    <div class="legion-cylinder-card-label" aria-hidden="true"><i></i><span>04</span><b>DESIGN REASONING</b></div>
-                  </article>
-                </div>
-                <div class="legion-cylinder-footer">
-                  <p class="legion-cylinder-hint" aria-hidden="true"><span>HOVER OR CLICK TO EXPLORE</span><i></i><b data-cylinder-count>01 / 04</b></p>
-                </div>
-              </div>
-            </section>
-            <article class="chapter-panel legion-page legion-prologue legion-prologue-05" id="legion-05" data-chapter="05" data-scroll-chapter="05" data-prologue="05">
-              <header class="legion-page-label reveal">
-                <p class="chapter-kicker">05 / DESIGN REASONING</p>
-              </header>
-              <figure class="legion-figure reveal">
-                <img src="assets/legion-zone/pages/05.webp" alt="Legion Zone 设计推导第 5 页" width="2880" height="1725" loading="lazy" decoding="async" />
-              </figure>
-            </article>
-            <article class="chapter-panel legion-page legion-prologue legion-prologue-06" id="legion-06" data-chapter="06" data-scroll-chapter="06" data-prologue="06">
-              <header class="legion-page-label reveal">
-                <p class="chapter-kicker">06 / DESIGN REASONING</p>
-              </header>
-              <figure class="legion-figure reveal">
-                <img src="assets/legion-zone/pages/06.webp" alt="Legion Zone 设计推导第 6 页" width="2880" height="1620" loading="lazy" decoding="async" />
-              </figure>
-            </article>
-            <article class="chapter-panel legion-page legion-prologue legion-prologue-08" id="legion-08" data-chapter="08" data-scroll-chapter="08" data-prologue="08">
-              <header class="legion-page-label reveal">
-                <p class="chapter-kicker">08 / DESIGN REASONING</p>
-              </header>
-              <figure class="legion-figure reveal">
-                <img src="assets/legion-zone/pages/08.webp" alt="Legion Zone 设计推导第 8 页" width="1920" height="1080" loading="lazy" decoding="async" />
-              </figure>
-            </article>
-            <article class="chapter-panel legion-page legion-prologue legion-prologue-07" id="legion-07" data-chapter="07" data-scroll-chapter="07" data-prologue="07">
-              <header class="legion-page-label reveal">
-                <p class="chapter-kicker">07 / DESIGN REASONING</p>
-              </header>
-              <figure class="legion-figure reveal">
-                <img src="assets/legion-zone/pages/07.webp" alt="Legion Zone 设计推导第 7 页" width="1920" height="1080" loading="lazy" decoding="async" />
-              </figure>
-            </article>
-            <article class="chapter-panel legion-page legion-prologue legion-prologue-09" id="legion-09" data-chapter="09" data-scroll-chapter="09" data-prologue="09">
-              <header class="legion-page-label reveal">
-                <p class="chapter-kicker">09 / DESIGN REASONING</p>
-              </header>
-              <figure class="legion-figure reveal">
-                <img src="assets/legion-zone/pages/09.webp" alt="Legion Zone 设计推导第 9 页" width="1920" height="1080" loading="lazy" decoding="async" />
-              </figure>
-            </article>
-            <article class="chapter-panel legion-page legion-prologue legion-prologue-10" id="legion-10" data-chapter="10" data-scroll-chapter="10" data-prologue="10">
-              <header class="legion-page-label reveal">
-                <p class="chapter-kicker">10 / DESIGN REASONING</p>
-              </header>
-              <figure class="legion-figure reveal">
-                <img src="assets/legion-zone/pages/10.webp" alt="Legion Zone 设计推导第 10 页" width="1920" height="1080" loading="lazy" decoding="async" />
-              </figure>
-            </article>
-            <article class="chapter-panel legion-page legion-prologue legion-prologue-12" id="legion-11" data-chapter="11" data-scroll-chapter="11" data-prologue="11">
-              <header class="legion-page-label reveal">
-                <p class="chapter-kicker">11 / DESIGN REASONING</p>
-              </header>
-              <figure class="legion-figure reveal">
-                <img src="assets/legion-zone/pages/12.webp" alt="Legion Zone 设计推导第 11 页" width="1920" height="1080" loading="lazy" decoding="async" />
-              </figure>
-            </article>
-            <article class="chapter-panel legion-page legion-prologue legion-prologue-13 legion-outcome" id="legion-12" data-chapter="12" data-scroll-chapter="12" data-prologue="12">
-              <header class="legion-page-label reveal">
-                <p class="chapter-kicker">12 / FINAL OUTCOME</p>
-              </header>
-              <div class="legion-outcome-result reveal">
-                <p class="legion-outcome-result-kicker">LAUNCH RESULT</p>
-                <h3>新版游戏中心改版设计</h3>
-                <p>上线后 CDKey 商城盈利增加 30%，用户反馈：“这才是更像游戏项目的游戏中心的感觉”</p>
-              </div>
-              <figure class="legion-figure reveal legion-final-figure">
-                <img src="assets/legion-zone/pages/14.webp" alt="Legion Zone 最终方案" width="2120" height="9968" loading="lazy" decoding="async" />
-              </figure>
-            </article>
             <section class="legion-supplement" id="legion-supplement" aria-labelledby="legion-supplement-title">
               <header class="legion-supplement-intro">
-                <h3 id="legion-supplement-title">PC & Phone / 延展设计</h3>
+                <h3 id="legion-supplement-title">PC & Phone / 视觉展示</h3>
               </header>
 
               <section class="legion-supplement-section" data-scroll-chapter="pc" aria-labelledby="legion-pc-title">
                 <header class="legion-supplement-heading">
-                  <p class="chapter-kicker">02 / PC REDESIGN</p>
+                  <p class="chapter-kicker">01 / PC REDESIGN</p>
                   <h4 id="legion-pc-title" class="legion-mixed-title"><span>首页，</span><strong>回归设备体验。</strong></h4>
                   <p>设备状态一眼可见，<br />常用操作触手可及。</p>
                 </header>
@@ -896,18 +758,17 @@
                     <figcaption><span>03 / 功能卡片</span></figcaption>
                   </figure>
                 </div>
-                <div class="legion-supplement-subheading"><h5>一套布局，四种表达。</h5><p>点击查看高清细节 ↗</p></div>
                 <div class="legion-supplement-grid legion-pc-showcase">
-                  <figure class="legion-supplement-figure"><button class="legion-supplement-zoom" type="button" aria-label="放大查看：PC 蓝色界面"><img src="assets/legion-zone/supplement/pc-blue-preview.webp" srcset="assets/legion-zone/supplement/pc-blue-preview.webp 1590w, assets/legion-zone/supplement/pc-blue-hd.webp 3180w" sizes="(max-width: 620px) calc(100vw - 44px), 1100px" data-lightbox-src="assets/legion-zone/supplement/pc-blue-hd.webp" alt="Legion Zone PC 首页蓝色界面，包含设备参数、性能面板与功能卡片" width="1590" height="1020" loading="lazy" decoding="async" data-lightbox-group="legion-pc-screens" /></button><figcaption><span>BLUE</span></figcaption></figure>
-                  <figure class="legion-supplement-figure"><button class="legion-supplement-zoom" type="button" aria-label="放大查看：PC 白色界面"><img src="assets/legion-zone/supplement/pc-white-preview.webp" srcset="assets/legion-zone/supplement/pc-white-preview.webp 1590w, assets/legion-zone/supplement/pc-white-hd.webp 3180w" sizes="(max-width: 620px) calc(100vw - 44px), 360px" data-lightbox-src="assets/legion-zone/supplement/pc-white-hd.webp" alt="Legion Zone PC 首页白色界面" width="1590" height="1020" loading="lazy" decoding="async" data-lightbox-group="legion-pc-screens" /></button><figcaption><span>WHITE</span></figcaption></figure>
-                  <figure class="legion-supplement-figure"><button class="legion-supplement-zoom" type="button" aria-label="放大查看：PC 红色界面"><img src="assets/legion-zone/supplement/pc-red-preview.webp" srcset="assets/legion-zone/supplement/pc-red-preview.webp 1590w, assets/legion-zone/supplement/pc-red-hd.webp 3180w" sizes="(max-width: 620px) calc(100vw - 44px), 360px" data-lightbox-src="assets/legion-zone/supplement/pc-red-hd.webp" alt="Legion Zone PC 首页红色界面" width="1590" height="1020" loading="lazy" decoding="async" data-lightbox-group="legion-pc-screens" /></button><figcaption><span>RED</span></figcaption></figure>
-                  <figure class="legion-supplement-figure"><button class="legion-supplement-zoom" type="button" aria-label="放大查看：PC 紫色界面"><img src="assets/legion-zone/supplement/pc-purple-preview.webp" srcset="assets/legion-zone/supplement/pc-purple-preview.webp 1590w, assets/legion-zone/supplement/pc-purple-hd.webp 3180w" sizes="(max-width: 620px) calc(100vw - 44px), 360px" data-lightbox-src="assets/legion-zone/supplement/pc-purple-hd.webp" alt="Legion Zone PC 首页紫色界面" width="1590" height="1020" loading="lazy" decoding="async" data-lightbox-group="legion-pc-screens" /></button><figcaption><span>PURPLE</span></figcaption></figure>
+                  <figure class="legion-supplement-figure"><button class="legion-supplement-zoom" type="button" aria-label="放大查看：PC 节能模式"><img src="assets/legion-zone/supplement/pc-blue-preview.webp" srcset="assets/legion-zone/supplement/pc-blue-preview.webp 1590w, assets/legion-zone/supplement/pc-blue-hd.webp 3180w" sizes="(max-width: 620px) calc(100vw - 44px), 1100px" data-lightbox-src="assets/legion-zone/supplement/pc-blue-hd.webp" alt="Legion Zone PC 首页节能模式（蓝色界面），包含设备参数、性能面板与功能卡片" width="1590" height="1020" loading="lazy" decoding="async" data-lightbox-group="legion-pc-screens" /></button><figcaption><span>节能模式</span></figcaption></figure>
+                  <figure class="legion-supplement-figure"><button class="legion-supplement-zoom" type="button" aria-label="放大查看：PC 均衡模式"><img src="assets/legion-zone/supplement/pc-white-preview.webp" srcset="assets/legion-zone/supplement/pc-white-preview.webp 1590w, assets/legion-zone/supplement/pc-white-hd.webp 3180w" sizes="(max-width: 620px) calc(100vw - 44px), 360px" data-lightbox-src="assets/legion-zone/supplement/pc-white-hd.webp" alt="Legion Zone PC 首页均衡模式（白色界面）" width="1590" height="1020" loading="lazy" decoding="async" data-lightbox-group="legion-pc-screens" /></button><figcaption><span>均衡模式</span></figcaption></figure>
+                  <figure class="legion-supplement-figure"><button class="legion-supplement-zoom" type="button" aria-label="放大查看：PC 野兽模式"><img src="assets/legion-zone/supplement/pc-red-preview.webp" srcset="assets/legion-zone/supplement/pc-red-preview.webp 1590w, assets/legion-zone/supplement/pc-red-hd.webp 3180w" sizes="(max-width: 620px) calc(100vw - 44px), 360px" data-lightbox-src="assets/legion-zone/supplement/pc-red-hd.webp" alt="Legion Zone PC 首页野兽模式（红色界面）" width="1590" height="1020" loading="lazy" decoding="async" data-lightbox-group="legion-pc-screens" /></button><figcaption><span>野兽模式</span></figcaption></figure>
+                  <figure class="legion-supplement-figure"><button class="legion-supplement-zoom" type="button" aria-label="放大查看：PC 自定义模式"><img src="assets/legion-zone/supplement/pc-purple-preview.webp" srcset="assets/legion-zone/supplement/pc-purple-preview.webp 1590w, assets/legion-zone/supplement/pc-purple-hd.webp 3180w" sizes="(max-width: 620px) calc(100vw - 44px), 360px" data-lightbox-src="assets/legion-zone/supplement/pc-purple-hd.webp" alt="Legion Zone PC 首页自定义模式（紫色界面）" width="1590" height="1020" loading="lazy" decoding="async" data-lightbox-group="legion-pc-screens" /></button><figcaption><span>自定义模式</span></figcaption></figure>
                 </div>
               </section>
 
               <section class="legion-supplement-section" data-scroll-chapter="motion" aria-labelledby="legion-motion-title">
                 <header class="legion-supplement-heading">
-                  <p class="chapter-kicker">02 / PC IN MOTION</p>
+                  <p class="chapter-kicker">01 / PC IN MOTION</p>
                   <h4 id="legion-motion-title" class="legion-mixed-title"><span>让体验，</span><strong>动起来。</strong></h4>
                   <p>模式切换、游戏启动、快捷控制。<br />在 50 秒里，看见交互节奏。</p>
                 </header>
@@ -922,7 +783,7 @@
 
               <section class="legion-supplement-section" data-scroll-chapter="phone" aria-labelledby="legion-phone-title">
                 <header class="legion-supplement-heading">
-                  <p class="chapter-kicker">03 / PHONE</p>
+                  <p class="chapter-kicker">02 / PHONE</p>
                   <h4 id="legion-phone-title" class="legion-mixed-title"><span>横屏展开，</span><strong>进入游戏。</strong></h4>
                   <p>三种性能模式，一个游戏空间。<br />从设备状态，到游戏与数据。</p>
                 </header>
@@ -940,6 +801,126 @@
                 </div>
               </section>
             </section>
+            <section class="legion-cylinder legion-cylinder-compact" data-legion-cylinder aria-label="Legion Zone 核心设计推导">
+              <div class="legion-cylinder-sticky">
+                <div class="legion-cylinder-ambient" aria-hidden="true"></div>
+                <div class="legion-cylinder-status" aria-live="polite">
+                  <h3 class="legion-cylinder-title">Legion Zone 游戏中心 · 设计方案推导</h3>
+                  <div class="legion-cylinder-status-meta">
+                    <p data-cylinder-label>01 / DESIGN GOAL</p>
+                    <nav aria-label="核心设计推导快速导航">
+                      <a class="is-active" href="#case-legion/01" aria-label="查看改版目标">01</a>
+                      <a href="#case-legion/03" aria-label="查看设计方向">02</a>
+                      <a href="#case-legion/04" aria-label="查看沉浸体验问题">03</a>
+                    </nav>
+                  </div>
+                </div>
+                <div class="legion-cylinder-scene" role="list" aria-label="Legion Zone 核心设计推导画廊">
+                  <article class="legion-cylinder-card is-active" id="legion-01" data-cylinder-card="0" data-display-chapter="01" data-cylinder-label="DESIGN GOAL" data-chapter="01" data-scroll-chapter="01" aria-label="Legion Zone 改版目标" aria-current="true" role="listitem" tabindex="0">
+                    <figure class="legion-figure legion-cylinder-front">
+                      <img src="assets/legion-zone/pages/01.webp" alt="Legion Zone 从设备控制台向专业游戏中心转型的改版目标" width="1920" height="1080" decoding="async" draggable="false" />
+                    </figure>
+                    <div class="legion-cylinder-card-overlay" aria-hidden="true"></div>
+                    <div class="legion-cylinder-card-label" aria-hidden="true"><i></i><span>01</span><b>DESIGN GOAL</b></div>
+                  </article>
+                  <article class="legion-cylinder-card" id="legion-03" data-cylinder-card="1" data-display-chapter="02" data-cylinder-label="DESIGN DIRECTION" data-chapter="03" data-scroll-chapter="03" aria-label="Legion Zone 设计方向" role="listitem" tabindex="0">
+                    <figure class="legion-figure legion-cylinder-front">
+                      <img src="assets/legion-zone/pages/03.webp" alt="Legion Zone 面向专业游戏中心的三项设计方向" width="1920" height="1080" loading="lazy" decoding="async" draggable="false" />
+                    </figure>
+                    <div class="legion-cylinder-card-overlay" aria-hidden="true"></div>
+                    <div class="legion-cylinder-card-label" aria-hidden="true"><i></i><span>02</span><b>DESIGN DIRECTION</b></div>
+                  </article>
+                  <article class="legion-cylinder-card" id="legion-04" data-cylinder-card="2" data-display-chapter="03" data-cylinder-label="IMMERSION QUESTION" data-chapter="04" data-scroll-chapter="04" aria-label="Legion Zone 沉浸体验问题" role="listitem" tabindex="0">
+                    <figure class="legion-figure legion-cylinder-front">
+                      <img src="assets/legion-zone/pages/04.webp" alt="以沉浸式交互体验问题引出门店体验类比" width="1920" height="1080" loading="lazy" decoding="async" draggable="false" />
+                    </figure>
+                    <div class="legion-cylinder-card-overlay" aria-hidden="true"></div>
+                    <div class="legion-cylinder-card-label" aria-hidden="true"><i></i><span>03</span><b>IMMERSION QUESTION</b></div>
+                  </article>
+                </div>
+                <div class="legion-cylinder-footer">
+                  <p class="legion-cylinder-hint" aria-hidden="true"><span>HOVER OR CLICK TO EXPLORE</span><i></i><b data-cylinder-count>01 / 03</b></p>
+                </div>
+              </div>
+            </section>
+            <article class="chapter-panel legion-page legion-prologue legion-prologue-05" id="legion-05" data-chapter="05" data-scroll-chapter="05" data-prologue="04">
+              <header class="legion-page-label reveal">
+                <p class="chapter-kicker">04 / EXPERIENCE ANALOGY</p>
+              </header>
+              <figure class="legion-figure reveal">
+                <img src="assets/legion-zone/pages/05.webp" alt="Legion Zone 设计推导第 5 页" width="2880" height="1725" loading="lazy" decoding="async" />
+              </figure>
+            </article>
+            <article class="chapter-panel legion-page legion-prologue legion-prologue-06" id="legion-06" data-chapter="06" data-scroll-chapter="06" data-prologue="05">
+              <header class="legion-page-label reveal">
+                <p class="chapter-kicker">05 / DESIGN PRINCIPLES</p>
+              </header>
+              <figure class="legion-figure reveal">
+                <img src="assets/legion-zone/pages/06.webp" alt="Legion Zone 设计推导第 6 页" width="2880" height="1620" loading="lazy" decoding="async" />
+              </figure>
+            </article>
+            <article class="chapter-panel legion-page legion-prologue legion-prologue-07 legion-principles" id="legion-07" data-chapter="07" data-scroll-chapter="07" data-prologue="06" data-legion-principles>
+              <header class="legion-principles-header reveal">
+                <p class="chapter-kicker">06 / PRINCIPLES IN PRACTICE</p>
+                <div>
+                  <h3 class="legion-mixed-title"><span>三个原则，</span><strong>落进三个真实场景。</strong></h3>
+                  <p>从内容、空间到服务，把抽象关键词转译成可感知的游戏体验。</p>
+                </div>
+              </header>
+              <div class="legion-principles-layout reveal">
+                <div class="legion-principles-rail" role="tablist" aria-label="三项设计原则">
+                  <button class="is-active" type="button" role="tab" id="legion-principle-tab-1" aria-controls="legion-principle-panel-1" aria-selected="true" data-principle-tab="0">
+                    <span>01</span><span><strong>视觉张力</strong><small>稀缺内容与节奏构图</small></span><i aria-hidden="true"></i>
+                  </button>
+                  <button type="button" role="tab" id="legion-principle-tab-2" aria-controls="legion-principle-panel-2" aria-selected="false" tabindex="-1" data-principle-tab="1">
+                    <span>02</span><span><strong>空间与动线融合</strong><small>全屏沉浸与清晰指引</small></span><i aria-hidden="true"></i>
+                  </button>
+                  <button type="button" role="tab" id="legion-principle-tab-3" aria-controls="legion-principle-panel-3" aria-selected="false" tabindex="-1" data-principle-tab="2">
+                    <span>03</span><span><strong>个性化服务</strong><small>评测、榜单与趣味交互</small></span><i aria-hidden="true"></i>
+                  </button>
+                </div>
+                <div class="legion-principles-stage">
+                  <div class="legion-principles-hud" aria-hidden="true"><span data-principle-label>VISUAL TENSION</span><b><i data-principle-current>01</i> / 03</b></div>
+                  <div class="legion-principles-stack">
+                    <figure class="legion-figure legion-principle-panel is-active" id="legion-principle-panel-1" role="tabpanel" aria-labelledby="legion-principle-tab-1" aria-hidden="false" data-principle-panel="0">
+                      <img src="assets/legion-zone/pages/08.webp" alt="视觉张力原则落地于先锋测试页面" width="1920" height="1080" loading="lazy" decoding="async" data-lightbox-group="legion-principles" />
+                      <figcaption><span>SCENE 01</span><b>先锋测试</b></figcaption>
+                    </figure>
+                    <figure class="legion-figure legion-principle-panel" id="legion-principle-panel-2" role="tabpanel" aria-labelledby="legion-principle-tab-2" aria-hidden="true" data-principle-panel="1">
+                      <img src="assets/legion-zone/pages/07.webp" alt="空间与动线融合原则落地于游戏中心首页" width="1920" height="1080" loading="lazy" decoding="async" data-lightbox-group="legion-principles" />
+                      <figcaption><span>SCENE 02</span><b>沉浸首页</b></figcaption>
+                    </figure>
+                    <figure class="legion-figure legion-principle-panel" id="legion-principle-panel-3" role="tabpanel" aria-labelledby="legion-principle-tab-3" aria-hidden="true" data-principle-panel="2">
+                      <img src="assets/legion-zone/pages/09.webp" alt="个性化服务原则落地于游戏排行榜页面" width="1920" height="1080" loading="lazy" decoding="async" data-lightbox-group="legion-principles" />
+                      <figcaption><span>SCENE 03</span><b>游戏排行榜</b></figcaption>
+                    </figure>
+                  </div>
+                  <p class="legion-principles-hint">选择左侧原则，查看对应的真实界面证据。点击画面可放大。</p>
+                </div>
+              </div>
+            </article>
+            <article class="chapter-panel legion-page legion-prologue legion-prologue-11 legion-visual-system" id="legion-11" data-chapter="11" data-scroll-chapter="11" data-prologue="07">
+              <header class="legion-page-label reveal">
+                <p class="chapter-kicker">07 / VISUAL SYSTEM</p>
+              </header>
+              <figure class="legion-figure reveal">
+                <img src="assets/legion-zone/pages/12.webp" alt="Legion Zone 设计推导第 11 页" width="1920" height="1080" loading="lazy" decoding="async" />
+              </figure>
+            </article>
+            <article class="chapter-panel legion-page legion-prologue legion-prologue-13 legion-outcome" id="legion-12" data-chapter="12" data-scroll-chapter="12" data-prologue="08">
+              <header class="legion-page-label reveal">
+                <p class="chapter-kicker">08 / FINAL OUTCOME</p>
+              </header>
+              <div class="legion-outcome-result reveal">
+                <p class="legion-outcome-result-kicker">LAUNCH RESULT</p>
+                <h3 class="legion-mixed-title"><span>新版游戏中心，</span><strong>改版设计。</strong></h3>
+                <p>上线后 CDKey 商城盈利增加 30%，用户反馈：“这才是更像游戏项目的游戏中心的感觉”</p>
+              </div>
+              <figure class="legion-figure reveal legion-final-figure">
+                <img src="assets/legion-zone/pages/14.webp" alt="Legion Zone 最终方案" width="2120" height="9968" loading="lazy" decoding="async" />
+              </figure>
+            </article>
+
           </div>
         </div>
         <div class="case-next reveal"><span>BACK TO INDEX</span><a href="#index">返回 Selected Works →</a></div>
@@ -948,7 +929,7 @@
     <section class="view case-view" data-view="case-aui" data-case-theme="slate" data-case-start="10-companion-state"><div class="page-wrap case-wrap"><div class="case-topbar reveal"><a href="#index" class="back-link">← 返回目录</a><span>03 / 03 · SYSTEM</span><span>Figma 10 — 12 / 12</span></div><div class="case-hero reveal"><p class="eyebrow accent-slate">SYSTEM / WHAT I BUILT</p><h2 class="case-title">把主动服务组织成<br /><em>可感知、可控、连续的系统体验。</em></h2><p class="case-dek">从 AUI 定义到跨端全景与伴随态，天禧 AUI 让 AI 在 Phone、Pad、PC 之间保持同一条任务关系，并以不同介入距离回应用户。</p></div><div class="case-layout"><aside class="chapter-nav reveal" data-case-nav="aui"><p>ON THIS CASE</p></aside><div class="case-body" data-case-body="aui"><article class="chapter-panel" data-chapter="10-companion-state"><div class="chapter-kicker">10 / COMPANION STATE</div><div class="chapter-layout"><div><h3>伴随态不是悬浮入口，<br /><em>而是一套 AI 存在方式。</em></h3><p>多模态主动感知、动态界面适配与跨端协同，让服务随任务、设备与环境自然迁移。</p><div class="companion-list"><button class="companion-card active" data-companion="aipc"><b>AI PC</b><span>主动识别 / 一键调优</span></button><button class="companion-card" data-companion="phone"><b>AI 手机</b><span>购物比价 / 导航直达 / 实景翻译</span></button><button class="companion-card" data-companion="pad"><b>AI 平板</b><span>全语音控制 / AI 影片推荐</span></button><button class="companion-card" data-companion="aiot"><b>AIoT</b><span>环境式服务与内容抵达</span></button></div></div><figure class="chapter-image"><img id="companion-visual" src="assets/shared/aui-roadmap-assets/aipc.png" alt="AI PC 伴随态" /></figure></div></article><article class="chapter-panel" data-chapter="11-cross-device"><div class="chapter-kicker">11 / CROSS-DEVICE PANORAMA</div><div class="chapter-layout"><div><h3>同一个意图，<br /><em>在 Phone / Pad / PC 间连续。</em></h3><p><b>AI 随心窗</b> 是用户主动呼唤；<b>AI 如影框</b> 原位进入当前任务；<b>AI 玲珑台</b> 承载天禧主动服务或提醒。形态随场景变化，任务关系不被打断。</p><div class="device-mode-grid"><button class="active" data-device-mode="window"><b>AI 随心窗</b><small>全屏 / 分屏 / 外屏</small></button><button data-device-mode="frame"><b>AI 如影框</b><small>原位 / 自定义尺寸</small></button><button data-device-mode="platform"><b>AI 玲珑台</b><small>轻 / 中 / 重介入</small></button></div><p class="mode-output" id="mode-output">用户主动与天禧交互后出现，适合从一句意图开始。</p></div><figure class="chapter-image"><img src="assets/shared/figma/r2-cross-device-continuity.png" alt="AUI 各端全景图" /></figure></div></article><article class="chapter-panel" data-chapter="12-in-context"><div class="chapter-kicker">12 / IN-CONTEXT COMPANION</div><div class="chapter-layout"><div><h3>即问即答，<br /><em>即答即走。</em></h3><p>AI 进入当前上下文，但不夺走主任务。长按电源键或语音唤醒；问题在下、结果在上。简单任务原位完成，复杂任务再进入 App 深度处理。</p><div class="decision-switch"><button class="active" data-decision="one">01 / 下问上答</button><button data-decision="two">02 / 复杂任务升级</button></div><p class="decision-output" id="decision-output">利用自上而下的视觉动线，将问题置于下方、结果置于上方；层次分明，便于用户聚焦核心信息。</p><p class="availability">已上线：Phone / Pad ｜ 设计判断：原位出现、单轮聚焦、复杂任务可升级。</p></div><figure class="chapter-image"><img src="assets/shared/figma/r2-intervention-distance.png" alt="AUI In-context Companion 交互证据" /></figure></div></article></div></div><div class="case-next reveal"><span>BACK TO INDEX</span><a href="#index">返回 Selected Works →</a></div></div></section>
   </main>
   <div class="image-lightbox" id="image-lightbox" aria-hidden="true"><button class="lightbox-close" type="button" aria-label="关闭图片预览">×</button><button class="lightbox-zoom" type="button" data-lightbox-zoom aria-label="放大图片" aria-pressed="false"><span aria-hidden="true">⤢</span></button><button class="lightbox-arrow lightbox-prev" type="button" data-lightbox-prev aria-label="查看上一张图片">‹</button><figure class="lightbox-stage"><img id="lightbox-image" src="" alt="" /></figure><button class="lightbox-arrow lightbox-next" type="button" data-lightbox-next aria-label="查看下一张图片">›</button><p id="lightbox-caption"></p><span class="lightbox-count" id="lightbox-count" aria-live="polite"></span></div>
-  <footer class="release-footer"><p>作品整理与叙述：王鹏飞 · Bill Wang</p><p>项目商标及相关作品权利归原权利人所有。仅供招聘评估与交流，请勿冒名、镜像或再分发。</p><a href="https://bill-fei.github.io/bill-portfolio/">核验作品集原始地址 ↗</a> · <a href="privacy.html">隐私与访问统计说明</a></footer>
-  <script src="study.js?v=279"></script>
+  <footer class="release-footer"><p>AI Native 设计师 王鹏飞</p><p class="release-footer-contact"><a href="tel:17600008651">Phone / WeChat: 176 0000 8651</a><span aria-hidden="true">·</span><a href="mailto:404125098@qq.com">Email: 404125098@qq.com</a></p></footer>
+  <script src="study.js?v=300"></script>
 </body>
 </html>

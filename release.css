@@ -6,5 +6,22 @@
 .release-footer a { text-decoration: underline; text-underline-offset: 4px; }
 @media (max-width: 620px) { .global-nav .nav-featured:not(.active)::after { color: #b6c6dc; } }
 .noscript-notice { position: relative; z-index: 40; margin: 90px 24px 24px; padding: 16px; background: #172234; }
-.image-lightbox::after { content: 'BILL WANG · bill-fei.github.io/bill-portfolio'; position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); color: #d3dce8; font: 10px monospace; white-space: nowrap; pointer-events: none; }
 @media print { .site-header, .cursor-glow, .ambient-grain { display: none !important; } .release-footer { display: block !important; } }
+
+/* V286 — concise authorship and direct contact only. */
+.release-footer {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 30px 24px 34px;
+}
+.release-footer p { margin: 0; }
+.release-footer > p:first-child { color: #c7d2e2; letter-spacing: .04em; }
+.release-footer-contact { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
+.release-footer-contact a { color: #9fb2ca; text-decoration: none; }
+.release-footer-contact a:hover { color: #e3ebf6; }
+.release-footer-contact a:focus-visible { border-radius: 2px; }
+@media (max-width: 620px) {
+  .release-footer-contact { flex-direction: column; gap: 4px; }
+  .release-footer-contact > span { display: none; }
+}

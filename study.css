@@ -1179,6 +1179,7 @@ html { overflow-x: clip; }
   }
 }
 
+
 /* Home v20 — one continuous narrative: identity, selected works, then career */
 .home-works {
   position: relative;
@@ -10691,7 +10692,7 @@ body[data-route^="case-"] .case-view.is-active .case-topbar {
   background: radial-gradient(circle at 78% 48%, #101725 0, #080b12 43%, #05070b 100%);
   -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 72%, transparent 100%);
   mask-image: linear-gradient(180deg, #000 0%, #000 72%, transparent 100%);
-  mix-blend-mode: screen;
+  mix-blend-mode: normal;
 }
 
 .case-paradigm > .gen-hero-laser #gen-hero-side-rays {
@@ -12052,6 +12053,7 @@ body[data-route^="case-"] .case-view.is-active .case-topbar {
 .legion-supplement-subheading p { margin: 0; font-size: 12px; }
 .legion-supplement-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 24px; }
 .legion-pc-showcase { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 20px; }
+.legion-supplement-reasoning + .legion-pc-showcase { margin-top: 40px; }
 .legion-pc-showcase > figure:first-child { grid-column: 1 / -1; }
 .legion-contents { display: grid; grid-template-columns: .9fr 1.1fr; align-items: start; gap: 48px; padding: 88px 0 104px; }
 .legion-contents header h3 { margin: 24px 0; color: #eef3fb; font-size: clamp(32px, 3.6vw, 48px); font-weight: 400; line-height: 1.25; letter-spacing: -.04em; }
@@ -12092,4 +12094,816 @@ body[data-route^="case-"] .case-view.is-active .case-topbar {
   .legion-contents small { font-size: 10px; }
   .case-legion .legion-contents,
   .case-legion .legion-supplement-section { scroll-margin-top: 155px; }
+}
+
+/* V280 — stabilize the global header and case navigation glass in Chromium.
+   A stronger translucent fallback preserves separation even if backdrop sampling is briefly unavailable. */
+.site-header {
+  background-color: rgba(7, 9, 14, .9);
+  background-image: linear-gradient(180deg, rgba(7, 9, 14, .96) 0%, rgba(8, 11, 17, .86) 64%, rgba(8, 11, 17, .68) 100%);
+  -webkit-backdrop-filter: blur(24px) saturate(122%);
+  backdrop-filter: blur(24px) saturate(122%);
+}
+.case-aui-one .case-topbar,
+.case-paradigm .case-topbar,
+.case-legion .case-topbar {
+  isolation: auto;
+  display: grid;
+  grid-template-columns: minmax(132px, 1fr) auto minmax(190px, 1fr);
+  column-gap: 24px;
+  background-color: rgba(12, 16, 24, .78);
+  background-image:
+    linear-gradient(180deg, rgba(74, 80, 92, .62) 0%, rgba(34, 40, 51, .68) 52%, rgba(14, 19, 28, .78) 100%),
+    linear-gradient(90deg, rgba(var(--case-glass-rgb), .11), transparent 36%, transparent 64%, rgba(var(--case-glass-rgb), .07));
+  border-color: rgba(236, 242, 252, .2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .19),
+    inset 0 -1px 0 rgba(0, 0, 0, .2),
+    0 16px 42px rgba(0, 0, 0, .3);
+  -webkit-backdrop-filter: blur(24px) saturate(125%) contrast(105%);
+  backdrop-filter: blur(24px) saturate(125%) contrast(105%);
+}
+.case-aui-one .case-topbar > .back-link,
+.case-paradigm .case-topbar > .back-link,
+.case-legion .case-topbar > .back-link { justify-self: start; }
+.case-aui-one .case-topbar > .case-current-label,
+.case-paradigm .case-topbar > .case-current-label,
+.case-legion .case-topbar > .case-current-label { justify-self: center; text-align: center; }
+.case-aui-one .case-topbar > span:last-child,
+.case-paradigm .case-topbar > span:last-child,
+.case-legion .case-topbar > span:last-child { justify-self: end; text-align: right; }
+.case-aui-one .case-topbar.reveal,
+.case-aui-one .case-topbar.reveal.is-visible,
+.case-aui-one .case-topbar.reveal.is-topbar-hidden,
+.case-paradigm .case-topbar.reveal,
+.case-paradigm .case-topbar.reveal.is-visible,
+.case-paradigm .case-topbar.reveal.is-topbar-hidden,
+.case-legion .case-topbar.reveal,
+.case-legion .case-topbar.reveal.is-visible,
+.case-legion .case-topbar.reveal.is-topbar-hidden { will-change: opacity; }
+.case-aui-one .case-topbar.reveal.is-topbar-visible,
+.case-aui-one .case-topbar.reveal.is-visible.is-topbar-visible,
+.case-paradigm .case-topbar.reveal.is-topbar-visible,
+.case-paradigm .case-topbar.reveal.is-visible.is-topbar-visible,
+.case-legion .case-topbar.reveal.is-topbar-visible,
+.case-legion .case-topbar.reveal.is-visible.is-topbar-visible { transform: none; }
+@media (min-width: 901px) and (max-width: 1180px) {
+  .case-aui-one .case-topbar,
+  .case-paradigm .case-topbar,
+  .case-legion .case-topbar {
+    grid-template-columns: minmax(110px, 1fr) minmax(0, auto) minmax(150px, 1fr);
+    column-gap: 16px;
+  }
+  .case-view .case-topbar > span:last-child {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 900px) {
+  .case-aui-one .case-topbar,
+  .case-paradigm .case-topbar,
+  .case-legion .case-topbar {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 12px;
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+    backdrop-filter: blur(20px) saturate(120%);
+  }
+  .case-aui-one .case-topbar > .case-current-label,
+  .case-paradigm .case-topbar > .case-current-label,
+  .case-legion .case-topbar > .case-current-label {
+    justify-self: end;
+    max-width: 100%;
+  }
+}
+
+
+/* V284 — restore truly translucent case-navigation glass.
+   V280's 62–78% dark layers hid the backdrop even though blur was active. */
+.case-aui-one .case-topbar,
+.case-paradigm .case-topbar,
+.case-legion .case-topbar {
+  background-color: rgba(8, 12, 18, .18);
+  background-image:
+    linear-gradient(180deg, rgba(36, 43, 57, .28) 0%, rgba(18, 24, 34, .30) 52%, rgba(7, 11, 18, .34) 100%),
+    linear-gradient(90deg, rgba(var(--case-glass-rgb), .08), transparent 42%, transparent 62%, rgba(var(--case-glass-rgb), .045));
+  border-color: rgba(236, 242, 252, .24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .22),
+    inset 0 -1px 0 rgba(0, 0, 0, .12),
+    0 16px 42px rgba(0, 0, 0, .20);
+  -webkit-backdrop-filter: blur(32px) saturate(138%) contrast(103%);
+  backdrop-filter: blur(32px) saturate(138%) contrast(103%);
+}
+.case-view .case-topbar > span:last-child {
+  color: rgba(226, 234, 246, .80);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .38);
+}
+@media (max-width: 900px) {
+  .case-aui-one .case-topbar,
+  .case-paradigm .case-topbar,
+  .case-legion .case-topbar {
+    background-color: rgba(8, 12, 18, .20);
+    background-image:
+      linear-gradient(180deg, rgba(36, 43, 57, .30) 0%, rgba(17, 23, 33, .32) 54%, rgba(7, 11, 18, .36) 100%),
+      linear-gradient(90deg, rgba(var(--case-glass-rgb), .075), transparent 46%, rgba(var(--case-glass-rgb), .04));
+    -webkit-backdrop-filter: blur(26px) saturate(134%) contrast(103%);
+    backdrop-filter: blur(26px) saturate(134%) contrast(103%);
+  }
+}
+
+
+/* V285 — keep the case-navigation backdrop layer continuously painted while scrolling.
+   The bar no longer enters a 1.5s hidden/compositor rebuild cycle on every scroll event. */
+.case-aui-one .case-topbar.reveal,
+.case-aui-one .case-topbar.reveal.is-visible,
+.case-aui-one .case-topbar.reveal.is-topbar-hidden,
+.case-paradigm .case-topbar.reveal,
+.case-paradigm .case-topbar.reveal.is-visible,
+.case-paradigm .case-topbar.reveal.is-topbar-hidden,
+.case-legion .case-topbar.reveal,
+.case-legion .case-topbar.reveal.is-visible,
+.case-legion .case-topbar.reveal.is-topbar-hidden {
+  will-change: auto;
+}
+
+
+/* V286 — AUI chapter label consistency, strict top alignment, and compact continuity copy. */
+.case-aui-one .aui-chapter-copy,
+.case-aui-one .aui-evidence-heading,
+.case-aui-one .aui-result-film-copy,
+.case-aui-one .aui-learning-intro {
+  align-items: start;
+}
+.case-aui-one .aui-chapter-copy .chapter-kicker,
+.case-aui-one .aui-evidence-heading .chapter-kicker,
+.case-aui-one .aui-result-film-copy .chapter-kicker,
+.case-aui-one .aui-learning-overline {
+  margin-top: 0;
+  font-size: 9px;
+  line-height: 1.35;
+  letter-spacing: .12em;
+  white-space: nowrap;
+}
+.case-aui-one .aui-chapter-copy .aui-chapter-summary,
+.case-aui-one .aui-evidence-heading > p:last-child,
+.case-aui-one .aui-result-film-copy > p:last-child {
+  align-self: start;
+  margin-top: 0;
+}
+.case-aui-one .aui-result-film-copy,
+.case-aui-one .aui-learning-intro {
+  grid-template-columns: 180px minmax(0, 1fr);
+}
+.case-aui-one .aui-learning-intro > p:last-child {
+  max-width: none;
+  margin-top: 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+@media (min-width: 1201px) {
+  .case-aui-one .aui-learning-intro > p:last-child {
+    white-space: nowrap;
+  }
+}
+@media (max-width: 900px) {
+  .case-aui-one .aui-chapter-copy .chapter-kicker,
+  .case-aui-one .aui-evidence-heading .chapter-kicker,
+  .case-aui-one .aui-result-film-copy .chapter-kicker,
+  .case-aui-one .aui-learning-overline {
+    white-space: normal;
+  }
+  .case-aui-one .aui-learning-intro > p:last-child {
+    white-space: normal;
+  }
+}
+
+/* V289 — make the fixed case navigation read as frosted glass, not a transparent tint.
+   Blur stays on the real surface; the pseudo layers only restore optical glaze and
+   edge thickness, so Chromium can sample the live page behind the fixed bar. */
+.case-aui-one .case-topbar,
+.case-paradigm .case-topbar,
+.case-legion .case-topbar {
+  isolation: auto;
+  overflow: hidden;
+  background-color: rgba(8, 12, 18, .52);
+  background-image:
+    linear-gradient(180deg, rgba(222, 232, 247, .16) 0%, rgba(72, 86, 108, .13) 38%, rgba(18, 25, 37, .34) 70%, rgba(5, 9, 15, .48) 100%),
+    linear-gradient(100deg, rgba(var(--case-glass-rgb), .14), transparent 34%, transparent 66%, rgba(var(--case-glass-rgb), .09));
+  background-clip: padding-box;
+  border-color: rgba(238, 244, 255, .31);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .34),
+    inset 0 -1px 0 rgba(4, 8, 14, .46),
+    inset 0 8px 18px rgba(255, 255, 255, .035),
+    0 16px 42px rgba(0, 0, 0, .28);
+  -webkit-backdrop-filter: blur(30px) saturate(152%) brightness(82%) contrast(106%);
+  backdrop-filter: blur(30px) saturate(152%) brightness(82%) contrast(106%);
+}
+.case-aui-one .case-topbar::before,
+.case-paradigm .case-topbar::before,
+.case-legion .case-topbar::before {
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 0;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 18% -55%, rgba(255, 255, 255, .27), transparent 48%),
+    radial-gradient(ellipse at 84% 150%, rgba(var(--case-glass-rgb), .13), transparent 52%),
+    linear-gradient(105deg, rgba(255, 255, 255, .075), transparent 28% 69%, rgba(var(--case-glass-rgb), .075));
+  opacity: .9;
+}
+.case-aui-one .case-topbar::after,
+.case-paradigm .case-topbar::after,
+.case-legion .case-topbar::after {
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 1px solid transparent;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 4%, rgba(255,255,255,.28) 26%, rgba(var(--case-glass-rgb),.24) 52%, rgba(255,255,255,.18) 76%, transparent 96%) top / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 10%, rgba(var(--case-glass-rgb),.12), rgba(255,255,255,.09), transparent 90%) bottom / 100% 1px no-repeat;
+  box-shadow: inset 0 0 18px rgba(210, 228, 255, .055);
+  opacity: .9;
+}
+.case-aui-one .case-topbar > *,
+.case-paradigm .case-topbar > *,
+.case-legion .case-topbar > * {
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 900px) {
+  .case-aui-one .case-topbar,
+  .case-paradigm .case-topbar,
+  .case-legion .case-topbar {
+    background-color: rgba(8, 12, 18, .58);
+    background-image:
+      linear-gradient(180deg, rgba(222, 232, 247, .17) 0%, rgba(68, 82, 103, .14) 40%, rgba(16, 23, 34, .37) 72%, rgba(5, 9, 15, .52) 100%),
+      linear-gradient(100deg, rgba(var(--case-glass-rgb), .13), transparent 42%, rgba(var(--case-glass-rgb), .08));
+    -webkit-backdrop-filter: blur(24px) saturate(146%) brightness(80%) contrast(105%);
+    backdrop-filter: blur(24px) saturate(146%) brightness(80%) contrast(105%);
+  }
+}
+
+/* V289 — align the generated-result title and explanatory copy from the top. */
+.case-paradigm .gen-story-result {
+  margin-top: clamp(56px, 7vw, 96px);
+}
+.case-paradigm .gen-story-result .gen-story-head {
+  align-items: start;
+}
+.case-paradigm .gen-story-result .gen-story-head > p:not(.gen-result-note) {
+  margin: 0;
+  padding-top: 30px;
+}
+
+/* V289 — preserve the same internal distance above the three device cards as
+   the system frame uses on its left and right edges. */
+.case-paradigm [data-chapter="08-cross-device-rendering"] .gen-device-system {
+  --gen-device-space: clamp(20px, 3vw, 34px);
+  display: grid;
+  row-gap: var(--gen-device-space);
+  padding: var(--gen-device-space);
+}
+.case-paradigm [data-chapter="08-cross-device-rendering"] .gen-shared-semantics {
+  margin: 0 auto;
+}
+@media (max-width: 1050px) {
+  .case-paradigm [data-chapter="08-cross-device-rendering"] .gen-device-system {
+    --gen-device-space: 20px;
+  }
+}
+@media (max-width: 760px) {
+  .case-paradigm [data-chapter="08-cross-device-rendering"] .gen-device-system {
+    --gen-device-space: 14px;
+  }
+}
+/* V289 — remove the legacy card-grid top margin so vertical and horizontal
+   breathing room inside the cross-device system are exactly equal. */
+.case-paradigm [data-chapter="08-cross-device-rendering"] .gen-device-renders {
+  margin-top: 0;
+}
+
+/* V291 — keep the Generative UI fixed glass outside its content stacking context.
+   The case content must stay above the SideRays canvas, but placing the fixed bar inside
+   that z-index layer prevents Chromium from sampling the live page backdrop. */
+.case-paradigm > .gen-case-nav-wrap {
+  position: relative;
+  z-index: auto;
+}
+.case-paradigm > .case-wrap > .gen-case-hero {
+  margin-top: 54px;
+}
+
+/* V295 — match the Generative UI navigation material to Legion exactly.
+   Keep the page's purple accent in its content, but use the neutral silver glass token
+   on the fixed navigation so the frosted surface no longer reads as a purple tint. */
+.case-paradigm > .gen-case-nav-wrap {
+  --case-glass-rgb: 225, 231, 240;
+}
+
+/* V292 — compress the Legion game-center narrative and turn three principle slides into one cinematic evidence stage. */
+.case-legion .legion-cylinder-compact .legion-cylinder-scene {
+  right: clamp(70px, 10vw, 190px);
+  left: clamp(70px, 10vw, 190px);
+  height: clamp(410px, 34vw, 620px);
+}
+.case-legion .legion-cylinder-compact .legion-cylinder-card.is-active {
+  --legion-card-grow: 3.2;
+}
+.case-legion .legion-principles {
+  --prologue-shift: 0px;
+  --prologue-entry-x: 0px;
+  --prologue-glow: rgba(94, 138, 244, .2);
+  --glow-x: 72%;
+  width: 100vw;
+  max-width: none;
+  min-height: min(94svh, 1040px);
+  margin-left: calc(50% - 50vw);
+  padding: clamp(86px, 8vw, 136px) clamp(24px, 4.4vw, 84px) clamp(96px, 9vw, 154px) !important;
+  overflow: clip;
+  background:
+    radial-gradient(circle at 78% 46%, rgba(68, 111, 219, .13), transparent 26%),
+    linear-gradient(180deg, #020305 0%, #05070c 52%, #020305 100%);
+}
+.case-legion .legion-principles::before {
+  right: clamp(22px, 4vw, 76px);
+  top: clamp(30px, 3vw, 54px);
+  color: transparent;
+  -webkit-text-stroke-color: rgba(150, 177, 225, .075);
+}
+.case-legion .legion-principles::after {
+  inset: 7% -2% 0;
+  background:
+    linear-gradient(90deg, transparent 0 49.9%, rgba(135, 165, 221, .045) 50%, transparent 50.1%),
+    radial-gradient(ellipse at 76% 48%, rgba(73, 116, 218, .2), transparent 38%);
+  filter: blur(16px);
+}
+.case-legion .legion-principles-header {
+  position: relative;
+  z-index: 20;
+  width: min(100%, 1500px);
+  margin: 0 auto clamp(44px, 5vw, 76px);
+}
+.case-legion .legion-principles-header .chapter-kicker {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 clamp(25px, 2.7vw, 42px);
+  color: #7f93b0;
+}
+.case-legion .legion-principles-header .chapter-kicker::after {
+  content: '';
+  width: clamp(44px, 7vw, 112px);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(94, 141, 255, .7), transparent);
+}
+.case-legion .legion-principles-header > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  gap: clamp(34px, 7vw, 120px);
+  align-items: end;
+}
+.case-legion .legion-principles-header h3 {
+  margin: 0;
+  color: #f2f6fd;
+  font-size: clamp(42px, 5.2vw, 82px);
+  font-weight: 470;
+  line-height: 1.04;
+  letter-spacing: -.065em;
+}
+.case-legion .legion-principles-header h3 em {
+  color: #95b8ff;
+  font-style: normal;
+}
+.case-legion .legion-principles-header > div > p {
+  max-width: 390px;
+  margin: 0 0 .35em;
+  color: rgba(181, 197, 222, .72);
+  font-size: clamp(14px, 1.1vw, 17px);
+  line-height: 1.85;
+}
+.case-legion .legion-principles-layout {
+  position: relative;
+  z-index: 5;
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(230px, .32fr) minmax(0, 1fr);
+  gap: clamp(36px, 5vw, 88px);
+  align-items: center;
+}
+.case-legion .legion-principles-rail {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 0;
+}
+.case-legion .legion-principles-rail::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 18px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(142, 171, 220, .28) 18% 82%, transparent);
+}
+.case-legion .legion-principles-rail button {
+  position: relative;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 44px;
+  gap: 18px;
+  align-items: center;
+  min-height: 112px;
+  padding: 16px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(137, 161, 202, .12);
+  color: rgba(157, 174, 202, .52);
+  text-align: left;
+  background: none;
+  cursor: pointer;
+  transition: color .45s ease, transform .55s var(--ease);
+}
+.case-legion .legion-principles-rail button:last-child { border-bottom: 0; }
+.case-legion .legion-principles-rail button > span:first-child {
+  position: relative;
+  z-index: 1;
+  color: rgba(166, 188, 226, .5);
+  font: 500 11px/1 var(--mono);
+  letter-spacing: .08em;
+}
+.case-legion .legion-principles-rail button > span:first-child::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  width: 37px;
+  height: 37px;
+  border: 1px solid rgba(131, 163, 221, .2);
+  border-radius: 50%;
+  background: #05070c;
+  transform: translate(-50%, -50%) scale(.72);
+  opacity: 0;
+  transition: opacity .35s ease, transform .5s var(--ease), box-shadow .5s ease;
+}
+.case-legion .legion-principles-rail button > span:nth-child(2) {
+  display: grid;
+  gap: 8px;
+}
+.case-legion .legion-principles-rail strong {
+  color: inherit;
+  font-size: clamp(17px, 1.5vw, 23px);
+  font-weight: 520;
+  line-height: 1.25;
+  letter-spacing: -.025em;
+}
+.case-legion .legion-principles-rail small {
+  color: rgba(150, 169, 198, .46);
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: .02em;
+  transition: color .4s ease;
+}
+.case-legion .legion-principles-rail button > i {
+  width: 12px;
+  height: 1px;
+  justify-self: end;
+  background: rgba(150, 182, 238, .25);
+  transform-origin: right;
+  transition: width .55s var(--ease), background .4s ease, box-shadow .4s ease;
+}
+.case-legion .legion-principles-rail button:hover,
+.case-legion .legion-principles-rail button.is-active {
+  color: #f2f6fd;
+  transform: translateX(6px);
+}
+.case-legion .legion-principles-rail button.is-active > span:first-child { color: #c8daff; }
+.case-legion .legion-principles-rail button.is-active > span:first-child::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  box-shadow: 0 0 30px rgba(90, 140, 239, .16);
+}
+.case-legion .legion-principles-rail button.is-active small { color: rgba(186, 204, 232, .72); }
+.case-legion .legion-principles-rail button.is-active > i {
+  width: 42px;
+  background: #9dbdff;
+  box-shadow: 0 0 14px rgba(102, 151, 255, .65);
+}
+.case-legion .legion-principles-rail button:focus-visible {
+  outline: 1px solid rgba(174, 204, 255, .82);
+  outline-offset: 5px;
+}
+.case-legion .legion-principles-stage {
+  min-width: 0;
+  perspective: 1600px;
+  perspective-origin: 44% 50%;
+}
+.case-legion .legion-principles-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 14px;
+  color: rgba(172, 194, 229, .64);
+  font: 500 9px/1 var(--mono);
+  letter-spacing: .16em;
+}
+.case-legion .legion-principles-hud b { color: rgba(208, 222, 245, .44); font-weight: 400; }
+.case-legion .legion-principles-hud i { color: #cfe0ff; font-style: normal; }
+.case-legion .legion-principles-stack {
+  position: relative;
+  min-height: 0;
+  aspect-ratio: 16 / 9;
+  margin: 0 clamp(22px, 3vw, 52px) clamp(30px, 3.5vw, 54px) 0;
+  transform-style: preserve-3d;
+}
+.case-legion .legion-principles-stack::before,
+.case-legion .legion-principles-stack::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+.case-legion .legion-principles-stack::before {
+  z-index: -1;
+  inset: 10% -10% -18% 8%;
+  background: radial-gradient(ellipse, rgba(78, 124, 227, .24), transparent 62%);
+  filter: blur(38px);
+}
+.case-legion .legion-principles-stack::after {
+  z-index: 30;
+  right: -28px;
+  bottom: -28px;
+  width: 32%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(149, 180, 236, .32));
+}
+.case-legion .legion-principle-panel,
+.case-legion .legion-principle-panel.legion-figure {
+  --principle-x: 0px;
+  --principle-y: 0px;
+  --principle-z: 0px;
+  --principle-scale: 1;
+  --principle-rotate: 0deg;
+  --principle-opacity: .4;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(143, 174, 226, .2);
+  border-radius: clamp(12px, 1.1vw, 18px);
+  background: #030406;
+  box-shadow: 0 38px 90px -32px rgba(0, 0, 0, .96);
+  opacity: var(--principle-opacity);
+  transform: translate3d(var(--principle-x), var(--principle-y), var(--principle-z)) scale(var(--principle-scale)) rotateY(var(--principle-rotate));
+  transform-origin: 50% 46%;
+  filter: saturate(.45) brightness(.55);
+  transition: opacity .62s ease, transform .78s var(--ease), filter .65s ease, border-color .55s ease, box-shadow .7s ease;
+  pointer-events: none;
+}
+.case-legion .legion-principle-panel::before { display: none; }
+.case-legion .legion-principle-panel::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 58%, rgba(0, 0, 0, .66));
+  opacity: .72;
+  pointer-events: none;
+  transition: opacity .5s ease;
+}
+.case-legion .legion-principle-panel.is-active {
+  opacity: 1;
+  filter: none;
+  border-color: rgba(167, 196, 246, .42);
+  box-shadow: 0 44px 112px -34px rgba(0, 0, 0, .98), 0 0 86px rgba(73, 119, 219, .13);
+  pointer-events: auto;
+}
+.case-legion .legion-principle-panel.is-active::after { opacity: .26; }
+.case-legion .legion-principle-panel img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.006);
+  cursor: zoom-in;
+}
+.case-legion .legion-principle-panel figcaption {
+  position: absolute;
+  z-index: 4;
+  right: 22px;
+  bottom: 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: rgba(229, 238, 252, .88);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .45s .18s ease, transform .55s .14s var(--ease);
+}
+.case-legion .legion-principle-panel.is-active figcaption { opacity: 1; transform: translateY(0); }
+.case-legion .legion-principle-panel figcaption span {
+  color: rgba(163, 188, 228, .68);
+  font: 500 8px var(--mono);
+  letter-spacing: .13em;
+}
+.case-legion .legion-principle-panel figcaption b {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.case-legion .legion-principles-hint {
+  margin: 0;
+  color: rgba(146, 164, 192, .46);
+  font: 400 9px/1.7 var(--mono);
+  letter-spacing: .06em;
+}
+.case-legion .legion-visual-system { padding-top: clamp(46px, 5vw, 78px) !important; }
+
+@media (max-width: 1000px) {
+  .case-legion .legion-cylinder-compact .legion-cylinder-scene {
+    right: 22px;
+    left: 22px;
+    height: min(600px, 70svh);
+  }
+  .case-legion .legion-principles-header > div {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .case-legion .legion-principles-header > div > p { max-width: 640px; }
+  .case-legion .legion-principles-layout {
+    grid-template-columns: minmax(195px, .3fr) minmax(0, 1fr);
+    gap: 30px;
+  }
+  .case-legion .legion-principles-rail button {
+    grid-template-columns: 34px minmax(0, 1fr) 24px;
+    gap: 12px;
+    min-height: 96px;
+  }
+  .case-legion .legion-principles-rail button.is-active > i { width: 24px; }
+}
+
+@media (max-width: 700px) {
+  .case-legion .legion-cylinder-compact .legion-cylinder-scene {
+    height: 470px;
+    gap: 8px;
+  }
+  .case-legion .legion-cylinder-compact .legion-cylinder-card.is-active { --legion-card-grow: 4; }
+  .case-legion .legion-principles {
+    min-height: 0;
+    padding: 72px 14px 88px !important;
+  }
+  .case-legion .legion-principles::before {
+    top: 24px;
+    right: 8px;
+    font-size: 170px;
+  }
+  .case-legion .legion-principles-header { margin-bottom: 34px; }
+  .case-legion .legion-principles-header .chapter-kicker { margin-bottom: 20px; }
+  .case-legion .legion-principles-header h3 {
+    font-size: clamp(38px, 11.4vw, 52px);
+    line-height: 1.08;
+  }
+  .case-legion .legion-principles-header > div > p { font-size: 14px; }
+  .case-legion .legion-principles-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .case-legion .legion-principles-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .case-legion .legion-principles-rail::before { display: none; }
+  .case-legion .legion-principles-rail button {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-content: start;
+    gap: 9px;
+    min-height: 112px;
+    padding: 14px 10px;
+    border: 1px solid rgba(137, 161, 202, .12);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .015);
+    transform: none;
+  }
+  .case-legion .legion-principles-rail button:last-child { border-bottom: 1px solid rgba(137, 161, 202, .12); }
+  .case-legion .legion-principles-rail button.is-active {
+    border-color: rgba(151, 187, 250, .38);
+    background: rgba(91, 139, 236, .08);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .28);
+  }
+  .case-legion .legion-principles-rail button > span:first-child::before,
+  .case-legion .legion-principles-rail button > i { display: none; }
+  .case-legion .legion-principles-rail strong { font-size: 14px; line-height: 1.35; }
+  .case-legion .legion-principles-rail small { font-size: 9px; line-height: 1.5; }
+  .case-legion .legion-principles-hud { margin-bottom: 10px; }
+  .case-legion .legion-principles-stack {
+    margin: 0 0 24px;
+    perspective: none;
+  }
+  .case-legion .legion-principle-panel,
+  .case-legion .legion-principle-panel.legion-figure {
+    opacity: 0;
+    transform: translateX(calc(var(--principle-x) * 2));
+    filter: none;
+  }
+  .case-legion .legion-principle-panel.is-active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .case-legion .legion-principle-panel figcaption { right: 12px; bottom: 10px; }
+  .case-legion .legion-principles-hint { font-size: 8px; }
+  .case-legion .legion-visual-system { padding-top: 42px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .case-legion .legion-principles-rail button,
+  .case-legion .legion-principle-panel,
+  .case-legion .legion-principle-panel figcaption { transition-duration: .01ms !important; }
+}
+
+/* V293 — apply browser review: restore a three-step reasoning rail, tighten vertical rhythm, and align the principles stage to the shared safe width. */
+@media (min-width: 901px) {
+  .case-legion .legion-cylinder-compact {
+    min-height: calc(100svh - 20px);
+  }
+  .case-legion .legion-principles-header,
+  .case-legion .legion-principles-layout {
+    width: min(1600px, calc(100vw - 320px));
+  }
+  .case-legion .legion-principles-layout {
+    grid-template-columns: minmax(210px, .3fr) minmax(0, 1fr);
+    gap: clamp(32px, 4vw, 64px);
+  }
+  .case-legion .legion-pages > article.legion-visual-system + article.legion-outcome {
+    margin-top: 20px !important;
+  }
+}
+@media (max-width: 1440px) and (min-width: 901px) {
+  .case-legion .legion-principles-header,
+  .case-legion .legion-principles-layout {
+    width: min(1600px, calc(100vw - 280px));
+  }
+}
+
+/* V294: reuse the Phone editorial title treatment in principles and final outcome. */
+.case-legion .legion-principles-header h3.legion-mixed-title {
+  min-width: 0;
+  container-type: inline-size;
+  line-height: 1.04;
+}
+.case-legion .legion-principles-header h3.legion-mixed-title > strong {
+  font-size: min(48px, 10cqi);
+  white-space: nowrap;
+}
+.case-legion .legion-outcome-result h3.legion-mixed-title {
+  margin: 0 0 18px;
+  font-size: clamp(32px, 4.8vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -.045em;
+}
+@media (max-width: 620px) {
+  .case-legion .legion-outcome-result h3.legion-mixed-title {
+    font-size: clamp(30px, 10vw, 42px);
+  }
+}
+
+.case-legion .legion-cylinder-compact .legion-cylinder-scene {
+  right: auto;
+  left: auto;
+}
+
+@media (min-width: 901px) {
+  .case-legion .legion-cylinder-compact .legion-cylinder-status,
+  .case-legion .legion-cylinder-compact .legion-cylinder-scene {
+    width: min(1600px, calc(100vw - 320px));
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 1440px) and (min-width: 901px) {
+  .case-legion .legion-cylinder-compact .legion-cylinder-status,
+  .case-legion .legion-cylinder-compact .legion-cylinder-scene {
+    width: min(1600px, calc(100vw - 280px));
+  }
+}
+
+.case-legion .legion-principles-rail button > span:first-child {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 37px;
+  text-align: center;
 }

@@ -24,9 +24,10 @@ const caseChapters = {
     ['10-companion-state', '10', '伴随态'], ['11-cross-device', '11', '各端全景'], ['12-in-context', '12', '原位伴随']
   ],
   legion: [
-    ['01', '01', '设计推导'], ['02', '02', '设计推导'], ['03', '03', '设计推导'], ['04', '04', '设计推导'], ['05', '05', '设计推导'], ['06', '06', '设计推导'], ['08', '08', '设计推导'], ['07', '07', '设计推导'], ['09', '09', '设计推导'], ['10', '10', '设计推导'], ['11', '11', '设计推导'], ['12', '12', '最终方案']
+    ['01', '01', '改版目标'], ['03', '02', '设计方向'], ['04', '03', '沉浸问题'], ['05', '04', '门店类比'], ['06', '05', '设计原则'], ['07', '06', '原则落地'], ['11', '07', '视觉系统'], ['12', '08', '最终方案']
   ]
 };
+const legionChapterAliases = { '02': '01', '08': '07', '09': '07', '10': '11', '13': '12' };
 const principleDetails = { boundaryless: '服务不被设备与页面边界截断；同一条意图可以从 Phone 延续到 Pad 与 PC。', anticipatory: '主动服务提前半步，但不越过用户；先让用户看见，再由用户确认执行。', adaptive: '内容决定界面；简单任务原位完成，复杂任务才升级为完整工作空间。' };
 const evolutionDetails = { gui: ['被动交互 / 人适应系统', '用户寻找功能，界面等待操作。'], lui: ['自然交互 / 系统理解人', '用户表达意图，系统理解上下文。'], aui: ['主动交互 / 服务主动找人', '服务提前出现，界面随任务生成。'] };
 const decisionDetails = { one: '利用自上而下的视觉动线，将问题置于下方、结果置于上方；层次分明，便于用户聚焦核心信息。', two: '简单任务原位完成，复杂任务再进入 App 深度处理；主动不等于打断，升级始终交给用户。' };
@@ -333,7 +334,7 @@ function setRoute() {
   if (legionHero && !reducedMotion && !document.hidden) legionHero.play()?.catch(() => {});
   if (route !== 'case-legion') document.querySelector('.legion-supplement-video video')?.pause();
   syncAuiFilmPlayback();
-  let actualChapter = route === 'case-legion' && chapter === '13' ? '12' : chapter;
+  let actualChapter = route === 'case-legion' ? (legionChapterAliases[chapter] || chapter) : chapter;
   if (target.classList.contains('case-view')) {
     const navKey = target.querySelector('[data-case-nav]')?.dataset.caseNav;
     const bodyKey = target.querySelector('[data-case-body]')?.dataset.caseBody;
@@ -2040,20 +2041,28 @@ function initLegionCylinder() {
   if (!cards.length) return;
 
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const chapterForCard = (card) => card?.dataset.scrollChapter || card?.dataset.chapter || '01';
+  const displayForCard = (card, index) => card?.dataset.displayChapter || String(index + 1).padStart(2, '0');
+  const findCardIndex = (chapter) => {
+    const normalizedChapter = legionChapterAliases[chapter] || chapter;
+    const index = cards.findIndex((card) => chapterForCard(card) === normalizedChapter);
+    return index >= 0 ? index : 0;
+  };
   const initialHash = parseHash();
-  const initialIndex = initialHash.route === 'case-legion'
-    ? clamp((Number.parseInt(initialHash.chapter, 10) || 1) - 1, 0, cards.length - 1)
-    : 0;
+  const initialIndex = initialHash.route === 'case-legion' ? findCardIndex(initialHash.chapter) : 0;
   let activeIndex = initialIndex;
 
   const setActive = (index, updateHash = false) => {
     const nextIndex = clamp(index, 0, cards.length - 1);
     activeIndex = nextIndex;
-    const chapter = String(nextIndex + 1).padStart(2, '0');
+    const card = cards[nextIndex];
+    const chapter = chapterForCard(card);
+    const displayChapter = displayForCard(card, nextIndex);
+    const chapterLabel = card?.dataset.cylinderLabel || 'DESIGN REASONING';
 
     gallery.style.setProperty('--legion-active-index', String(nextIndex));
-    if (label) label.textContent = `${chapter} / DESIGN REASONING`;
-    if (count) count.textContent = `${chapter} / ${String(cards.length).padStart(2, '0')}`;
+    if (label) label.textContent = `${displayChapter} / ${chapterLabel}`;
+    if (count) count.textContent = `${displayChapter} / ${String(cards.length).padStart(2, '0')}`;
 
     cards.forEach((card, cardIndex) => {
       const active = cardIndex === nextIndex;
@@ -2125,14 +2134,70 @@ function initLegionCylinder() {
   window.addEventListener('hashchange', () => {
     const nextHash = parseHash();
     if (nextHash.route !== 'case-legion') return;
-    const parsedIndex = Number.parseInt(nextHash.chapter, 10) - 1;
-    if (Number.isFinite(parsedIndex) && parsedIndex >= 0 && parsedIndex < cards.length) {
+    const parsedIndex = findCardIndex(nextHash.chapter);
+    if (chapterForCard(cards[parsedIndex]) === (legionChapterAliases[nextHash.chapter] || nextHash.chapter)) {
       setActive(parsedIndex, false);
     }
   });
 
   if (reducedMotion) gallery.classList.add('is-reduced-motion');
   setActive(initialIndex, false);
+}
+
+function initLegionPrinciples() {
+  const sections = [...document.querySelectorAll('[data-legion-principles]')];
+  sections.forEach((section) => {
+    const tabs = [...section.querySelectorAll('[data-principle-tab]')];
+    const panels = [...section.querySelectorAll('[data-principle-panel]')];
+    const current = section.querySelector('[data-principle-current]');
+    const label = section.querySelector('[data-principle-label]');
+    const labels = ['VISUAL TENSION', 'SPATIAL FLOW', 'PERSONAL SERVICE'];
+    if (!tabs.length || tabs.length !== panels.length) return;
+    let activeIndex = 0;
+
+    const setActive = (index, focusTab = false) => {
+      const nextIndex = (index + tabs.length) % tabs.length;
+      activeIndex = nextIndex;
+      section.dataset.activePrinciple = String(nextIndex);
+      tabs.forEach((tab, tabIndex) => {
+        const active = tabIndex === nextIndex;
+        tab.classList.toggle('is-active', active);
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      panels.forEach((panel, panelIndex) => {
+        const distance = Math.abs(panelIndex - nextIndex);
+        const direction = Math.sign(panelIndex - nextIndex);
+        panel.classList.toggle('is-active', panelIndex === nextIndex);
+        panel.setAttribute('aria-hidden', String(panelIndex !== nextIndex));
+        panel.style.setProperty('--principle-x', `${direction * distance * 30}px`);
+        panel.style.setProperty('--principle-y', `${distance * 18}px`);
+        panel.style.setProperty('--principle-z', `${distance * -46}px`);
+        panel.style.setProperty('--principle-scale', String(1 - distance * .04));
+        panel.style.setProperty('--principle-rotate', `${direction * -1.8}deg`);
+        panel.style.setProperty('--principle-opacity', String(Math.max(.12, .42 - distance * .16)));
+        panel.style.zIndex = String(10 - distance);
+      });
+      if (current) current.textContent = String(nextIndex + 1).padStart(2, '0');
+      if (label) label.textContent = labels[nextIndex] || labels[0];
+      if (focusTab) tabs[nextIndex].focus({ preventScroll: true });
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => setActive(index));
+      tab.addEventListener('pointerenter', (event) => {
+        if (event.pointerType === 'mouse') setActive(index);
+      });
+      tab.addEventListener('keydown', (event) => {
+        if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        if (event.key === 'Home') setActive(0, true);
+        else if (event.key === 'End') setActive(tabs.length - 1, true);
+        else setActive(activeIndex + (event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1), true);
+      });
+    });
+    setActive(0);
+  });
 }
 
 function initLegionPrologue() {
@@ -2445,14 +2510,13 @@ function initCaseTopbarVisibility() {
   };
 
   const onScroll = () => {
-    clearSettleTimer();
-    cases.forEach((item) => setVisible(item, false));
-    scheduleVisibilityUpdate();
+    // V285: keep the fixed glass navigation painted while scrolling.
+    // Repeated opacity toggles caused Chromium to drop and rebuild the backdrop layer.
+    updateVisibility();
   };
 
   const onScrollEnd = () => {
-    cases.forEach((item) => setVisible(item, false));
-    scheduleVisibilityUpdate();
+    updateVisibility();
   };
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -2530,4 +2594,4 @@ function initArchiveCarousel() {
   sync();
 }
 
-wireInteractiveStates(); wireLightbox(); wireAuiFilms(); initMobileSystemCarousel(); initAuiDesignMarquee(); initLegionCylinder(); initScrollCaseNavigation(); initWarpText(); initSpectralClouds(); initSideRays(); initHomeStrands(); initCaseBorderGlow(); initGeneratedHomeFocusHover(); initLegionPrologue(); setRoute(); initCaseTopbarVisibility(); initArchiveCarousel();
+wireInteractiveStates(); wireLightbox(); wireAuiFilms(); initMobileSystemCarousel(); initAuiDesignMarquee(); initLegionCylinder(); initScrollCaseNavigation(); initWarpText(); initSpectralClouds(); initSideRays(); initHomeStrands(); initCaseBorderGlow(); initGeneratedHomeFocusHover(); initLegionPrinciples(); initLegionPrologue(); setRoute(); initCaseTopbarVisibility(); initArchiveCarousel();
