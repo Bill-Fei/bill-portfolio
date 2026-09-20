@@ -34,11 +34,11 @@ const decisionDetails = { one: '利用自上而下的视觉动线，将问题置
 const companionAssets = { aipc: ['assets/shared/aui-roadmap-assets/aipc.png', 'AI PC 伴随态'], phone: ['assets/shared/aui-roadmap-assets/phone.png', 'AI 手机伴随态'], pad: ['assets/shared/aui-roadmap-assets/pad.png', 'AI 平板伴随态'], aiot: ['assets/shared/aui-roadmap-assets/aiot.png', 'AIoT 伴随态'] };
 const modeDetails = { window: '用户主动与天禧交互后出现，适合从一句意图开始。', frame: '在当前应用原位出现，遵循系统分屏与尺寸逻辑，不把用户带离主任务。', platform: '天禧主动服务或提醒时出现，以轻 / 中 / 重三种介入距离承载提醒、反馈与入口引导。' };
 const mobileSystemFrames = [
-  { title: 'Color', label: '色彩与渐变', src: 'assets/figma-pages/12-mobile-color-3x.png?v=80', fullSrc: 'assets/figma-pages/12-mobile-color-3x.png?v=80' },
-  { title: 'Voice', label: '语音交互', src: 'assets/figma-pages/12-mobile-voice-3x.png?v=80', fullSrc: 'assets/figma-pages/12-mobile-voice-3x.png?v=80' },
-  { title: 'Text', label: '文本交互', src: 'assets/figma-pages/12-mobile-text-3x.png?v=84', fullSrc: 'assets/figma-pages/12-mobile-text-3x.png?v=84' },
-  { title: 'Image', label: '图选交互', src: 'assets/figma-pages/12-mobile-image-3x.png?v=84', fullSrc: 'assets/figma-pages/12-mobile-image-3x.png?v=84' },
-  { title: 'AI Components', label: 'AI 组件', src: 'assets/figma-pages/12-mobile-components-3x.png?v=80', fullSrc: 'assets/figma-pages/12-mobile-components-3x.png?v=80' }
+  { title: 'Color', label: '色彩与渐变', src: 'assets/aui-lossless/figma-pages/12-mobile-color-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-color-3x.png?v=80' },
+  { title: 'Voice', label: '语音交互', src: 'assets/aui-lossless/figma-pages/12-mobile-voice-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-voice-3x.png?v=80' },
+  { title: 'Text', label: '文本交互', src: 'assets/aui-lossless/figma-pages/12-mobile-text-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-text-3x.png?v=84' },
+  { title: 'Image', label: '图选交互', src: 'assets/aui-lossless/figma-pages/12-mobile-image-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-image-3x.png?v=84' },
+  { title: 'AI Components', label: 'AI 组件', src: 'assets/aui-lossless/figma-pages/12-mobile-components-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-components-3x.png?v=80' }
 ];
 const auiDesignFrames = [
   {
@@ -46,63 +46,63 @@ const auiDesignFrames = [
     meta: 'AUI HOME',
     alt: '天禧 AUI 首页主动聚合知识、天气与内容服务',
     ratio: 720 / 1764,
-    src: 'assets/aui-marquee/04-companion-home.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/04-companion-home.webp'
   },
   {
     title: 'Morning Brief',
     meta: 'PROACTIVE BRIEF',
     alt: 'AUI 主动提供次日天气并协助设置出发闹钟',
     ratio: 824 / 1832,
-    src: 'assets/aui-marquee/02-morning-brief.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/02-morning-brief.webp'
   },
   {
     title: 'AI Podcast',
     meta: 'KNOWLEDGE AUDIO',
     alt: 'AI 播客基于文档、知识库或链接生成音频内容的主题选择界面',
     ratio: 1236 / 2742,
-    src: 'assets/aui-marquee/07-ai-podcast.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/07-ai-podcast.webp'
   },
   {
     title: 'Travel Planning',
     meta: 'TRAVEL AGENT',
     alt: 'AUI 汇总航班、酒店与日程冲突的出差安排',
     ratio: 824 / 1832,
-    src: 'assets/aui-marquee/03-travel-plan.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/03-travel-plan.webp'
   },
   {
     title: 'Voice Composer',
     meta: 'VOICE FIRST',
     alt: '天禧 AUI 首页语音输入与实时声波反馈状态',
     ratio: 720 / 1764,
-    src: 'assets/aui-marquee/05-voice-composer.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/05-voice-composer.webp'
   },
   {
     title: 'Live Companion Call',
     meta: 'REAL-TIME COMPANION',
     alt: '天禧实时语音陪伴通话界面，支持字幕、麦克风、共享与视频控制',
     ratio: 1236 / 2742,
-    src: 'assets/aui-marquee/06-live-companion-call.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/06-live-companion-call.webp'
   },
   {
     title: 'AI Image Studio',
     meta: 'GENERATIVE CREATION',
     alt: 'AI 修图首页展示创意模板、风格选择与图片生成输入',
     ratio: 1236 / 2736,
-    src: 'assets/aui-marquee/08-ai-image-studio.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/08-ai-image-studio.webp'
   },
   {
     title: 'Ambient Listening',
     meta: 'SYSTEM PRESENCE',
     alt: 'AUI 系统级倾听状态，主屏底部显示语音入口与我在听反馈',
     ratio: 824 / 1832,
-    src: 'assets/aui-marquee/01-ambient-listening.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/01-ambient-listening.webp'
   },
   {
     title: 'Image Edit Composer',
     meta: 'MULTIMODAL EDITING',
     alt: 'AI 图片编辑界面通过灵感词、语音、图片和文本共同组织修图指令',
     ratio: 824 / 1824,
-    src: 'assets/aui-marquee/09-image-edit-composer.png?v=101'
+    src: 'assets/aui-lossless/aui-marquee/09-image-edit-composer.webp'
   }
 ];
 
@@ -268,7 +268,7 @@ function parseHash() {
 function renderCaseNav(view, route, activeChapter) {
   const nav = view.querySelector('[data-case-nav]');
   if (!nav || !caseChapters[route]) return;
-  nav.innerHTML = `<p>ON THIS CASE</p>${caseChapters[route].map(([id, num, label]) => `<a class="${id === activeChapter ? 'active' : ''}" href="#${view.dataset.view}/${id}"><span>${num}</span>${label}<b>↗</b></a>`).join('')}`;
+  nav.innerHTML = `<p>ON THIS CASE</p>${caseChapters[route].map(([id, num, label]) => `<a class="${id === activeChapter ? 'active' : ''}" href="#${view.dataset.view}/${id}"><span>${num}</span>${label}<b><svg class="direction-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6h12v12"/></svg></b></a>`).join('')}`;
 }
 function setNavLinkState(link, isActive) {
   link.classList.toggle('active', isActive);
@@ -639,7 +639,7 @@ function initMobileSystemCarousel() {
 
     const image = document.createElement('img');
     image.className = 'mobile-system-slide-board';
-    image.src = fullSrc;
+    image.src = src;
     image.dataset.lightboxSrc = fullSrc;
     image.dataset.lightboxGroup = 'mobile-system-pages';
     image.sizes = '(max-width: 620px) 77vw, (max-width: 900px) 54vw, 460px';
@@ -668,7 +668,7 @@ function initMobileSystemCarousel() {
   let isInView = false;
   const schedule = () => {
     window.clearTimeout(autoTimer);
-    if (reducedMotion || document.hidden || !isInView) return;
+    if (reducedMotion || document.hidden || !isInView || window.matchMedia('(max-width: 620px)').matches) return;
     autoTimer = window.setTimeout(() => render(current + 1, 1), 4600);
   };
   const render = (next, direction = 1) => {
@@ -695,6 +695,48 @@ function initMobileSystemCarousel() {
 
   root.querySelector('[data-mobile-system-prev]')?.addEventListener('click', () => render(current - 1, -1));
   root.querySelector('[data-mobile-system-next]')?.addEventListener('click', () => render(current + 1, 1));
+  const phoneViewport = window.matchMedia('(max-width: 620px)');
+  let gesture = null;
+  let suppressClickUntil = 0;
+  viewport.addEventListener('pointerdown', event => {
+    if (!phoneViewport.matches || !event.isPrimary || event.button !== 0) return;
+    gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, horizontal: false };
+  });
+  viewport.addEventListener('pointermove', event => {
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const deltaX = event.clientX - gesture.x;
+    const deltaY = event.clientY - gesture.y;
+    if (!gesture.horizontal && Math.abs(deltaY) > 12 && Math.abs(deltaY) > Math.abs(deltaX)) {
+      gesture = null;
+      return;
+    }
+    if (Math.abs(deltaX) > 12 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+      gesture.horizontal = true;
+      if (event.isTrusted) viewport.setPointerCapture(event.pointerId);
+    }
+  });
+  viewport.addEventListener('pointerup', event => {
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const deltaX = event.clientX - gesture.x;
+    const deltaY = event.clientY - gesture.y;
+    if (gesture.horizontal) {
+      suppressClickUntil = performance.now() + 450;
+      if (Math.abs(deltaX) >= 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+        render(current + (deltaX < 0 ? 1 : -1), deltaX < 0 ? 1 : -1);
+      }
+    }
+    gesture = null;
+    if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+  });
+  viewport.addEventListener('pointercancel', () => { gesture = null; });
+  viewport.addEventListener('click', event => {
+    if (performance.now() >= suppressClickUntil) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+  viewport.addEventListener('dragstart', event => {
+    if (phoneViewport.matches) event.preventDefault();
+  });
   viewport.addEventListener('click', (event) => {
     const slide = event.target.closest('.mobile-system-slide');
     if (!slide || slide.classList.contains('is-active')) return;
@@ -917,9 +959,9 @@ function initSideRays() {
       canvas: document.querySelector('#side-rays-canvas'),
       containerSelector: '.side-rays-container',
       route: 'home',
-      minWidth: 901,
-      maxPixelRatio: 1.35,
-      fps: 30,
+      minWidth: window.innerWidth <= 620 ? 0 : 901,
+      maxPixelRatio: window.innerWidth <= 620 ? 0.8 : 1.35,
+      fps: window.innerWidth <= 620 ? 20 : 30,
       speed: 0.46,
       color1: [0.831, 0.886, 0.957],
       color2: [0.463, 0.435, 0.612],
@@ -1248,7 +1290,7 @@ function initSideRays() {
 
 function initHomeStrands() {
   const canvas = document.querySelector('#home-strands-canvas');
-  if (!canvas || window.innerWidth <= 900) return;
+  if (!canvas || (window.innerWidth > 620 && window.innerWidth <= 900)) return;
 
   const container = canvas.closest('.home-strands-field');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1443,7 +1485,7 @@ function initHomeStrands() {
   const resize = () => {
     const bounds = container?.getBoundingClientRect();
     if (!bounds?.width || !bounds.height) return;
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.2);
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, window.innerWidth <= 620 ? 0.8 : 1.2);
     width = Math.max(1, Math.round(bounds.width * pixelRatio));
     height = Math.max(1, Math.round(bounds.height * pixelRatio));
     if (canvas.width !== width || canvas.height !== height) {
@@ -1456,7 +1498,7 @@ function initHomeStrands() {
   const loop = now => {
     frame = 0;
     if (!canAnimate() || reducedMotion) return;
-    if (now - lastFrame >= 1000 / 28) {
+    if (now - lastFrame >= 1000 / (window.innerWidth <= 620 ? 20 : 28)) {
       draw((now - startedAt) * 0.001);
       lastFrame = now;
     }
@@ -1527,7 +1569,7 @@ function initWarpText() {
       line.textContent = '';
       Array.from(text).forEach(char => {
         const glyph = document.createElement('span');
-        glyph.className = 'stagger-char';
+        glyph.className = char === ' ' ? 'stagger-char stagger-space' : 'stagger-char';
         glyph.textContent = char === ' ' ? '\u00a0' : char;
         glyph.style.setProperty('--char-index', charIndex++);
         line.appendChild(glyph);
