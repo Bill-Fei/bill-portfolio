@@ -496,6 +496,13 @@ html { overflow-x: clip; }
   58% { opacity: 1; filter: blur(1.5px); }
   100% { opacity: 1; filter: none; transform: translate3d(0, 0, 0) rotateX(0); }
 }
+@keyframes homeTitleCharInMobile {
+  from { opacity: 0; transform: translateY(.35em); }
+  to { opacity: 1; transform: none; }
+}
+@media (max-width: 620px) and (prefers-reduced-motion: reduce) {
+  body .home-content .warp-text.is-staggered-in .stagger-char { animation: none; }
+}
 .warp-text::after {
   content: '';
   position: absolute;
@@ -12974,7 +12981,17 @@ body[data-route^="case-"] .case-view.is-active .case-topbar {
     line-height: 1.08;
     letter-spacing: -.055em;
   }
-  .home-content .warp-text-fallback { width: 100%; padding-right: 0; padding-bottom: .24em; }
+  .home-content .warp-text-fallback { width: 100%; padding-right: 0; padding-bottom: .24em; perspective: none; }
+  .home-content .warp-text-fallback .stagger-char {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    will-change: auto;
+  }
+  .home-content .warp-text.is-staggered-in .stagger-char {
+    animation-name: homeTitleCharInMobile;
+    animation-fill-mode: backwards;
+  }
   .home-content .warp-text-fallback > em .stagger-space {
     display: block;
     height: 0;
