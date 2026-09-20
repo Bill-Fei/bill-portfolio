@@ -518,6 +518,9 @@ html { overflow-x: clip; }
   .warp-text-fallback { padding-right: .12em; }
   .warp-text canvas { inset: -3% -5%; width: 110%; height: 106%; }
 }
+@media (min-width: 621px) and (max-width: 900px) {
+  .warp-text canvas { inset: 0; width: 100%; height: 100%; }
+}
 @media (prefers-reduced-motion: reduce) {
   .warp-text canvas,
   .warp-text-fallback { transition: none; }
@@ -12965,11 +12968,13 @@ body[data-route^="case-"] .case-view.is-active .case-topbar {
   .home-content .display-title {
     width: 100%;
     max-width: 100%;
+    contain: layout;
+    overflow: visible;
     font-size: clamp(40px, 11.2vw, 58px);
     line-height: 1.08;
     letter-spacing: -.055em;
   }
-  .home-content .warp-text-fallback { width: 100%; padding-right: 0; }
+  .home-content .warp-text-fallback { width: 100%; padding-right: 0; padding-bottom: .24em; }
   .home-content .warp-text-fallback > em .stagger-space {
     display: block;
     height: 0;
