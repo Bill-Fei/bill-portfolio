@@ -3,6 +3,173 @@ const routeLinks = [...document.querySelectorAll('[data-route-link]')];
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const scrollBehavior = reducedMotion ? 'auto' : 'smooth';
 const defaultRoute = 'home';
+const mediaFeedback = (() => {
+  const states = new WeakMap();
+  const attach = element => {
+    if (states.has(element)) return states.get(element);
+    if (!element.closest('.case-view')) return null;
+    const video = element.tagName === 'VIDEO';
+    const autoVideo = video && (element.matches('[data-aui-hero-film]') || element.closest('.legion-cover-media'));
+    const host = element.closest('figure, .aui-result-player, .aui-learning-player') || (element.parentElement.matches('button, a') ? element.parentElement.parentElement : element.parentElement);
+    host.classList.add('media-feedback-host');
+    const panel = host.querySelector('[data-media-feedback]') || document.createElement('div');
+    panel.classList.add('media-feedback');
+    const label = panel.querySelector('[data-media-feedback-label]') || document.createElement('span');
+    label.setAttribute('role', 'status');
+    const action = panel.querySelector('[data-media-feedback-action]') || document.createElement('button');
+    action.type = 'button';
+    if (!panel.parentElement) {
+      panel.append(label, action);
+      host.appendChild(panel);
+    }
+    let timer;
+    const show = (state, text, buttonText = '') => {
+      clearTimeout(timer);
+      element.dataset.loadState = state;
+      panel.dataset.state = state;
+      panel.hidden = state === 'ready';
+      element.setAttribute('aria-busy', String(state === 'loading' || state === 'slow'));
+      label.textContent = text;
+      action.hidden = !buttonText;
+      action.textContent = buttonText;
+      if (state === 'loading') timer = setTimeout(() => show('slow', '加载时间较长，请稍候或重试', '重试'), 12000);
+    };
+    const loading = () => show('loading', video ? '视频加载中…' : '图片加载中…');
+    const blocked = () => show('paused', '视频已准备，请点击播放', '播放视频');
+    const ready = () => show('ready', '');
+    const failed = () => show('error', video ? '视频未能加载' : '图片未能加载', '重试');
+    action.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      const previous = element.dataset.loadState;
+      loading();
+      if (video) {
+        const pendingSource = element.querySelector('source[data-media-src]');
+        if (pendingSource) {
+          pendingSource.src = pendingSource.dataset.mediaSrc;
+          delete pendingSource.dataset.mediaSrc;
+        }
+        if (previous !== 'paused' || !element.currentSrc) element.load();
+        element.play()?.catch(blocked);
+      } else {
+        const source = element.dataset.mediaSrc || element.currentSrc || element.src;
+        const sourceSet = element.dataset.mediaSrcset || element.srcset;
+        if (sourceSet) element.srcset = sourceSet;
+        if (source) element.src = source;
+        else element.load();
+      }
+    });
+    if (video) {
+      element.addEventListener('loadstart', loading);
+      element.addEventListener('waiting', loading);
+      element.addEventListener('playing', ready);
+      element.addEventListener('canplay', () => {
+        if (!autoVideo || !element.paused) ready();
+      });
+      element.addEventListener('stalled', loading);
+      element.querySelectorAll('source').forEach(source => source.addEventListener('error', failed));
+    } else {
+      element.addEventListener('load', ready);
+    }
+    element.addEventListener('error', failed);
+    const state = { loading, blocked, ready };
+    states.set(element, state);
+    loading();
+    if (!video && element.complete && element.naturalWidth) ready();
+    return state;
+  };
+  return { attach };
+})();
+const deferredMedia = (() => {
+  let observer;
+  const selector = 'img[data-media-src], video';
+  const activate = (element, includeVideo = false) => {
+    if (!element || !element.closest('[data-view]')?.classList.contains('is-active')) return;
+    mediaFeedback.attach(element);
+    if (element.dataset.mediaPoster) {
+      element.poster = element.dataset.mediaPoster;
+      delete element.dataset.mediaPoster;
+    }
+    if (element.tagName === 'VIDEO') {
+      if (!includeVideo) return;
+      element.preload = element.hasAttribute('controls') ? 'metadata' : 'auto';
+      let changed = false;
+      const useMobileSource = window.matchMedia('(max-width: 720px)').matches;
+      element.querySelectorAll('source[data-media-src]').forEach(source => {
+        const sourceUrl = useMobileSource && source.dataset.mediaMobileSrc
+          ? source.dataset.mediaMobileSrc
+          : source.dataset.mediaSrc;
+        if (!sourceUrl) return;
+        source.src = sourceUrl;
+        delete source.dataset.mediaSrc;
+        delete source.dataset.mediaMobileSrc;
+        changed = true;
+      });
+      if (changed || element.dataset.mediaActivated !== 'true') {
+        element.dataset.mediaActivated = 'true';
+        element.load();
+      }
+      return;
+    }
+    if (element.dataset.mediaSrc) {
+      element.loading = 'eager';
+      if (element.dataset.mediaSrcset) {
+        element.srcset = element.dataset.mediaSrcset;
+        delete element.dataset.mediaSrcset;
+      }
+      element.src = element.dataset.mediaSrc;
+      delete element.dataset.mediaSrc;
+      element.dataset.mediaActivated = 'true';
+    }
+  };
+  const refresh = () => {
+    observer?.disconnect();
+    if (!document.documentElement.classList.contains('styles-ready')) return;
+    const media = document.querySelectorAll(`.view.is-active ${selector.split(', ').join(', .view.is-active ')}`);
+    if (!('IntersectionObserver' in window)) {
+      media.forEach(element => activate(element, element.tagName === 'VIDEO'));
+      return;
+    }
+    observer ||= new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const legionHero = entry.target.matches('.legion-cover-media video');
+        activate(entry.target, entry.target.tagName === 'VIDEO');
+        if (legionHero && !reducedMotion && !document.hidden) entry.target.play()?.catch(() => {});
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '480px 160px', threshold: 0 });
+    media.forEach(element => observer.observe(element));
+  };
+  return { activate, refresh };
+})();
+function initCasePreload() {
+  if (navigator.connection?.saveData || /(^|-)2g$/.test(navigator.connection?.effectiveType || '')) return;
+  const cases = [...document.querySelectorAll('.case-aui-one, .case-paradigm, .case-legion')];
+  const batches = cases.map(view => [...view.querySelectorAll('video[data-media-poster], img[data-media-src]')]
+    .filter(element => element.tagName === 'VIDEO' || element.closest('figure'))
+    .slice(0, 3).map(element => element.dataset.mediaPoster || element.dataset.mediaSrc));
+  const queue = [...new Set([0, 1, 2].flatMap(index => batches.map(batch => batch[index]).filter(Boolean)))];
+  let index = 0;
+  const next = () => {
+    if (index >= queue.length) return;
+    if (document.hidden || document.body.dataset.route !== 'home') { setTimeout(next, 2500); return; }
+    const image = new Image();
+    image.fetchPriority = 'low';
+    let completed = false;
+    const finish = () => {
+      if (completed) return;
+      completed = true;
+      clearTimeout(timeout);
+      setTimeout(next, 600);
+    };
+    const timeout = setTimeout(() => { image.src = ''; finish(); }, 20000);
+    image.onload = finish;
+    image.onerror = finish;
+    image.src = queue[index++];
+  };
+  setTimeout(next, 1800);
+}
 function observeLayoutResize(target, callback) {
   let pendingFrame = 0;
   const observer = new ResizeObserver(() => {
@@ -13,6 +180,8 @@ function observeLayoutResize(target, callback) {
   return observer;
 }
 let replayHomeTitle = () => {};
+let routeRevision = 0;
+let hasCompletedInitialRoute = false;
 const caseChapters = {
   workflow: [
     ['05-method', '01', '设计方法'], ['07-aui-evolution', '02', '交互演进'], ['08-aui-paradigm', '03', '服务转向'], ['06-aui-definition', '04', '设计理念'], ['09-native-interaction', '05', '自然交互'], ['09-aui-principles', '06', '设计原则'], ['10-companion-state', '07', '伴随态'], ['11-immersion-state', '08', '沉浸态'], ['11-cross-device', '09', '各端全景'], ['12-mobile-design-system', '10', '移动规范']
@@ -291,11 +460,12 @@ function syncAuiFilmPlayback() {
   const heroFilm = caseView?.querySelector('[data-aui-hero-film]');
   const fullFilm = caseView?.querySelector('[data-aui-full-film]');
   const caseIsActive = caseView?.classList.contains('is-active');
-  const heroIsVisible = heroFilm?.dataset.inViewport !== 'false';
+  const heroIsVisible = heroFilm?.dataset.inViewport === 'true';
   const canPlayHero = caseIsActive && heroIsVisible && !document.hidden && !reducedMotion;
 
   if (heroFilm) {
     if (canPlayHero) {
+      deferredMedia.activate(heroFilm, true);
       heroFilm.muted = true;
       heroFilm.defaultMuted = true;
       const playPromise = heroFilm.play();
@@ -318,11 +488,18 @@ function jumpToPageTop() {
 }
 
 function setRoute() {
+  const revision = ++routeRevision;
   if (document.querySelector('#image-lightbox')?.classList.contains('is-open')) closeLightbox();
   const { route, chapter } = parseHash();
+  const previousRoute = document.body.dataset.route || '';
+  const isRouteTransition = hasCompletedInitialRoute && previousRoute && previousRoute !== route;
+  lastRoutedHash = location.hash;
   const target = views.find((view) => view.dataset.view === route) || views[0];
+  target.querySelectorAll('.reveal').forEach(node => node.classList.add('is-visible'));
   document.title = route.startsWith('case-') ? `${target.dataset.caseTheme === 'blue' ? 'Tianxi AUI 1.0 Experience Design' : target.dataset.caseTheme === 'purple' ? 'Tianxi Generative UI' : target.dataset.caseTheme === 'legion' ? 'Legion Zone Gaming Experience' : 'Tianxi AUI'} · Bill Wang` : 'Bill Wang · AI Native Experience Design';
   views.forEach((view) => view.classList.toggle('is-active', view === target));
+  views.forEach((view) => view.classList.remove('route-entering'));
+  if (isRouteTransition) target.classList.add('route-entering');
   const homeSection = route === 'home' ? chapter : '';
   if (route === 'home') setHomeNavState(homeSection);
   else routeLinks.forEach((link) => setNavLinkState(link, (route.startsWith('case-') || route === 'archive') && link.dataset.routeLink === 'index'));
@@ -330,8 +507,6 @@ function setRoute() {
   document.querySelectorAll('[data-view] video').forEach((video) => {
     if (video.closest('[data-view]') !== target) video.pause();
   });
-  const legionHero = target.querySelector('.legion-cover-media video');
-  if (legionHero && !reducedMotion && !document.hidden) legionHero.play()?.catch(() => {});
   if (route !== 'case-legion') document.querySelector('.legion-supplement-video video')?.pause();
   syncAuiFilmPlayback();
   let actualChapter = route === 'case-legion' ? (legionChapterAliases[chapter] || chapter) : chapter;
@@ -352,23 +527,35 @@ function setRoute() {
   const embeddedTarget = route === 'home'
     ? (chapter === 'works' ? document.querySelector('#selected-works') : chapter === 'career' ? document.querySelector('#career') : ['contact', 'archive'].includes(chapter) ? document.querySelector('#contact') : null)
     : null;
-  if (!embeddedTarget) jumpToPageTop();
-  requestAnimationFrame(() => {
-    if (embeddedTarget) {
-      embeddedTarget.scrollIntoView({ block: 'start', behavior: 'auto' });
-      setTimeout(() => embeddedTarget.scrollIntoView({ block: 'start', behavior: 'auto' }), 80);
-    } else if (target.classList.contains('case-scroll') && target.dataset.scrollTarget) {
-      const section = target.querySelector(`[data-scroll-chapter="${target.dataset.scrollTarget}"]`);
-      const destination = section?.closest('[data-legion-cylinder]') || section;
-      if (destination) requestAnimationFrame(() => destination.scrollIntoView({ block: 'start', behavior: 'instant' }));
-      delete target.dataset.scrollTarget;
-    }
-    target.querySelectorAll('.reveal').forEach((node, index) => {
-      if (reducedMotion) node.classList.add('is-visible');
-      else setTimeout(() => node.classList.add('is-visible'), Math.min(index * 35, 240));
-    });
-    if (route === 'home') setTimeout(replayHomeTitle, reducedMotion ? 0 : 90);
+  if (embeddedTarget) embeddedTarget.scrollIntoView({ block: 'start', behavior: 'instant' });
+  else if (target.classList.contains('case-scroll') && target.dataset.scrollTarget) {
+    const section = target.querySelector(`[data-scroll-chapter="${target.dataset.scrollTarget}"]`);
+    const destination = section?.closest('[data-legion-cylinder]') || section;
+    if (destination) destination.scrollIntoView({ block: 'start', behavior: 'instant' });
+    else jumpToPageTop();
+    delete target.dataset.scrollTarget;
+  } else jumpToPageTop();
+  const shouldShowCaseTopbar = route.startsWith('case-') && window.scrollY >= window.innerHeight;
+  document.querySelectorAll('.case-topbar.reveal').forEach((topbar) => {
+    const caseView = topbar.closest('[data-view]');
+    const visible = shouldShowCaseTopbar && caseView?.dataset.view === route;
+    topbar.classList.toggle('is-topbar-visible', visible);
+    topbar.classList.toggle('is-topbar-hidden', !visible);
+    topbar.setAttribute('aria-hidden', String(!visible));
+    topbar.inert = !visible;
   });
+  if (route === 'home') replayHomeTitle();
+  const refreshDelay = isRouteTransition && route === 'home' ? 180 : 0;
+  window.setTimeout(() => {
+    if (revision !== routeRevision) return;
+    deferredMedia.refresh();
+  }, refreshDelay);
+  if (isRouteTransition) {
+    window.setTimeout(() => {
+      if (revision === routeRevision) target.classList.remove('route-entering');
+    }, 260);
+  }
+  hasCompletedInitialRoute = true;
 }
 
 function wireAuiFilms() {
@@ -388,6 +575,7 @@ function wireAuiFilms() {
     },
     effect: {
       src: 'assets/video/aui-effect-showcase.mp4',
+      mobileSrc: 'assets/video/aui-effect-showcase-mobile.mp4',
       poster: 'assets/video/aui-effect-showcase-poster.jpg',
       title: 'AUI 让服务主动抵达',
       meta: '00:10 AUI EFFECT · 完整播放',
@@ -408,12 +596,9 @@ function wireAuiFilms() {
     window.clearTimeout(playRetryTimer);
     heroFilm.muted = true;
     heroFilm.defaultMuted = true;
-    if (heroFilm.readyState < 3) {
-      playRetryTimer = window.setTimeout(playHeroWhenReady, 180);
-      return;
-    }
+    deferredMedia.activate(heroFilm, true);
     const playPromise = heroFilm.play();
-    if (playPromise?.catch) playPromise.catch(() => {});
+    if (playPromise?.catch) playPromise.catch(() => mediaFeedback.attach(heroFilm)?.blocked());
   };
   const stopFilmProgress = () => {
     if (progressFrame) window.cancelAnimationFrame(progressFrame);
@@ -447,10 +632,12 @@ function wireAuiFilms() {
     stopFilmProgress();
     heroFilm.pause();
     heroFilm.currentTime = 0;
-    heroSource.src = option.src;
-    heroFilm.poster = option.poster;
+    heroSource.dataset.mediaSrc = option.src;
+    if (option.mobileSrc) heroSource.dataset.mediaMobileSrc = option.mobileSrc;
+    else delete heroSource.dataset.mediaMobileSrc;
+    heroFilm.dataset.mediaPoster = option.poster;
     heroFilm.loop = option.loop;
-    heroFilm.load();
+    deferredMedia.activate(heroFilm, shouldPlay);
     heroFilm.dataset.auiFilm = key;
     updateFilmProgress();
     if (heroShell) heroShell.setAttribute('aria-label', option.label);
@@ -553,7 +740,7 @@ function setScrollCaseNavActive(view, chapterId, updateHistory = true) {
     });
   }
   view.querySelector('.case-body')?.setAttribute('data-current-chapter', chapterId);
-  if (updateHistory && document.body.dataset.route === view.dataset.view) {
+  if (updateHistory && document.body.dataset.route === view.dataset.view && parseHash().route === view.dataset.view) {
     history.replaceState(null, '', `#${view.dataset.view}/${chapterId}`);
   }
 }
@@ -586,7 +773,7 @@ function initScrollCaseNavigation() {
     if (!sections.length) return;
     let activeId = '';
     const updateByReadingLine = () => {
-      if (document.body.dataset.route !== view.dataset.view) return;
+      if (document.body.dataset.route !== view.dataset.view || parseHash().route !== view.dataset.view) return;
       const readingLine = Math.max(118, window.innerHeight * .24);
       const firstSection = sections[0];
       if (firstSection.getBoundingClientRect().top > readingLine) {
@@ -606,18 +793,27 @@ function initScrollCaseNavigation() {
         : current.dataset.scrollChapter;
       if (id && id !== activeId) {
         activeId = id;
-        setScrollCaseNavActive(view, id);
+        setScrollCaseNavActive(view, id, false);
       }
     };
     let frame = 0;
-    window.addEventListener('scroll', () => {
+    const scheduleReadingLineUpdate = () => {
       if (frame) return;
-      frame = requestAnimationFrame(() => { frame = 0; updateByReadingLine(); });
-    }, { passive: true });
+      const revision = routeRevision;
+      const hash = window.location.hash;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (revision !== routeRevision || hash !== window.location.hash) return;
+        updateByReadingLine();
+      });
+    };
+    window.addEventListener('scroll', scheduleReadingLineUpdate, { passive: true });
     window.addEventListener('resize', updateByReadingLine, { passive: true });
     window.addEventListener('hashchange', () => {
       activeId = '';
-      requestAnimationFrame(updateByReadingLine);
+      cancelAnimationFrame(frame);
+      frame = 0;
+      scheduleReadingLineUpdate();
     });
   });
 }
@@ -639,7 +835,9 @@ function initMobileSystemCarousel() {
 
     const image = document.createElement('img');
     image.className = 'mobile-system-slide-board';
-    image.src = src;
+    image.dataset.mediaSrc = src;
+    image.width = 1380;
+    image.height = [3813, 3279, 2538, 1896, 2100][index];
     image.dataset.lightboxSrc = fullSrc;
     image.dataset.lightboxGroup = 'mobile-system-pages';
     image.sizes = '(max-width: 620px) 77vw, (max-width: 900px) 54vw, 460px';
@@ -647,7 +845,7 @@ function initMobileSystemCarousel() {
     image.tabIndex = 0;
     image.setAttribute('role', 'button');
     image.setAttribute('aria-label', `查看${label}高清大图`);
-    image.loading = index === 0 ? 'eager' : 'lazy';
+    image.loading = 'lazy';
     image.decoding = 'async';
     artwork.appendChild(image);
 
@@ -797,9 +995,11 @@ function initAuiDesignMarquee() {
     figure.style.setProperty('--frame-ratio', String(frame.ratio || .445));
 
     const image = document.createElement('img');
-    image.src = frame.src;
+    image.dataset.mediaSrc = frame.src;
+    image.width = Math.round((frame.ratio || .445) * 1000);
+    image.height = 1000;
     image.alt = index < auiDesignFrames.length ? frame.alt : '';
-    image.loading = index < 3 ? 'eager' : 'lazy';
+    image.loading = 'lazy';
     image.decoding = 'async';
     image.draggable = false;
 
@@ -942,7 +1142,7 @@ function wireInteractiveStates() {
     const decision = event.target.closest('[data-decision]');
     if (decision) { activateWithin(decision.closest('.decision-switch'), decision); const out = decision.closest('.chapter-panel')?.querySelector('.decision-output'); if (out) out.textContent = decisionDetails[decision.dataset.decision]; return; }
     const companion = event.target.closest('[data-companion]');
-    if (companion) { activateWithin(companion.closest('.companion-list'), companion); const asset = companionAssets[companion.dataset.companion]; const image = document.querySelector('#companion-visual'); if (image && asset) { image.src = asset[0]; image.alt = asset[1]; } return; }
+    if (companion) { activateWithin(companion.closest('.companion-list'), companion); const asset = companionAssets[companion.dataset.companion]; const image = document.querySelector('#companion-visual'); if (image && asset) { delete image.dataset.mediaSrc; image.src = asset[0]; image.alt = asset[1]; } return; }
     const mode = event.target.closest('[data-device-mode]');
     if (mode) { activateWithin(mode.closest('.device-mode-grid'), mode); const out = document.querySelector('#mode-output'); if (out) out.textContent = modeDetails[mode.dataset.deviceMode]; return; }
     const supplementButton = event.target.closest('.legion-supplement-zoom');
@@ -1556,10 +1756,16 @@ function initHomeStrands() {
 function initWarpText() {
   const container = document.querySelector('.warp-text');
   if (!container) return;
+  if (window.matchMedia('(max-width: 620px)').matches) {
+    container.classList.add('is-intro-complete', 'is-staggered-in', 'is-warp-rendered', 'is-warp-ready');
+    replayHomeTitle = () => {};
+    return;
+  }
 
   const fallback = container.querySelector('.warp-text-fallback');
   let introTimer = 0;
   let introComplete = reducedMotion;
+  let introStarted = false;
   let refreshWarp = () => {};
 
   if (fallback) {
@@ -1586,6 +1792,15 @@ function initWarpText() {
   };
 
   replayHomeTitle = () => {
+    if (introStarted) {
+      window.clearTimeout(introTimer);
+      introComplete = true;
+      container.classList.add('is-staggered-in', 'is-intro-complete');
+      if (container.classList.contains('is-warp-rendered')) container.classList.add('is-warp-ready');
+      if (!container.classList.contains('is-warp-rendered')) requestAnimationFrame(refreshWarp);
+      return;
+    }
+    introStarted = true;
     window.clearTimeout(introTimer);
     requestAnimationFrame(refreshWarp);
     container.classList.remove('is-staggered-in', 'is-warp-ready');
@@ -1599,6 +1814,7 @@ function initWarpText() {
     requestAnimationFrame(() => container.classList.add('is-staggered-in'));
     introTimer = window.setTimeout(() => {
       introComplete = true;
+      container.classList.add('is-intro-complete');
       if (container.classList.contains('is-warp-rendered')) container.classList.add('is-warp-ready');
     }, 1280);
   };
@@ -2123,7 +2339,7 @@ function initLegionCylinder() {
 
     if (caseView) setScrollCaseNavActive(caseView, chapter, false);
 
-    if (updateHash && document.body.dataset.route === 'case-legion') {
+    if (updateHash && document.body.dataset.route === 'case-legion' && parseHash().route === 'case-legion') {
       history.replaceState(null, '', `#case-legion/${chapter}`);
     }
   };
@@ -2288,7 +2504,7 @@ function getLightboxItems(image) {
     : [image];
   return images.map((item) => ({
     image: item,
-    src: item.dataset.lightboxSrc || item.currentSrc || item.src,
+    src: item.dataset.lightboxSrc || item.dataset.mediaSrc || item.currentSrc || item.src,
     alt: item.alt || 'IMAGE DETAIL',
     caption: item.closest('figure')?.querySelector('figcaption')?.textContent || item.alt || 'IMAGE DETAIL'
   }));
@@ -2382,7 +2598,20 @@ window.addEventListener('scroll', () => {
   });
 }, { passive: true });
 
-window.addEventListener('hashchange', setRoute);
+let lastRoutedHash;
+let routeSyncFrame = 0;
+history.scrollRestoration = 'manual';
+const syncHistoryRoute = () => {
+  if (location.hash === lastRoutedHash) return;
+  if (routeSyncFrame) cancelAnimationFrame(routeSyncFrame);
+  routeSyncFrame = requestAnimationFrame(() => {
+    routeSyncFrame = 0;
+    if (location.hash !== lastRoutedHash) setRoute();
+  });
+};
+window.addEventListener('popstate', syncHistoryRoute);
+window.addEventListener('hashchange', syncHistoryRoute);
+window.addEventListener('pageshow', syncHistoryRoute);
 document.querySelector('.skip-content')?.addEventListener('click', (event) => {
   event.preventDefault();
   const main = document.querySelector('#app');
@@ -2566,8 +2795,7 @@ function initCaseTopbarVisibility() {
   window.addEventListener('resize', updateVisibility, { passive: true });
   window.addEventListener('hashchange', () => {
     clearSettleTimer();
-    cases.forEach((item) => setVisible(item, false));
-    window.requestAnimationFrame(updateVisibility);
+    updateVisibility();
   });
   updateVisibility();
 }
@@ -2636,4 +2864,17 @@ function initArchiveCarousel() {
   sync();
 }
 
-wireInteractiveStates(); wireLightbox(); wireAuiFilms(); initMobileSystemCarousel(); initAuiDesignMarquee(); initLegionCylinder(); initScrollCaseNavigation(); initWarpText(); initSpectralClouds(); initSideRays(); initHomeStrands(); initCaseBorderGlow(); initGeneratedHomeFocusHover(); initLegionPrinciples(); initLegionPrologue(); setRoute(); initCaseTopbarVisibility(); initArchiveCarousel();
+setRoute();
+document.documentElement.classList.add('app-ready');
+function initializeEnhancements() {
+  if (document.documentElement.classList.contains('enhancements-ready')) return;
+  document.documentElement.classList.add('enhancements-ready');
+  for (const initialize of [wireInteractiveStates, wireLightbox, wireAuiFilms, initMobileSystemCarousel, initAuiDesignMarquee, initLegionCylinder, initScrollCaseNavigation, initWarpText, initSpectralClouds, initSideRays, initHomeStrands, initCaseBorderGlow, initGeneratedHomeFocusHover, initLegionPrinciples, initLegionPrologue, initCaseTopbarVisibility, initArchiveCarousel]) {
+    try { initialize(); } catch (error) { console.error(`Initialization failed: ${initialize.name}`, error); }
+  }
+  setRoute();
+  initCasePreload();
+}
+const mainStyles = document.querySelector('#main-styles');
+if (!mainStyles || document.documentElement.classList.contains('styles-ready')) initializeEnhancements();
+else mainStyles.addEventListener('load', initializeEnhancements, { once: true });
