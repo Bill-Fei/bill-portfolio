@@ -2878,3 +2878,87 @@ function initializeEnhancements() {
 const mainStyles = document.querySelector('#main-styles');
 if (!mainStyles || document.documentElement.classList.contains('styles-ready')) initializeEnhancements();
 else mainStyles.addEventListener('load', initializeEnhancements, { once: true });
+
+const billAnalytics = (() => {
+  const endpoint = typeof window.BILL_ANALYTICS_ENDPOINT === 'string' ? window.BILL_ANALYTICS_ENDPOINT.trim() : '';
+  const optOutKey = 'bill-analytics-optout';
+  const sessionKey = 'bill-analytics-session';
+  const activeWindowMs = 30000;
+  const heartbeatMs = 10000;
+  const pageNames = new Set(['home', 'case-workflow', 'case-paradigm', 'case-legion', 'case-aui', 'archive']);
+  let sessionId;
+  let visit;
+  let timer;
+  let lastActivity = Date.now();
+  let activeMs = 0;
+  let lastTick = Date.now();
+
+  const createId = () => window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const optedOut = () => window.localStorage?.getItem(optOutKey) === 'true';
+  const currentPage = () => {
+    const page = (location.hash.replace(/^#/, '').split('/')[0] || 'home').split('?')[0];
+    return pageNames.has(page) ? page : 'home';
+  };
+  const deviceType = () => {
+    if (navigator.userAgentData?.mobile) return 'mobile';
+    if (Math.max(window.innerWidth, window.innerHeight) <= 720) return 'mobile';
+    if (navigator.maxTouchPoints > 1 && Math.min(window.innerWidth, window.innerHeight) <= 1024) return 'mobile';
+    return 'pc';
+  };
+  const send = (event, durationSec) => {
+    if (!endpoint || optedOut() || !visit) return;
+    const payload = JSON.stringify({
+      event,
+      visitId: visit.id,
+      sessionId,
+      page: visit.page,
+      durationSec: Math.max(0, Math.round(durationSec)),
+      occurredAt: Date.now(),
+      deviceType: deviceType(),
+      referrerOrigin: (() => { try { return document.referrer ? new URL(document.referrer).origin : ''; } catch { return ''; } })()
+    });
+    try {
+      if (event === 'page_exit' && navigator.sendBeacon) {
+        navigator.sendBeacon(endpoint, new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch(endpoint, { method: 'POST', headers: { 'content-type': 'application/json' }, body: payload, keepalive: true }).catch(() => {});
+      }
+    } catch {}
+  };
+  const tick = () => {
+    const now = Date.now();
+    if (document.visibilityState === 'visible' && now - lastActivity <= activeWindowMs) activeMs += Math.max(0, now - lastTick);
+    lastTick = now;
+  };
+  const closeVisit = () => {
+    tick();
+    send('page_exit', activeMs / 1000);
+    visit = null;
+    activeMs = 0;
+  };
+  const startVisit = () => {
+    if (!endpoint || optedOut()) return;
+    tick();
+    visit = { id: createId(), page: currentPage() };
+    lastActivity = Date.now();
+    lastTick = Date.now();
+    send('pageview', 0);
+  };
+  const routeChanged = () => {
+    closeVisit();
+    startVisit();
+  };
+  const initialize = () => {
+    if (!endpoint || optedOut()) return;
+    try { sessionId = window.sessionStorage.getItem(sessionKey) || createId(); window.sessionStorage.setItem(sessionKey, sessionId); } catch { sessionId = createId(); }
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(type => window.addEventListener(type, () => { lastActivity = Date.now(); }, { passive: true }));
+    window.addEventListener('hashchange', routeChanged);
+    document.addEventListener('visibilitychange', () => { tick(); lastActivity = Date.now(); });
+    window.addEventListener('pagehide', closeVisit, { once: true });
+    timer = window.setInterval(() => { tick(); if (visit && activeMs > 0) send('heartbeat', activeMs / 1000); }, heartbeatMs);
+    startVisit();
+  };
+  window.BillAnalytics = { optOut: () => { window.localStorage?.setItem(optOutKey, 'true'); closeVisit(); window.clearInterval(timer); } };
+  window.setTimeout(initialize, 0);
+  return window.BillAnalytics;
+})();
