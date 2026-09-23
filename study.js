@@ -144,31 +144,73 @@ const deferredMedia = (() => {
   return { activate, refresh };
 })();
 function initCasePreload() {
-  if (navigator.connection?.saveData || /(^|-)2g$/.test(navigator.connection?.effectiveType || '')) return;
-  const cases = [...document.querySelectorAll('.case-aui-one, .case-paradigm, .case-legion')];
-  const batches = cases.map(view => [...view.querySelectorAll('video[data-media-poster], img[data-media-src]')]
-    .filter(element => element.tagName === 'VIDEO' || element.closest('figure'))
-    .slice(0, 3).map(element => element.dataset.mediaPoster || element.dataset.mediaSrc));
-  const queue = [...new Set([0, 1, 2].flatMap(index => batches.map(batch => batch[index]).filter(Boolean)))];
-  let index = 0;
-  const next = () => {
-    if (index >= queue.length) return;
-    if (document.hidden || document.body.dataset.route !== 'home') { setTimeout(next, 2500); return; }
-    const image = new Image();
-    image.fetchPriority = 'low';
-    let completed = false;
-    const finish = () => {
-      if (completed) return;
-      completed = true;
-      clearTimeout(timeout);
-      setTimeout(next, 600);
+  const connection = navigator.connection;
+  if (connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType || '')) return;
+  const caseSelectors = ['[data-view="case-workflow"]', '[data-view="case-paradigm"]', '[data-view="case-legion"]'];
+  const queue = [...new Set(caseSelectors.flatMap(selector => {
+    const view = document.querySelector(selector);
+    if (!view) return [];
+    return [...view.querySelectorAll('img[data-media-src], video[data-media-poster]')]
+      .filter(element => element.tagName === 'VIDEO' || element.closest('figure'))
+      .slice(0, 3)
+      .map(element => element.dataset.mediaPoster || element.dataset.mediaSrc)
+      .filter(Boolean);
+  }))];
+  if (!queue.length) return;
+  const pending = [...queue];
+  const active = new Set();
+  const loaded = new Set();
+  const concurrency = 3;
+  let scheduled = false;
+  const canPreload = () => !document.hidden && document.body.dataset.route === 'home';
+  const schedule = (delay = 0) => {
+    if (scheduled) return;
+    scheduled = true;
+    const run = () => {
+      scheduled = false;
+      pump();
     };
-    const timeout = setTimeout(() => { image.src = ''; finish(); }, 20000);
-    image.onload = finish;
-    image.onerror = finish;
-    image.src = queue[index++];
+    if (delay) window.setTimeout(run, delay);
+    else if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 1500 });
+    else window.setTimeout(run, 0);
   };
-  setTimeout(next, 1800);
+  const finish = (url) => {
+    active.delete(url);
+    loaded.add(url);
+    schedule(350);
+  };
+  const preload = (url) => {
+    active.add(url);
+    const image = new Image();
+    image.decoding = 'async';
+    image.fetchPriority = 'low';
+    let settled = false;
+    const complete = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      finish(url);
+    };
+    const timeout = window.setTimeout(complete, 15000);
+    image.onload = () => {
+      const decoded = typeof image.decode === 'function' ? image.decode() : Promise.resolve();
+      decoded.catch(() => {}).finally(complete);
+    };
+    image.onerror = complete;
+    image.src = url;
+  };
+  const pump = () => {
+    if (!canPreload()) return;
+    while (active.size < concurrency && pending.length) {
+      const url = pending.shift();
+      if (loaded.has(url) || active.has(url)) continue;
+      preload(url);
+    }
+    if (pending.length || active.size) schedule(500);
+  };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) schedule(); }, { passive: true });
+  window.addEventListener('pageshow', () => schedule(), { passive: true });
+  schedule(1200);
 }
 function observeLayoutResize(target, callback) {
   let pendingFrame = 0;
