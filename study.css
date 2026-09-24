@@ -11678,7 +11678,7 @@ body[data-route^="case-"] .case-view.is-active .case-topbar {
     width: 100%;
     max-width: 100%;
     white-space: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
     word-break: normal;
   }
   .home-content .warp-text-fallback {
@@ -11692,6 +11692,57 @@ body[data-route^="case-"] .case-view.is-active .case-topbar {
   .home-content .warp-text-fallback > em > span {
     display: block;
     width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .home-content .warp-text-fallback > span,
+  .home-content .warp-text-fallback > em > span {
+    opacity: 1;
+    transform: translateY(.55em);
+    filter: blur(8px);
+    transition: opacity .82s var(--ease), transform .82s var(--ease), filter .82s var(--ease);
+  }
+  .home-content .warp-text.is-mobile-title-entering .warp-text-fallback > span,
+  .home-content .warp-text.is-mobile-title-entering .warp-text-fallback > em > span {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  .home-content .warp-text.is-staggered-in .warp-text-fallback > span,
+  .home-content .warp-text.is-staggered-in .warp-text-fallback > em > span {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .home-content .warp-text.is-staggered-in .warp-text-fallback > em > span:nth-child(1) { transition-delay: 80ms; }
+  .home-content .warp-text.is-staggered-in .warp-text-fallback > em > span:nth-child(2) { transition-delay: 170ms; }
+
+  .home-content .warp-text-fallback {
+    transition: opacity .75s var(--ease), transform .28s var(--ease), filter .28s var(--ease);
+  }
+}
+@media (max-width: 620px) and (prefers-reduced-motion: reduce) {
+  .home-content .warp-text-fallback > span,
+  .home-content .warp-text-fallback > em > span {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+  .home-content .warp-text-fallback { transition: none; }
+}
+
+@media (max-width: 620px) and (pointer: fine) {
+  .home-content .warp-text:hover .warp-text-fallback {
+    transform: translateY(-2px) scale(1.018);
+    filter: brightness(1.08) drop-shadow(0 8px 22px rgba(143, 178, 235, .18));
+  }
+}
+
+@media (max-width: 620px) and (pointer: coarse) {
+  .home-content .warp-text.is-touch-engaged .warp-text-fallback {
+    transform: translateY(-2px) scale(1.018);
+    filter: brightness(1.08) drop-shadow(0 8px 22px rgba(143, 178, 235, .18));
   }
 }
 
