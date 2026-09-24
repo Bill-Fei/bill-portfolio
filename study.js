@@ -1798,9 +1798,32 @@ function initHomeStrands() {
 function initWarpText() {
   const container = document.querySelector('.warp-text');
   if (!container) return;
-  if (window.matchMedia('(max-width: 620px)').matches) {
-    container.classList.add('is-intro-complete', 'is-staggered-in', 'is-warp-rendered', 'is-warp-ready');
-    replayHomeTitle = () => {};
+  const narrowViewport = window.matchMedia('(max-width: 620px)').matches;
+  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
+  if (narrowViewport) {
+    container.classList.add('is-intro-complete', 'is-warp-rendered', 'is-warp-ready');
+    if (coarsePointer) {
+      container.classList.add('is-touch-only');
+      const releaseTouch = () => container.classList.remove('is-touch-engaged');
+      const engageTouch = event => {
+        if (event.pointerType !== 'touch') return;
+        container.classList.add('is-touch-engaged');
+      };
+      container.addEventListener('pointerdown', engageTouch, { passive: true });
+      container.addEventListener('pointermove', engageTouch, { passive: true });
+      container.addEventListener('pointerup', releaseTouch, { passive: true });
+      container.addEventListener('pointercancel', releaseTouch, { passive: true });
+      container.addEventListener('pointerleave', releaseTouch, { passive: true });
+    }
+    replayHomeTitle = () => {
+      container.classList.add('is-mobile-title-entering');
+      container.classList.remove('is-staggered-in');
+      void container.offsetWidth;
+      requestAnimationFrame(() => {
+        container.classList.remove('is-mobile-title-entering');
+        container.classList.add('is-staggered-in');
+      });
+    };
     return;
   }
 
@@ -1966,7 +1989,6 @@ function initWarpText() {
   let disposed = false;
   let resizeObserver;
   let intersectionObserver;
-  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
   const pointer = { x: .5, y: .5, tx: .5, ty: .5, active: 0, target: 0 };
   const startedAt = performance.now();
 
@@ -2920,6 +2942,13 @@ function initializeEnhancements() {
 const mainStyles = document.querySelector('#main-styles');
 if (!mainStyles || document.documentElement.classList.contains('styles-ready')) initializeEnhancements();
 else mainStyles.addEventListener('load', initializeEnhancements, { once: true });
+
+let warpViewportMode = window.matchMedia('(max-width: 620px)').matches;
+window.matchMedia('(max-width: 620px)').addEventListener('change', event => {
+  if (event.matches === warpViewportMode) return;
+  warpViewportMode = event.matches;
+  window.location.reload();
+});
 
 const billAnalytics = (() => {
   const endpoint = typeof window.BILL_ANALYTICS_ENDPOINT === 'string' ? window.BILL_ANALYTICS_ENDPOINT.trim() : '';
