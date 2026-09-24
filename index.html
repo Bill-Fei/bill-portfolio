@@ -54,9 +54,9 @@
     html:not(.app-ready) .reveal:not(.case-topbar) { opacity: 1 !important; transform: none !important; filter: none !important; }
     html:not(.app-ready) .case-topbar.reveal { opacity: 0 !important; transform: translateY(-10px) !important; filter: none !important; pointer-events: none !important; }
   </style>
-  <link rel="stylesheet" href="fonts.css?v=331" />
-  <link id="main-styles" rel="stylesheet" href="study.css?v=331" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
-  <link rel="stylesheet" href="release.css?v=331" />
+  <link rel="stylesheet" href="fonts.css?v=332" />
+  <link id="main-styles" rel="stylesheet" href="study.css?v=332" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
+  <link rel="stylesheet" href="release.css?v=332" />
   <script>
     window.BILL_ANALYTICS_ENDPOINT = 'https://bill-portfolio-analytics.bill-fei.deno.net';
     (function () {
@@ -99,7 +99,7 @@
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
     })();
   </script>
-  <script defer src="study.js?v=331"></script>
+  <script defer src="study.js?v=332"></script>
 </head>
 <body>
   <a class="skip-content" href="#app">跳至主要内容</a>
@@ -289,7 +289,7 @@
 
         <figure class="aui-hero-film reveal" aria-label="从用户意图到 AUI 主动服务的项目影片预告">
           <video muted playsinline preload="none" poster="assets/video/aui-effect-showcase-poster.jpg" data-media-poster="assets/video/aui-effect-showcase-poster.jpg" data-aui-hero-film aria-busy="true">
-            <source data-media-src="assets/video/aui-effect-showcase.mp4" data-media-mobile-src="assets/video/aui-effect-showcase-mobile.mp4" type="video/mp4" data-aui-hero-source />
+            <source data-media-src="assets/aui-compressed-review/videos/aui-effect-showcase-compressed.mp4" data-media-mobile-src="assets/video/aui-effect-showcase-mobile.mp4" type="video/mp4" data-aui-hero-source />
           </video>
           <div class="media-feedback media-feedback-static" data-media-feedback role="status">
             <span data-media-feedback-label>视频加载中…</span>
@@ -326,7 +326,7 @@
                 <p class="chapter-kicker">02 / INTERACTION EVOLUTION</p>
                 <p class="aui-chapter-summary">GUI 让人找到入口，LUI 让人说出意图，AUI 则让服务基于上下文主动抵达，并让界面随任务生成。</p>
               </header>
-              <figure class="aui-figma-frame reveal"><img data-lightbox-src="assets/figma-pages/07-aui-evolution-v138.png?v=138" data-lightbox-group="aui-core-pages" data-media-src="assets/aui-lossless/figma-pages/07-aui-evolution-v138.webp" alt="Figma 第 6 页：交互演进，从 GUI、LUI 到 AUI" loading="lazy" decoding="async" width="3840" height="2160" /><figcaption>FIGMA / 02 · GUI → LUI → AUI</figcaption></figure>
+                <figure class="aui-figma-frame reveal"><img data-lightbox-src="assets/figma-pages/07-aui-evolution-v138.png?v=138" data-lightbox-group="aui-core-pages" data-media-src="assets/aui-compressed-review/images/07-aui-evolution-v138-desktop.webp" data-media-srcset="assets/aui-compressed-review/images/07-aui-evolution-v138-mobile.webp 1280w, assets/aui-compressed-review/images/07-aui-evolution-v138-desktop.webp 1920w" sizes="100vw" alt="Figma 第 6 页：交互演进，从 GUI、LUI 到 AUI" loading="lazy" decoding="async" width="3840" height="2160" /><figcaption>FIGMA / 02 · GUI → LUI → AUI</figcaption></figure>
             </article>
 
             <article class="chapter-panel scroll-chapter" id="08-aui-paradigm" data-chapter="08-aui-paradigm" data-scroll-chapter="08-aui-paradigm">
@@ -350,7 +350,7 @@
                 <p class="chapter-kicker">05 / NATIVE INTERACTION</p>
                 <p class="aui-chapter-summary">从用户熟悉的“说、按、圈”等自然动作出发，让系统能力以符合直觉的方式被发现和使用。</p>
               </header>
-              <figure class="aui-figma-frame reveal"><img data-lightbox-src="assets/figma-pages/09-aui-principles-intro.png?v=136" data-lightbox-group="aui-core-pages" data-media-src="assets/aui-lossless/figma-pages/09-aui-principles-intro.webp" alt="打造系统原生 AI 交互体验：以语音、按压与圈选等自然交互方式，对应用户符合直觉的操作。" loading="lazy" decoding="async" width="3840" height="2160" /><figcaption>FIGMA / 05 · NATIVE INTERACTION</figcaption></figure>
+              <figure class="aui-figma-frame reveal"><img data-lightbox-src="assets/figma-pages/09-aui-principles-intro.png?v=136" data-lightbox-group="aui-core-pages" data-media-src="assets/aui-compressed-review/images/09-aui-principles-intro-desktop.webp" data-media-srcset="assets/aui-compressed-review/images/09-aui-principles-intro-mobile.webp 1280w, assets/aui-compressed-review/images/09-aui-principles-intro-desktop.webp 1920w" sizes="100vw" alt="打造系统原生 AI 交互体验：以语音、按压与圈选等自然交互方式，对应用户符合直觉的操作。" loading="lazy" decoding="async" width="3840" height="2160" /><figcaption>FIGMA / 05 · NATIVE INTERACTION</figcaption></figure>
             </article>
 
             <article class="chapter-panel scroll-chapter" id="09-aui-principles" data-chapter="09-aui-principles" data-scroll-chapter="09-aui-principles">
@@ -366,7 +366,7 @@
                 <p class="chapter-kicker">07 / COMPANION STATE</p>
                 <p class="aui-chapter-summary">多模态主动感知、动态界面适配与跨端协同，让 AI 随任务、设备与环境自然迁移，并在不同终端承载合适的服务。</p>
               </header>
-              <figure class="aui-figma-frame reveal"><img data-lightbox-src="assets/figma-pages/10-companion-state-v131.png?v=136" data-lightbox-group="aui-core-pages" data-media-src="assets/aui-lossless/figma-pages/10-companion-state-v131.webp" alt="Figma 第 10 页：AUI 伴随态覆盖 AIPC、AI 手机、AI 平板与 AIoT" loading="lazy" decoding="async" width="3840" height="2160" /><figcaption>FIGMA / 07 · COMPANION STATE</figcaption></figure>
+              <figure class="aui-figma-frame reveal"><img data-lightbox-src="assets/figma-pages/10-companion-state-v131.png?v=136" data-lightbox-group="aui-core-pages" data-media-src="assets/aui-compressed-review/images/10-companion-state-v131-desktop.webp" data-media-srcset="assets/aui-compressed-review/images/10-companion-state-v131-mobile.webp 1280w, assets/aui-compressed-review/images/10-companion-state-v131-desktop.webp 1920w" sizes="100vw" alt="Figma 第 10 页：AUI 伴随态覆盖 AIPC、AI 手机、AI 平板与 AIoT" loading="lazy" decoding="async" width="3840" height="2160" /><figcaption>FIGMA / 07 · COMPANION STATE</figcaption></figure>
             </article>
 
             <article class="chapter-panel scroll-chapter aui-inset-page" id="11-immersion-state" data-chapter="11-immersion-state" data-scroll-chapter="11-immersion-state">
@@ -374,7 +374,7 @@
                 <p class="chapter-kicker">08 / AUI IMMERSION STATE</p>
                 <p class="aui-chapter-summary">复杂任务，深度协同：让 AI 深度融入多端协同，帮助用户从“问一下”走向“交给 AI 完成”。</p>
               </header>
-              <figure class="aui-figma-frame reveal"><img data-lightbox-src="assets/figma-pages/11-immersion-state.png?v=137" data-lightbox-group="aui-core-pages" data-media-src="assets/aui-lossless/figma-pages/11-immersion-state.webp" alt="AUI 沉浸态：复杂任务与多端协同方案展示" loading="lazy" decoding="async" width="3840" height="2160" /><figcaption>FIGMA / 08 · AUI IMMERSION STATE</figcaption></figure>
+              <figure class="aui-figma-frame reveal"><img data-lightbox-src="assets/figma-pages/11-immersion-state.png?v=137" data-lightbox-group="aui-core-pages" data-media-src="assets/aui-compressed-review/images/11-immersion-state-desktop.webp" data-media-srcset="assets/aui-compressed-review/images/11-immersion-state-mobile.webp 1280w, assets/aui-compressed-review/images/11-immersion-state-desktop.webp 1920w" sizes="100vw" alt="AUI 沉浸态：复杂任务与多端协同方案展示" loading="lazy" decoding="async" width="3840" height="2160" /><figcaption>FIGMA / 08 · AUI IMMERSION STATE</figcaption></figure>
             </article>
 
             <article class="chapter-panel scroll-chapter" id="11-cross-device" data-chapter="11-cross-device" data-scroll-chapter="11-cross-device">
@@ -441,7 +441,7 @@
           </header>
           <div class="aui-result-player">
             <video controls playsinline preload="none" data-media-poster="assets/video/aui-film-poster.jpg" data-aui-full-film>
-              <source data-media-src="assets/video/aui-full-film.mp4" type="video/mp4" />
+              <source data-media-src="assets/aui-compressed-review/videos/aui-full-film-compressed.mp4" type="video/mp4" />
             </video>
           </div>
           <footer><span>LENOVO TIANXI · AUI 1.0</span><span>01:27 · FULL FILM</span></footer>

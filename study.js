@@ -9,6 +9,7 @@ const mediaFeedback = (() => {
     if (states.has(element)) return states.get(element);
     if (!element.closest('.case-view')) return null;
     const video = element.tagName === 'VIDEO';
+    const heroVideo = video && element.matches('[data-aui-hero-film]');
     const autoVideo = video && (element.matches('[data-aui-hero-film]') || element.closest('.legion-cover-media'));
     const host = element.closest('figure, .aui-result-player, .aui-learning-player') || (element.parentElement.matches('button, a') ? element.parentElement.parentElement : element.parentElement);
     host.classList.add('media-feedback-host');
@@ -23,18 +24,37 @@ const mediaFeedback = (() => {
       host.appendChild(panel);
     }
     let timer;
+    let feedbackDelay;
+    let loadingPending = false;
     const show = (state, text, buttonText = '') => {
       clearTimeout(timer);
+      clearTimeout(feedbackDelay);
+      loadingPending = state === 'loading' || state === 'slow';
       element.dataset.loadState = state;
       panel.dataset.state = state;
-      panel.hidden = state === 'ready';
+      panel.hidden = state === 'ready' || state === 'idle';
       element.setAttribute('aria-busy', String(state === 'loading' || state === 'slow'));
       label.textContent = text;
       action.hidden = !buttonText;
       action.textContent = buttonText;
       if (state === 'loading') timer = setTimeout(() => show('slow', '加载时间较长，请稍候或重试', '重试'), 12000);
     };
-    const loading = () => show('loading', video ? '视频加载中…' : '图片加载中…');
+    const loading = event => {
+      if (!heroVideo) return show('loading', video ? '视频加载中…' : '图片加载中…');
+      if (event?.type === 'stalled' && !element.paused && element.readyState >= 3) return;
+      if (loadingPending && event?.type !== 'loadstart') return;
+      clearTimeout(timer);
+      clearTimeout(feedbackDelay);
+      loadingPending = true;
+      element.dataset.loadState = 'loading';
+      element.setAttribute('aria-busy', 'true');
+      panel.hidden = true;
+      feedbackDelay = setTimeout(() => {
+        if (document.hidden || !element.closest('.case-view')?.classList.contains('is-active')
+          || element.dataset.inViewport === 'false') return show('idle', '');
+        show('loading', '视频加载中…');
+      }, 700);
+    };
     const blocked = () => show('paused', '视频已准备，请点击播放', '播放视频');
     const ready = () => show('ready', '');
     const failed = () => show('error', video ? '视频未能加载' : '图片未能加载', '重试');
@@ -42,6 +62,7 @@ const mediaFeedback = (() => {
       event.preventDefault();
       event.stopPropagation();
       const previous = element.dataset.loadState;
+      loadingPending = false;
       loading();
       if (video) {
         const pendingSource = element.querySelector('source[data-media-src]');
@@ -50,7 +71,11 @@ const mediaFeedback = (() => {
           delete pendingSource.dataset.mediaSrc;
         }
         if (previous !== 'paused' || !element.currentSrc) element.load();
-        element.play()?.catch(blocked);
+        element.play()?.catch(error => {
+          if (heroVideo && error.name === 'AbortError') return;
+          if (!heroVideo || error.name === 'NotAllowedError') blocked();
+          else failed();
+        });
       } else {
         const source = element.dataset.mediaSrc || element.currentSrc || element.src;
         const sourceSet = element.dataset.mediaSrcset || element.srcset;
@@ -67,12 +92,16 @@ const mediaFeedback = (() => {
         if (!autoVideo || !element.paused) ready();
       });
       element.addEventListener('stalled', loading);
+      if (heroVideo) element.addEventListener('pause', () => {
+        if (document.hidden || !element.closest('.case-view')?.classList.contains('is-active')
+          || element.dataset.inViewport === 'false') show('idle', '');
+      });
       element.querySelectorAll('source').forEach(source => source.addEventListener('error', failed));
     } else {
       element.addEventListener('load', ready);
     }
     element.addEventListener('error', failed);
-    const state = { loading, blocked, ready };
+    const state = { loading, blocked, ready, failed };
     states.set(element, state);
     loading();
     if (!video && element.complete && element.naturalWidth) ready();
@@ -616,7 +645,7 @@ function wireAuiFilms() {
       progressDuration: 6
     },
     effect: {
-      src: 'assets/video/aui-effect-showcase.mp4',
+      src: 'assets/aui-compressed-review/videos/aui-effect-showcase-compressed.mp4',
       mobileSrc: 'assets/video/aui-effect-showcase-mobile.mp4',
       poster: 'assets/video/aui-effect-showcase-poster.jpg',
       title: 'AUI 让服务主动抵达',
@@ -639,8 +668,15 @@ function wireAuiFilms() {
     heroFilm.muted = true;
     heroFilm.defaultMuted = true;
     deferredMedia.activate(heroFilm, true);
+    const requestedSource = heroSource?.src;
     const playPromise = heroFilm.play();
-    if (playPromise?.catch) playPromise.catch(() => mediaFeedback.attach(heroFilm)?.blocked());
+    if (playPromise?.catch) playPromise.catch(error => {
+      if (error.name === 'AbortError' || heroSource?.src !== requestedSource || document.hidden
+        || document.body.dataset.route !== 'case-workflow' || heroFilm.dataset.inViewport === 'false') return;
+      const feedback = mediaFeedback.attach(heroFilm);
+      if (error.name === 'NotAllowedError') feedback?.blocked();
+      else feedback?.failed();
+    });
   };
   const stopFilmProgress = () => {
     if (progressFrame) window.cancelAnimationFrame(progressFrame);
