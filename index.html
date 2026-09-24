@@ -57,8 +57,48 @@
   <link rel="stylesheet" href="fonts.css?v=331" />
   <link id="main-styles" rel="stylesheet" href="study.css?v=331" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
   <link rel="stylesheet" href="release.css?v=331" />
-  <script>window.BILL_ANALYTICS_ENDPOINT = 'https://bill-portfolio-analytics.bill-fei.deno.net';</script>
-  <script defer src="https://bill-portfolio-analytics.bill-fei.deno.net/a.js"></script>
+  <script>
+    window.BILL_ANALYTICS_ENDPOINT = 'https://bill-portfolio-analytics.bill-fei.deno.net';
+    (function () {
+      var ENDPOINT = (window.BILL_ANALYTICS_ENDPOINT || '').replace(/\/$/, '');
+      if (!ENDPOINT) return;
+      var TRACK_URL = ENDPOINT + '/track';
+      var SESSION_KEY = 'bill_analytics_session';
+      var startTs = Date.now(), endSent = false;
+      function today() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+      function getSession() {
+        try { var raw = localStorage.getItem(SESSION_KEY); if (raw) { var s = JSON.parse(raw); if (s && s.date === today()) return s; } } catch (e) {}
+        var s = { id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 's' + Math.random().toString(36).slice(2) + Date.now(), date: today() };
+        try { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); } catch (e) {}
+        return s;
+      }
+      var session = getSession();
+      function send(payload) {
+        var body = JSON.stringify(Object.assign({ t: Date.now() }, payload, { sid: session.id }));
+        if (navigator.sendBeacon) { try { navigator.sendBeacon(TRACK_URL, new Blob([body], { type: 'text/plain' })); return; } catch (e) {} }
+        try { fetch(TRACK_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body, keepalive: true }).catch(function () {}); } catch (e) {}
+      }
+      function start() {
+        send({ type: 'pageview', path: location.pathname + location.search, referrer: document.referrer || '' });
+        setInterval(function () { if (!document.hidden) send({ type: 'heartbeat', path: location.pathname + location.search }); }, 15000);
+        document.addEventListener('click', function (ev) {
+          var el = ev.target;
+          while (el && el !== document && !(el.tagName === 'A')) el = el.parentNode;
+          if (!el || el.tagName !== 'A') return;
+          send({ type: 'click', path: location.pathname + location.search, target: el.href || el.getAttribute('href') || '' });
+        });
+        function end() {
+          if (endSent) return;
+          endSent = true;
+          send({ type: 'end', path: location.pathname + location.search, dur: Math.round((Date.now() - startTs) / 1000) });
+        }
+        document.addEventListener('visibilitychange', function () { if (document.hidden) end(); });
+        window.addEventListener('pagehide', end);
+        window.addEventListener('beforeunload', end);
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+    })();
+  </script>
   <script defer src="study.js?v=331"></script>
 </head>
 <body>
