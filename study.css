@@ -2654,7 +2654,7 @@ html { overflow-x: clip; }
 .case-legion .legion-cover-media {
   z-index: -3;
   background:
-    url("assets/legion-zone/hero-poster.png") center / cover no-repeat,
+    url("assets/responsive-media/images/legion-hero-poster-desktop.webp") center / cover no-repeat,
     #000;
 }
 .case-legion .legion-cover-media video {
@@ -2808,6 +2808,7 @@ html { overflow-x: clip; }
 }
 @media (max-width: 720px) {
   .case-legion .legion-cover { min-height: 100svh; }
+  .case-legion .legion-cover-media { background-image: url("assets/responsive-media/images/legion-hero-poster-mobile.webp"); }
   .case-legion .legion-cover-media video { object-position: 43% center; filter: saturate(.7) contrast(1.08) brightness(.68); }
   .case-legion .legion-cover-scrim {
     background: linear-gradient(to bottom, rgba(0, 0, 0, .68) 0%, rgba(0, 0, 0, .2) 30%, rgba(0, 0, 0, .48) 54%, rgba(0, 0, 0, .9) 100%);

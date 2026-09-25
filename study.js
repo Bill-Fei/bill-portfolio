@@ -111,23 +111,23 @@ const mediaFeedback = (() => {
 })();
 const deferredMedia = (() => {
   let observer;
-  let preloadTimer;
-  const backgroundLoads = new Map();
-  const attemptedPosters = new WeakSet();
-  const connection = navigator.connection;
   const selector = 'img[data-media-src], video';
   const activate = (element, includeVideo = false) => {
     if (!element || !element.closest('[data-view]')?.classList.contains('is-active')) return;
     mediaFeedback.attach(element);
-    if (element.dataset.mediaPoster) {
-      element.poster = element.dataset.mediaPoster;
+    const useMobileSource = window.matchMedia('(max-width: 720px)').matches;
+    const poster = useMobileSource && element.dataset.mediaPosterMobile
+      ? element.dataset.mediaPosterMobile
+      : element.dataset.mediaPoster;
+    if (poster) {
+      element.poster = poster;
       delete element.dataset.mediaPoster;
+      delete element.dataset.mediaPosterMobile;
     }
     if (element.tagName === 'VIDEO') {
       if (!includeVideo) return;
       element.preload = element.hasAttribute('controls') ? 'metadata' : 'auto';
       let changed = false;
-      const useMobileSource = window.matchMedia('(max-width: 720px)').matches;
       element.querySelectorAll('source[data-media-src]').forEach(source => {
         const sourceUrl = useMobileSource && source.dataset.mediaMobileSrc
           ? source.dataset.mediaMobileSrc
@@ -155,97 +155,8 @@ const deferredMedia = (() => {
       element.dataset.mediaActivated = 'true';
     }
   };
-  const canPreload = () => !document.hidden && !connection?.saveData
-    && !/(^|-)2g$/.test(connection?.effectiveType || '');
-  const schedulePreload = (delay = 300) => {
-    if (preloadTimer || !canPreload()) return;
-    preloadTimer = window.setTimeout(() => {
-      preloadTimer = null;
-      preloadNext();
-    }, delay);
-  };
-  const foregroundPending = view => [...view.querySelectorAll('img, video')].some(element => {
-    const bounds = element.getBoundingClientRect();
-    if (!bounds.width || !bounds.height || bounds.bottom < -480 || bounds.top > window.innerHeight + 480
-      || bounds.right < -160 || bounds.left > window.innerWidth + 160) return false;
-    if (element.dataset.loadState === 'error') return false;
-    if (element.tagName === 'IMG') return Boolean(element.dataset.mediaSrc) || !element.complete;
-    return !reducedMotion && !element.hasAttribute('controls') && !element.error
-      && element.dataset.loadState !== 'paused' && element.readyState < 3;
-  });
-  const preloadImage = element => {
-    const poster = element.tagName === 'VIDEO';
-    const image = poster ? new Image() : element;
-    const posterUrl = element.dataset.mediaPoster;
-    const sourceUrl = element.dataset.mediaSrc;
-    const sourceSet = element.dataset.mediaSrcset;
-    let settled = false;
-    const finish = () => {
-      if (settled) return;
-      settled = true;
-      image.removeEventListener('load', finish);
-      image.removeEventListener('error', finish);
-      if (poster && image.naturalWidth && element.dataset.mediaPoster === posterUrl) {
-        element.poster = posterUrl;
-        delete element.dataset.mediaPoster;
-      }
-      backgroundLoads.delete(element);
-      schedulePreload();
-    };
-    backgroundLoads.set(element, {
-      cancel() {
-        finish();
-        if (poster) {
-          attemptedPosters.delete(element);
-          image.removeAttribute('src');
-        } else if (image.getAttribute('src') === sourceUrl) {
-          element.dataset.mediaSrc = sourceUrl;
-          if (sourceSet) element.dataset.mediaSrcset = sourceSet;
-          image.removeAttribute('srcset');
-          image.removeAttribute('src');
-          delete element.dataset.mediaActivated;
-        }
-      }
-    });
-    image.addEventListener('load', finish);
-    image.addEventListener('error', finish);
-    image.fetchPriority = 'low';
-    image.decoding = 'async';
-    if (poster) {
-      attemptedPosters.add(element);
-      image.src = posterUrl;
-    } else activate(element);
-    if (image.complete) finish();
-  };
-  const preloadNext = () => {
-    if (!canPreload() || !document.documentElement.classList.contains('styles-ready')) return;
-    const view = document.querySelector('.case-view.is-active');
-    if (!view) return;
-    const pending = [...view.querySelectorAll('img[data-media-src], video[data-media-poster]')]
-      .filter(element => !backgroundLoads.has(element) && !attemptedPosters.has(element));
-    if (!pending.length) return;
-    if (foregroundPending(view)) {
-      schedulePreload(500);
-      return;
-    }
-    const slots = 2 - backgroundLoads.size;
-    pending.slice(0, Math.max(0, slots)).forEach(preloadImage);
-  };
-  const resumePreload = () => {
-    window.clearTimeout(preloadTimer);
-    preloadTimer = null;
-    schedulePreload(500);
-  };
-  document.addEventListener('visibilitychange', resumePreload);
-  connection?.addEventListener?.('change', resumePreload);
-  window.addEventListener('pageshow', resumePreload);
   const refresh = () => {
     observer?.disconnect();
-    for (const [element, load] of backgroundLoads) {
-      if (!element.closest('[data-view]')?.classList.contains('is-active')) load.cancel();
-    }
-    window.clearTimeout(preloadTimer);
-    preloadTimer = null;
     if (!document.documentElement.classList.contains('styles-ready')) return;
     const media = document.querySelectorAll(`.view.is-active ${selector.split(', ').join(', .view.is-active ')}`);
     if (!('IntersectionObserver' in window)) {
@@ -261,81 +172,11 @@ const deferredMedia = (() => {
         if (legionHero && !reducedMotion && !document.hidden) entry.target.play()?.catch(() => {});
         observer.unobserve(entry.target);
       });
-    }, { rootMargin: '480px 160px', threshold: 0 });
+    }, { rootMargin: '920px 160px', threshold: 0 });
     media.forEach(element => observer.observe(element));
-    schedulePreload(1200);
   };
   return { activate, refresh };
 })();
-function initCasePreload() {
-  const connection = navigator.connection;
-  if (connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType || '')) return;
-  const caseSelectors = ['[data-view="case-workflow"]', '[data-view="case-paradigm"]', '[data-view="case-legion"]'];
-  const queue = [...new Set(caseSelectors.flatMap(selector => {
-    const view = document.querySelector(selector);
-    if (!view) return [];
-    return [...view.querySelectorAll('img[data-media-src], video[data-media-poster]')]
-      .filter(element => element.tagName === 'VIDEO' || element.closest('figure'))
-      .slice(0, 3)
-      .map(element => element.dataset.mediaPoster || element.dataset.mediaSrc)
-      .filter(Boolean);
-  }))];
-  if (!queue.length) return;
-  const pending = [...queue];
-  const active = new Set();
-  const loaded = new Set();
-  const concurrency = 3;
-  let scheduled = false;
-  const canPreload = () => !document.hidden && document.body.dataset.route === 'home';
-  const schedule = (delay = 0) => {
-    if (scheduled) return;
-    scheduled = true;
-    const run = () => {
-      scheduled = false;
-      pump();
-    };
-    if (delay) window.setTimeout(run, delay);
-    else if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 1500 });
-    else window.setTimeout(run, 0);
-  };
-  const finish = (url) => {
-    active.delete(url);
-    loaded.add(url);
-    schedule(350);
-  };
-  const preload = (url) => {
-    active.add(url);
-    const image = new Image();
-    image.decoding = 'async';
-    image.fetchPriority = 'low';
-    let settled = false;
-    const complete = () => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timeout);
-      finish(url);
-    };
-    const timeout = window.setTimeout(complete, 15000);
-    image.onload = () => {
-      const decoded = typeof image.decode === 'function' ? image.decode() : Promise.resolve();
-      decoded.catch(() => {}).finally(complete);
-    };
-    image.onerror = complete;
-    image.src = url;
-  };
-  const pump = () => {
-    if (!canPreload()) return;
-    while (active.size < concurrency && pending.length) {
-      const url = pending.shift();
-      if (loaded.has(url) || active.has(url)) continue;
-      preload(url);
-    }
-    if (pending.length || active.size) schedule(500);
-  };
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) schedule(); }, { passive: true });
-  window.addEventListener('pageshow', () => schedule(), { passive: true });
-  schedule(1200);
-}
 function observeLayoutResize(target, callback) {
   let pendingFrame = 0;
   const observer = new ResizeObserver(() => {
@@ -731,7 +572,8 @@ function wireAuiFilms() {
   const caption = heroShell?.querySelector('[data-aui-film-caption]');
   const options = {
     preview: {
-      src: 'assets/video/aui-hero-intent-loop.mp4',
+      src: 'assets/aui-compressed-review/videos/aui-hero-intent-loop-compressed.mp4',
+      mobileSrc: 'assets/aui-compressed-review/videos/aui-hero-intent-loop-mobile.mp4',
       poster: 'assets/video/aui-hero-intent-poster.jpg',
       title: '从一句意图，到主动服务',
       meta: '06s PREVIEW → FULL EFFECT · 自动切换',
@@ -3068,7 +2910,6 @@ function initializeEnhancements() {
     try { initialize(); } catch (error) { console.error(`Initialization failed: ${initialize.name}`, error); }
   }
   setRoute();
-  initCasePreload();
 }
 const mainStyles = document.querySelector('#main-styles');
 if (!mainStyles || document.documentElement.classList.contains('styles-ready')) initializeEnhancements();
