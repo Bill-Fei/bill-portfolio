@@ -11,13 +11,16 @@ const mediaFeedback = (() => {
     const video = element.tagName === 'VIDEO';
     const heroVideo = video && element.matches('[data-aui-hero-film]');
     const autoVideo = video && (element.matches('[data-aui-hero-film]') || element.closest('.legion-cover-media'));
-    const host = element.closest('figure, .aui-result-player, .aui-learning-player') || (element.parentElement.matches('button, a') ? element.parentElement.parentElement : element.parentElement);
+    const host = element.closest('.gen-component-library-stage, .mobile-system-slide-artwork, figure, .aui-result-player, .aui-learning-player') || (element.parentElement.matches('button, a') ? element.parentElement.parentElement : element.parentElement);
     host.classList.add('media-feedback-host');
     const panel = host.querySelector('[data-media-feedback]') || document.createElement('div');
     panel.classList.add('media-feedback');
+    panel.dataset.mediaFeedback = '';
     const label = panel.querySelector('[data-media-feedback-label]') || document.createElement('span');
+    label.dataset.mediaFeedbackLabel = '';
     label.setAttribute('role', 'status');
     const action = panel.querySelector('[data-media-feedback-action]') || document.createElement('button');
+    action.dataset.mediaFeedbackAction = '';
     action.type = 'button';
     if (!panel.parentElement) {
       panel.append(label, action);
@@ -77,11 +80,14 @@ const mediaFeedback = (() => {
           else failed();
         });
       } else {
-        const source = element.dataset.mediaSrc || element.currentSrc || element.src;
-        const sourceSet = element.dataset.mediaSrcset || element.srcset;
-        if (sourceSet) element.srcset = sourceSet;
-        if (source) element.src = source;
-        else element.load();
+        const source = element.currentSrc || element.src || element.dataset.mediaSrc;
+        if (!source) return failed();
+        const retryUrl = new URL(source, document.baseURI);
+        retryUrl.searchParams.set('media-retry', String(Date.now()));
+        element.removeAttribute('srcset');
+        element.removeAttribute('src');
+        element.loading = 'eager';
+        element.src = retryUrl.href;
       }
     });
     if (video) {
@@ -146,11 +152,12 @@ const deferredMedia = (() => {
     }
     if (element.dataset.mediaSrc) {
       element.loading = 'eager';
-      if (element.dataset.mediaSrcset) {
+      const mobileSource = useMobileSource && element.dataset.mediaMobileSrc;
+      if (!mobileSource && element.dataset.mediaSrcset) {
         element.srcset = element.dataset.mediaSrcset;
-        delete element.dataset.mediaSrcset;
       }
-      element.src = element.dataset.mediaSrc;
+      element.src = mobileSource || element.dataset.mediaSrc;
+      delete element.dataset.mediaSrcset;
       delete element.dataset.mediaSrc;
       element.dataset.mediaActivated = 'true';
     }
@@ -210,11 +217,11 @@ const decisionDetails = { one: '利用自上而下的视觉动线，将问题置
 const companionAssets = { aipc: ['assets/shared/aui-roadmap-assets/aipc.png', 'AI PC 伴随态'], phone: ['assets/shared/aui-roadmap-assets/phone.png', 'AI 手机伴随态'], pad: ['assets/shared/aui-roadmap-assets/pad.png', 'AI 平板伴随态'], aiot: ['assets/shared/aui-roadmap-assets/aiot.png', 'AIoT 伴随态'] };
 const modeDetails = { window: '用户主动与天禧交互后出现，适合从一句意图开始。', frame: '在当前应用原位出现，遵循系统分屏与尺寸逻辑，不把用户带离主任务。', platform: '天禧主动服务或提醒时出现，以轻 / 中 / 重三种介入距离承载提醒、反馈与入口引导。' };
 const mobileSystemFrames = [
-  { title: 'Color', label: '色彩与渐变', src: 'assets/aui-lossless/figma-pages/12-mobile-color-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-color-3x.png?v=80' },
-  { title: 'Voice', label: '语音交互', src: 'assets/aui-lossless/figma-pages/12-mobile-voice-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-voice-3x.png?v=80' },
-  { title: 'Text', label: '文本交互', src: 'assets/aui-lossless/figma-pages/12-mobile-text-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-text-3x.png?v=84' },
-  { title: 'Image', label: '图选交互', src: 'assets/aui-lossless/figma-pages/12-mobile-image-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-image-3x.png?v=84' },
-  { title: 'AI Components', label: 'AI 组件', src: 'assets/aui-lossless/figma-pages/12-mobile-components-3x.webp', fullSrc: 'assets/figma-pages/12-mobile-components-3x.png?v=80' }
+  { title: 'Color', label: '色彩与渐变', src: 'assets/responsive-media/images/system-12-mobile-color-3x-desktop.webp', mobileSrc: 'assets/responsive-media/images/system-12-mobile-color-3x-mobile.webp', fullSrc: 'assets/figma-pages/12-mobile-color-3x.png?v=80' },
+  { title: 'Voice', label: '语音交互', src: 'assets/responsive-media/images/system-12-mobile-voice-3x-desktop.webp', mobileSrc: 'assets/responsive-media/images/system-12-mobile-voice-3x-mobile.webp', fullSrc: 'assets/figma-pages/12-mobile-voice-3x.png?v=80' },
+  { title: 'Text', label: '文本交互', src: 'assets/responsive-media/images/system-12-mobile-text-3x-desktop.webp', mobileSrc: 'assets/responsive-media/images/system-12-mobile-text-3x-mobile.webp', fullSrc: 'assets/figma-pages/12-mobile-text-3x.png?v=84' },
+  { title: 'Image', label: '图选交互', src: 'assets/responsive-media/images/system-12-mobile-image-3x-desktop.webp', mobileSrc: 'assets/responsive-media/images/system-12-mobile-image-3x-mobile.webp', fullSrc: 'assets/figma-pages/12-mobile-image-3x.png?v=84' },
+  { title: 'AI Components', label: 'AI 组件', src: 'assets/responsive-media/images/system-12-mobile-components-3x-desktop.webp', mobileSrc: 'assets/responsive-media/images/system-12-mobile-components-3x-mobile.webp', fullSrc: 'assets/figma-pages/12-mobile-components-3x.png?v=80' }
 ];
 const auiDesignFrames = [
   {
@@ -222,63 +229,63 @@ const auiDesignFrames = [
     meta: 'AUI HOME',
     alt: '天禧 AUI 首页主动聚合知识、天气与内容服务',
     ratio: 720 / 1764,
-    src: 'assets/aui-lossless/aui-marquee/04-companion-home.webp'
+    src: 'assets/responsive-media/images/marquee-04-companion-home-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-04-companion-home-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/04-companion-home.webp'
   },
   {
     title: 'Morning Brief',
     meta: 'PROACTIVE BRIEF',
     alt: 'AUI 主动提供次日天气并协助设置出发闹钟',
     ratio: 824 / 1832,
-    src: 'assets/aui-lossless/aui-marquee/02-morning-brief.webp'
+    src: 'assets/responsive-media/images/marquee-02-morning-brief-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-02-morning-brief-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/02-morning-brief.webp'
   },
   {
     title: 'AI Podcast',
     meta: 'KNOWLEDGE AUDIO',
     alt: 'AI 播客基于文档、知识库或链接生成音频内容的主题选择界面',
     ratio: 1236 / 2742,
-    src: 'assets/aui-lossless/aui-marquee/07-ai-podcast.webp'
+    src: 'assets/responsive-media/images/marquee-07-ai-podcast-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-07-ai-podcast-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/07-ai-podcast.webp'
   },
   {
     title: 'Travel Planning',
     meta: 'TRAVEL AGENT',
     alt: 'AUI 汇总航班、酒店与日程冲突的出差安排',
     ratio: 824 / 1832,
-    src: 'assets/aui-lossless/aui-marquee/03-travel-plan.webp'
+    src: 'assets/responsive-media/images/marquee-03-travel-plan-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-03-travel-plan-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/03-travel-plan.webp'
   },
   {
     title: 'Voice Composer',
     meta: 'VOICE FIRST',
     alt: '天禧 AUI 首页语音输入与实时声波反馈状态',
     ratio: 720 / 1764,
-    src: 'assets/aui-lossless/aui-marquee/05-voice-composer.webp'
+    src: 'assets/responsive-media/images/marquee-05-voice-composer-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-05-voice-composer-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/05-voice-composer.webp'
   },
   {
     title: 'Live Companion Call',
     meta: 'REAL-TIME COMPANION',
     alt: '天禧实时语音陪伴通话界面，支持字幕、麦克风、共享与视频控制',
     ratio: 1236 / 2742,
-    src: 'assets/aui-lossless/aui-marquee/06-live-companion-call.webp'
+    src: 'assets/responsive-media/images/marquee-06-live-companion-call-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-06-live-companion-call-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/06-live-companion-call.webp'
   },
   {
     title: 'AI Image Studio',
     meta: 'GENERATIVE CREATION',
     alt: 'AI 修图首页展示创意模板、风格选择与图片生成输入',
     ratio: 1236 / 2736,
-    src: 'assets/aui-lossless/aui-marquee/08-ai-image-studio.webp'
+    src: 'assets/responsive-media/images/marquee-08-ai-image-studio-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-08-ai-image-studio-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/08-ai-image-studio.webp'
   },
   {
     title: 'Ambient Listening',
     meta: 'SYSTEM PRESENCE',
     alt: 'AUI 系统级倾听状态，主屏底部显示语音入口与我在听反馈',
     ratio: 824 / 1832,
-    src: 'assets/aui-lossless/aui-marquee/01-ambient-listening.webp'
+    src: 'assets/responsive-media/images/marquee-01-ambient-listening-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-01-ambient-listening-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/01-ambient-listening.webp'
   },
   {
     title: 'Image Edit Composer',
     meta: 'MULTIMODAL EDITING',
     alt: 'AI 图片编辑界面通过灵感词、语音、图片和文本共同组织修图指令',
     ratio: 824 / 1824,
-    src: 'assets/aui-lossless/aui-marquee/09-image-edit-composer.webp'
+    src: 'assets/responsive-media/images/marquee-09-image-edit-composer-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-09-image-edit-composer-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/09-image-edit-composer.webp'
   }
 ];
 
@@ -840,7 +847,7 @@ function initMobileSystemCarousel() {
   const status = root?.querySelector('[data-mobile-system-status]');
   if (!root || !viewport || !status) return;
 
-  const slides = mobileSystemFrames.map(({ title, label, src, fullSrc }, index) => {
+  const slides = mobileSystemFrames.map(({ title, label, src, mobileSrc, fullSrc }, index) => {
     const slide = document.createElement('article');
     slide.className = 'mobile-system-slide';
     slide.dataset.index = String(index);
@@ -851,6 +858,7 @@ function initMobileSystemCarousel() {
     const image = document.createElement('img');
     image.className = 'mobile-system-slide-board';
     image.dataset.mediaSrc = src;
+    image.dataset.mediaMobileSrc = mobileSrc;
     image.width = 1380;
     image.height = [3813, 3279, 2538, 1896, 2100][index];
     image.dataset.lightboxSrc = fullSrc;
@@ -879,6 +887,12 @@ function initMobileSystemCarousel() {
   let current = 0;
   let autoTimer = 0;
   let isInView = false;
+  let isNearby = false;
+  const prepareSlides = () => {
+    if (!isNearby) return;
+    [current, (current + 1) % slides.length, (current + slides.length - 1) % slides.length]
+      .forEach(index => deferredMedia.activate(slides[index].querySelector('img')));
+  };
   const schedule = () => {
     window.clearTimeout(autoTimer);
     if (reducedMotion || document.hidden || !isInView || window.matchMedia('(max-width: 620px)').matches) return;
@@ -903,6 +917,7 @@ function initMobileSystemCarousel() {
     });
     const { title, label } = mobileSystemFrames[current];
     status.textContent = `${String(current + 1).padStart(2, '0')} — ${title.toUpperCase()} / ${label}`;
+    prepareSlides();
     schedule();
   };
 
@@ -912,6 +927,7 @@ function initMobileSystemCarousel() {
   let gesture = null;
   let suppressClickUntil = 0;
   viewport.addEventListener('pointerdown', event => {
+    if (event.target.closest('[data-media-feedback]')) return;
     if (!phoneViewport.matches || !event.isPrimary || event.button !== 0) return;
     gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, horizontal: false };
   });
@@ -964,6 +980,7 @@ function initMobileSystemCarousel() {
     }
   });
   viewport.addEventListener('keydown', (event) => {
+    if (event.target.closest('[data-media-feedback]')) return;
     if (event.key === 'ArrowLeft') {
       event.preventDefault();
       render(current - 1, -1);
@@ -992,6 +1009,10 @@ function initMobileSystemCarousel() {
     else window.clearTimeout(autoTimer);
   }, { threshold: [0, 0.18, 0.5] });
   observer.observe(root);
+  new IntersectionObserver(([entry]) => {
+    isNearby = entry.isIntersecting;
+    prepareSlides();
+  }, { rootMargin: '920px 0px', threshold: 0 }).observe(root);
   viewport.tabIndex = 0;
   render(0);
 }
@@ -1011,6 +1032,8 @@ function initAuiDesignMarquee() {
 
     const image = document.createElement('img');
     image.dataset.mediaSrc = frame.src;
+    image.dataset.mediaMobileSrc = frame.mobileSrc;
+    image.dataset.lightboxSrc = frame.fullSrc;
     image.width = Math.round((frame.ratio || .445) * 1000);
     image.height = 1000;
     image.alt = index < auiDesignFrames.length ? frame.alt : '';
@@ -1037,6 +1060,17 @@ function initAuiDesignMarquee() {
   let animationFrame = 0;
   let lastFrameTime = 0;
   const autoSpeed = -0.46;
+  let lastPreparation = 0;
+  const prepareCards = () => {
+    const bounds = stage.getBoundingClientRect();
+    if (bounds.bottom < -920 || bounds.top > window.innerHeight + 920) return;
+    cards.forEach(card => {
+      const rectangle = card.getBoundingClientRect();
+      if (rectangle.right > bounds.left - bounds.width && rectangle.left < bounds.right + bounds.width) {
+        deferredMedia.activate(card.querySelector('img'));
+      }
+    });
+  };
 
   const measure = () => {
     const first = cards[0];
@@ -1062,6 +1096,10 @@ function initAuiDesignMarquee() {
   const tick = (time) => {
     animationFrame = 0;
     if (!isInView || document.hidden) return;
+    if (time - lastPreparation > 250) {
+      lastPreparation = time;
+      prepareCards();
+    }
     const frameScale = lastFrameTime ? Math.min(2.4, (time - lastFrameTime) / (1000 / 60)) : 1;
     lastFrameTime = time;
 
@@ -1091,6 +1129,7 @@ function initAuiDesignMarquee() {
   };
 
   stage.addEventListener('pointerdown', (event) => {
+    if (event.target.closest('[data-media-feedback]')) return;
     if (event.button !== 0 || isDragging) return;
     pointerId = event.pointerId;
     isDragging = true;
@@ -1141,6 +1180,10 @@ function initAuiDesignMarquee() {
     else stopAnimation();
   }, { threshold: [0, 0.08, 0.35] });
   observer.observe(root);
+
+  new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) prepareCards();
+  }, { rootMargin: '920px 0px', threshold: 0 }).observe(root);
 
   if ('ResizeObserver' in window) new ResizeObserver(measure).observe(stage);
   else window.addEventListener('resize', measure, { passive: true });
