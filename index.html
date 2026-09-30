@@ -54,13 +54,12 @@
     html:not(.app-ready) .reveal:not(.case-topbar) { opacity: 1 !important; transform: none !important; filter: none !important; }
     html:not(.app-ready) .case-topbar.reveal { opacity: 0 !important; transform: translateY(-10px) !important; filter: none !important; pointer-events: none !important; }
   </style>
-  <link rel="stylesheet" href="fonts.css?v=339" />
-  <link id="main-styles" rel="stylesheet" href="study.css?v=339" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
-  <link rel="stylesheet" href="release.css?v=339" />
+  <link rel="stylesheet" href="fonts.css?v=340" />
+  <link id="main-styles" rel="stylesheet" href="study.css?v=340" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
+  <link rel="stylesheet" href="release.css?v=340" />
   <script>
-    window.BILL_ANALYTICS_ENDPOINT = 'https://bill-portfolio-analytics.pages.dev';
     (function () {
-      var ENDPOINT = (window.BILL_ANALYTICS_ENDPOINT || '').replace(/\/$/, '');
+      var ENDPOINT = 'https://bill-portfolio-analytics.pages.dev';
       if (!ENDPOINT) return;
       var TRACK_URL = ENDPOINT + '/track';
       var SESSION_KEY = 'bill_analytics_session';
@@ -74,7 +73,7 @@
       }
       var session = getSession();
       function send(payload) {
-        var body = JSON.stringify(Object.assign({ t: Date.now() }, payload, { sid: session.id }));
+        var body = JSON.stringify(Object.assign({ t: Date.now(), v: '340', env: 'prod' }, payload, { sid: session.id }));
         if (navigator.sendBeacon) { try { navigator.sendBeacon(TRACK_URL, new Blob([body], { type: 'text/plain' })); return; } catch (e) {} }
         try { fetch(TRACK_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body, keepalive: true }).catch(function () {}); } catch (e) {}
       }
@@ -99,7 +98,7 @@
       if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
     })();
   </script>
-  <script defer src="study.js?v=339"></script>
+  <script defer src="study.js?v=340"></script>
 </head>
 <body>
   <a class="skip-content" href="#app">跳至主要内容</a>
