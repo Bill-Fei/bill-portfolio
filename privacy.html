@@ -1,9 +1,29 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>隐私与访问统计 · Bill Wang</title><style>body{max-width:760px;margin:64px auto;padding:0 24px;background:#080a0f;color:#e4ebf5;font:16px/1.9 system-ui}a{color:#adc7ff}h1{font-size:30px}h2{font-size:21px}</style></head><body>
-<a href="./#home">← 返回作品集</a><h1>隐私与访问统计说明</h1><p>更新日期：2026-09-23</p>
-<h2>访问统计</h2><p>启用统计后，网站会记录逻辑页面访问、页面停留秒数、设备类型（PC 或手机）、访问时间、来源站点的主域名，以及服务器收到的 IP。统计用于了解作品集是否被查看，不用于识别招聘者或建立跨站画像；不采集联系人文本、邮箱、电话或 URL 查询参数。</p>
-<p>统计使用无 Cookie 的会话标识，仅在当前浏览器标签页会话中有效。停留时间按页面可见且近期有操作的时间累计，后台标签页和长时间无操作会暂停计时。历史数据不会补回，拒绝统计、浏览器拦截或网络失败会造成遗漏。</p>
-<p><button type="button" onclick="localStorage.setItem('bill-analytics-optout','true');this.textContent='已拒绝后续统计';">拒绝后续统计</button> <a href="./#home">返回作品集</a></p>
+<a href="./#home">← 返回作品集</a><h1>隐私与访问统计说明</h1><p>更新日期：2026-10-02</p>
+<h2>访问统计</h2><p>统计只在正式作品集网站启用，本地和其他预览地址不发送统计。当前脚本发送页面访问、可见页面每 15 秒的心跳、链接点击与离开事件，包含访问时间、页面路径及查询参数、浏览器提供的来源地址和点击链接的目标地址。链接地址可能含查询参数或联系方式；统计用于了解作品集是否被查看，不用于识别招聘者或建立跨站画像。统计服务也会收到网络请求的 IP。</p>
+<p>统计不使用 Cookie，会话标识保存在浏览器本地，同一浏览器按日复用。离开事件记录从本次页面初始化到首次隐藏或离开的经过秒数，不等于实际阅读时间；不会根据鼠标或键盘操作计算有效停留。历史数据不会补回，拒绝统计、浏览器拦截或网络失败会造成遗漏。</p>
+<p>拒绝后，此浏览器已打开的作品集标签页及后续访问将停止发送新统计；已经发出的请求和已有记录不会因此撤回。拒绝设置保存在当前浏览器，清除网站数据或换用其他浏览器后需要重新设置。隐私说明页本身不发送访问统计。</p>
+<p><button type="button" id="analytics-optout">拒绝后续统计</button> <a href="./#home">返回作品集</a></p>
+<p id="analytics-optout-status" role="status"></p>
+<script>
+  (function () {
+    var button = document.getElementById('analytics-optout');
+    var status = document.getElementById('analytics-optout-status');
+    function confirmed() { button.textContent = '已拒绝后续统计'; button.disabled = true; }
+    try { if (localStorage.getItem('bill-analytics-optout') === 'true') confirmed(); } catch (e) {}
+    button.addEventListener('click', function () {
+      try {
+        localStorage.setItem('bill-analytics-optout', 'true');
+        if (window.BillAnalytics && window.BillAnalytics.optOut) window.BillAnalytics.optOut();
+        confirmed();
+        status.textContent = '设置已保存；此浏览器中的作品集将停止发送后续统计。';
+      } catch (e) {
+        status.textContent = '浏览器未能保存设置，尚未完成跨标签页拒绝。请关闭其他作品集标签页，并允许网站保存此设置后重试。';
+      }
+    });
+  })();
+</script>
 <p>网站托管平台 GitHub 会为安全目的记录访客 IP，该记录不等于作者拥有可查看的访客 IP 后台。详情请见 <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noreferrer">GitHub 隐私声明</a>。视频和字体资源若由外部服务提供，也会产生对应的网络请求。</p>
 <h2>保存与访问</h2><p>数据保存在站长控制的统计后台，仅站长登录后可查看；管理密钥不会写入公开网站代码。原始 IP 属于敏感访问日志，自动保存 30 天后清空；页面访问、设备与停留等汇总记录可继续保留，用于观察作品集整体访问趋势。IP 不作为访客身份的可靠依据。</p>
 <h2>作品归属与联系</h2><p>本作品集由王鹏飞（Bill Wang）整理。项目商标及相关作品权利归原权利人所有，页面不表示作者独占全部项目成果。请勿改名冒用、镜像再分发；招聘交流可联系 <a href="mailto:404125098@qq.com">404125098@qq.com</a>。</p>

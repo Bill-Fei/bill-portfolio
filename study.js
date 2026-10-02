@@ -2970,6 +2970,8 @@ window.matchMedia('(max-width: 620px)').addEventListener('change', event => {
 
 const billAnalytics = (() => {
   const endpoint = typeof window.BILL_ANALYTICS_ENDPOINT === 'string' ? window.BILL_ANALYTICS_ENDPOINT.trim() : '';
+  // The inline production tracker owns opt-out; an inactive legacy tracker must not replace it.
+  if (!endpoint || window.BillAnalytics) return window.BillAnalytics || null;
   const optOutKey = 'bill-analytics-optout';
   const sessionKey = 'bill-analytics-session';
   const activeWindowMs = 30000;
