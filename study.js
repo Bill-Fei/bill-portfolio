@@ -1217,7 +1217,10 @@ function initSideRays() {
       canvas: document.querySelector('#side-rays-canvas'),
       containerSelector: '.side-rays-container',
       route: 'home',
-      minWidth: window.innerWidth <= 620 ? 0 : 901,
+      // The split-pane browser used by Codex often lands in the 621–900px
+      // range. Keep the home rays alive there; that range is tablet-like,
+      // not a reason to remove the ambient field.
+      minWidth: window.innerWidth <= 620 ? 0 : 621,
       maxPixelRatio: window.innerWidth <= 620 ? 0.8 : 1.35,
       fps: window.innerWidth <= 620 ? 20 : 30,
       speed: 0.46,
@@ -1548,7 +1551,7 @@ function initSideRays() {
 
 function initHomeStrands() {
   const canvas = document.querySelector('#home-strands-canvas');
-  if (!canvas || (window.innerWidth > 620 && window.innerWidth <= 900)) return;
+  if (!canvas) return;
 
   const container = canvas.closest('.home-strands-field');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

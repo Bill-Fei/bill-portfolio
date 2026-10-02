@@ -13287,6 +13287,68 @@ body[data-route^="case-"] .case-view.is-active .case-topbar {
   .view.route-entering { animation: none; }
 }
 
+/* V342 — keep the home hero intact in the 621–900px split-pane viewport.
+   This is a compact desktop/tablet layout, so preserve the three-item nav,
+   ambient rays and animated strands while giving the content a 44px side gutter. */
+@media (min-width: 621px) and (max-width: 900px) {
+  .site-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-inline: 28px;
+  }
+  .global-nav {
+    gap: 3px;
+    padding: 4px;
+    border: 1px solid rgba(174,192,219,.12);
+    background: rgba(10,14,21,.34);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+  .global-nav a:nth-child(3) {
+    display: grid;
+  }
+  .global-nav a,
+  .global-nav .nav-featured {
+    min-width: 0;
+    min-height: 36px;
+    padding-inline: 10px;
+  }
+  .global-nav a > span,
+  .global-nav a > small,
+  .global-nav a > b {
+    display: none;
+  }
+  .global-nav a::after {
+    font: 500 11px/1 var(--sans);
+    letter-spacing: 0;
+  }
+  .global-nav a:nth-child(1)::after { content: '首页'; }
+  .global-nav a:nth-child(2)::after { content: '履历'; }
+  .global-nav a:nth-child(3)::after { content: '精选'; }
+  .global-nav .nav-featured::after { color: #b6c6dc; }
+  .global-nav a.active::after,
+  .global-nav .nav-featured.active::after { color: #142033; }
+
+  .page-wrap { width: calc(100% - 88px); }
+  .home-content { padding-top: 12vh; }
+  .home-visual::after {
+    background:
+      linear-gradient(90deg, rgba(4,6,9,.92) 0%, rgba(4,6,9,.72) 32%, rgba(4,6,9,.18) 82%, rgba(4,6,9,.28) 100%),
+      linear-gradient(0deg, rgba(4,6,9,.78) 0%, transparent 40%, rgba(4,6,9,.2) 100%);
+  }
+  .side-rays-container {
+    display: block;
+    opacity: .7;
+  }
+  .home-strands-field {
+    display: block;
+    right: -18vw;
+    bottom: -6vh;
+    width: 82vw;
+    height: 58vh;
+    opacity: .58;
+  }
+}
+
 /* V321 — expose media loading without changing the artwork layout. */
 .media-feedback-host {
   position: relative;
