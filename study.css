@@ -3728,6 +3728,23 @@ html { overflow-x: clip; }
   background: #020306;
   object-fit: cover;
 }
+.case-aui-one .aui-hero-film-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #020306;
+}
+.case-aui-one .aui-hero-film-media video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .36s ease, filter .36s ease;
+}
+.case-aui-one .aui-hero-film-media video.is-active {
+  opacity: 1;
+  visibility: visible;
+}
 .case-aui-one .aui-result-player video,
 .case-aui-one .aui-learning-player video {
   position: relative;
