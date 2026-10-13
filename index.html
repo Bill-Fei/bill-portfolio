@@ -54,9 +54,9 @@
     html:not(.app-ready) .reveal:not(.case-topbar) { opacity: 1 !important; transform: none !important; filter: none !important; }
     html:not(.app-ready) .case-topbar.reveal { opacity: 0 !important; transform: translateY(-10px) !important; filter: none !important; pointer-events: none !important; }
   </style>
-  <link rel="stylesheet" href="fonts.css?v=344" />
-  <link id="main-styles" rel="stylesheet" href="study.css?v=344" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
-  <link rel="stylesheet" href="release.css?v=344" />
+  <link rel="stylesheet" href="fonts.css?v=345" />
+  <link id="main-styles" rel="stylesheet" href="study.css?v=345" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
+  <link rel="stylesheet" href="release.css?v=345" />
   <script>
     (function () {
       if (location.origin !== 'https://bill-fei.github.io' || !/^\/bill-portfolio(?:\/|$)/.test(location.pathname)) return;
@@ -79,7 +79,7 @@
       function send(payload) {
         if (stopped) return;
         if (optedOut()) { stop(); return; }
-        var body = JSON.stringify(Object.assign({ t: Date.now(), v: '344', env: 'prod' }, payload, { sid: session.id }));
+        var body = JSON.stringify(Object.assign({ t: Date.now(), v: '345', env: 'prod' }, payload, { sid: session.id }));
         if (navigator.sendBeacon) { try { navigator.sendBeacon(TRACK_URL, new Blob([body], { type: 'text/plain' })); return; } catch (e) {} }
         try { fetch(TRACK_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body, keepalive: true }).catch(function () {}); } catch (e) {}
       }
@@ -123,7 +123,7 @@
       if (document.readyState === 'loading') on(document, 'DOMContentLoaded', start); else start();
     })();
   </script>
-  <script defer src="study.js?v=344"></script>
+  <script defer src="study.js?v=345"></script>
 </head>
 <body>
   <a class="skip-content" href="#app">跳至主要内容</a>
@@ -312,9 +312,14 @@
         </div>
 
         <figure class="aui-hero-film reveal" aria-label="从用户意图到 AUI 主动服务的项目影片预告">
-          <video muted playsinline preload="none" poster="assets/video/aui-effect-showcase-poster.jpg" data-media-poster="assets/video/aui-effect-showcase-poster.jpg" data-aui-hero-film aria-busy="true">
-            <source data-media-src="assets/aui-compressed-review/videos/aui-effect-showcase-compressed.mp4" data-media-mobile-src="assets/video/aui-effect-showcase-mobile.mp4" type="video/mp4" data-aui-hero-source />
-          </video>
+          <div class="aui-hero-film-media" data-aui-hero-film-stack>
+            <video class="is-active" muted playsinline preload="auto" poster="assets/video/aui-effect-showcase-poster.jpg" data-media-poster="assets/video/aui-effect-showcase-poster.jpg" data-aui-hero-film="effect" data-load-state="loading" aria-busy="true">
+              <source data-media-src="assets/aui-compressed-review/videos/aui-effect-showcase-compressed.mp4" data-media-mobile-src="assets/video/aui-effect-showcase-mobile.mp4" type="video/mp4" />
+            </video>
+            <video muted playsinline preload="auto" poster="assets/video/aui-hero-intent-poster.jpg" data-media-poster="assets/video/aui-hero-intent-poster.jpg" data-aui-hero-film="preview" data-load-state="loading" aria-busy="true">
+              <source data-media-src="assets/aui-compressed-review/videos/aui-hero-intent-loop-compressed.mp4" data-media-mobile-src="assets/aui-compressed-review/videos/aui-hero-intent-loop-mobile.mp4" type="video/mp4" />
+            </video>
+          </div>
           <div class="media-feedback media-feedback-static" data-media-feedback role="status">
             <span data-media-feedback-label>视频加载中…</span>
             <button type="button" data-media-feedback-action hidden>重试</button>
