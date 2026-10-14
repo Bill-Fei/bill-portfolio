@@ -809,6 +809,7 @@ html { overflow-x: clip; }
   font-size: 13px;
   line-height: 1.7;
 }
+.career-recognition p + p { margin-top: 5px; }
 .career-earlier {
   grid-column: 1;
   grid-row: 2;
