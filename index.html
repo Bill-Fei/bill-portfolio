@@ -54,9 +54,9 @@
     html:not(.app-ready) .reveal:not(.case-topbar) { opacity: 1 !important; transform: none !important; filter: none !important; }
     html:not(.app-ready) .case-topbar.reveal { opacity: 0 !important; transform: translateY(-10px) !important; filter: none !important; pointer-events: none !important; }
   </style>
-  <link rel="stylesheet" href="fonts.css?v=345" />
-  <link id="main-styles" rel="stylesheet" href="study.css?v=345" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
-  <link rel="stylesheet" href="release.css?v=345" />
+  <link rel="stylesheet" href="fonts.css?v=348" />
+  <link id="main-styles" rel="stylesheet" href="study.css?v=348" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
+  <link rel="stylesheet" href="release.css?v=348" />
   <script>
     (function () {
       if (location.origin !== 'https://bill-fei.github.io' || !/^\/bill-portfolio(?:\/|$)/.test(location.pathname)) return;
@@ -79,7 +79,7 @@
       function send(payload) {
         if (stopped) return;
         if (optedOut()) { stop(); return; }
-        var body = JSON.stringify(Object.assign({ t: Date.now(), v: '345', env: 'prod' }, payload, { sid: session.id }));
+        var body = JSON.stringify(Object.assign({ t: Date.now(), v: '348', env: 'prod' }, payload, { sid: session.id }));
         if (navigator.sendBeacon) { try { navigator.sendBeacon(TRACK_URL, new Blob([body], { type: 'text/plain' })); return; } catch (e) {} }
         try { fetch(TRACK_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body, keepalive: true }).catch(function () {}); } catch (e) {}
       }
@@ -123,7 +123,7 @@
       if (document.readyState === 'loading') on(document, 'DOMContentLoaded', start); else start();
     })();
   </script>
-  <script defer src="study.js?v=345"></script>
+  <script defer src="study.js?v=348"></script>
 </head>
 <body>
   <a class="skip-content" href="#app">跳至主要内容</a>
@@ -183,7 +183,12 @@
               <time>2020.10 — 2022.02</time>
               <h3>58 同城</h3>
               <p class="career-position">体验设计专家 · 赶集网体验设计</p>
-              <p class="career-detail">负责招聘核心业务体验设计；获 UXD 杰出员工奖，并取得多项发明及 GUI 专利。</p>
+              <p class="career-detail">负责招聘核心业务体验设计，针对不同求职人群的招聘流程需求，完善从投递、面试到结果反馈的全流程体验。</p>
+              <div class="career-recognition">
+                <span>奖项与专利</span>
+                <p>58UXD最佳作者奖</p>
+                <p>多项发明及 GUI 专利</p>
+              </div>
             </article>
 
             <aside class="career-earlier" aria-label="早期职业经历">
