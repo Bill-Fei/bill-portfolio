@@ -29,15 +29,11 @@ const mediaFeedback = (() => {
     let timer;
     let feedbackDelay;
     let loadingPending = false;
-    const isActiveHero = () => !heroVideo || element.classList.contains('is-active');
     const show = (state, text, buttonText = '') => {
       clearTimeout(timer);
       clearTimeout(feedbackDelay);
       loadingPending = state === 'loading' || state === 'slow';
       element.dataset.loadState = state;
-      element.setAttribute('aria-busy', String(loadingPending));
-      // Each video owns its state; only the selected video owns the shared panel.
-      if (!isActiveHero()) return;
       panel.dataset.state = state;
       panel.hidden = state === 'ready' || state === 'idle';
       element.setAttribute('aria-busy', String(state === 'loading' || state === 'slow'));
@@ -48,7 +44,6 @@ const mediaFeedback = (() => {
     };
     const loading = event => {
       if (!heroVideo) return show('loading', video ? '视频加载中…' : '图片加载中…');
-      if (!isActiveHero()) return show('loading', '');
       if (event?.type === 'stalled' && !element.paused && element.readyState >= 3) return;
       if (loadingPending && event?.type !== 'loadstart') return;
       clearTimeout(timer);
@@ -58,10 +53,8 @@ const mediaFeedback = (() => {
       element.setAttribute('aria-busy', 'true');
       panel.hidden = true;
       feedbackDelay = setTimeout(() => {
-        if (!isActiveHero()) return show('idle', '');
         if (document.hidden || !element.closest('.case-view')?.classList.contains('is-active')
           || element.dataset.inViewport === 'false') return show('idle', '');
-        if (!element.paused && element.readyState >= 3) return ready();
         show('loading', '视频加载中…');
       }, 700);
     };
@@ -69,7 +62,6 @@ const mediaFeedback = (() => {
     const ready = () => show('ready', '');
     const failed = () => show('error', video ? '视频未能加载' : '图片未能加载', '重试');
     action.addEventListener('click', event => {
-      if (!isActiveHero()) return;
       event.preventDefault();
       event.stopPropagation();
       const previous = element.dataset.loadState;
@@ -103,8 +95,7 @@ const mediaFeedback = (() => {
       element.addEventListener('waiting', loading);
       element.addEventListener('playing', ready);
       element.addEventListener('canplay', () => {
-        if (heroVideo && reducedMotion && isActiveHero()) blocked();
-        else if (heroVideo || !autoVideo || !element.paused) ready();
+        if (!autoVideo || !element.paused) ready();
       });
       element.addEventListener('stalled', loading);
       if (heroVideo) element.addEventListener('pause', () => {
@@ -116,7 +107,7 @@ const mediaFeedback = (() => {
       element.addEventListener('load', ready);
     }
     element.addEventListener('error', failed);
-    const state = { loading, blocked, ready, failed, idle: () => show('idle', '') };
+    const state = { loading, blocked, ready, failed };
     states.set(element, state);
     loading();
     if (!video && element.complete && element.naturalWidth) ready();
@@ -217,6 +208,9 @@ const caseChapters = {
   ],
   legion: [
     ['01', '01', '改版目标'], ['03', '02', '设计方向'], ['04', '03', '沉浸问题'], ['05', '04', '门店类比'], ['06', '05', '设计原则'], ['07', '06', '原则落地'], ['11', '07', '视觉系统'], ['12', '08', '最终方案']
+  ],
+  'agent-island': [
+    ['01-origin', '01', '起点'], ['02-attention', '02', '注意力分三档'], ['03-privacy', '03', '隐私边界'], ['04-approval', '04', '审批'], ['05-words', '05', '说人话'], ['06-making', '06', '和 AI 一起做']
   ]
 };
 const legionChapterAliases = { '02': '01', '08': '07', '09': '07', '10': '11', '13': '12' };
@@ -480,16 +474,12 @@ function setHomeNavState(section = '') {
 
 function syncAuiFilmPlayback() {
   const caseView = document.querySelector('.case-aui-one');
-  const heroFilm = caseView?.querySelector('[data-aui-hero-film].is-active');
+  const heroFilm = caseView?.querySelector('[data-aui-hero-film]');
   const fullFilm = caseView?.querySelector('[data-aui-full-film]');
   const caseIsActive = caseView?.classList.contains('is-active');
   const heroIsVisible = heroFilm?.dataset.inViewport === 'true';
   const canPlayHero = caseIsActive && heroIsVisible && !document.hidden && !reducedMotion;
 
-  if (caseIsActive && heroIsVisible && !document.hidden) {
-    // Prime both persistent players once, including when entering from the home page.
-    caseView.querySelectorAll('[data-aui-hero-film]').forEach(video => deferredMedia.activate(video, true));
-  }
   if (heroFilm) {
     if (canPlayHero) {
       deferredMedia.activate(heroFilm, true);
@@ -499,9 +489,6 @@ function syncAuiFilmPlayback() {
       if (playPromise?.catch) playPromise.catch(() => {});
     } else {
       heroFilm.pause();
-      const feedback = mediaFeedback.attach(heroFilm);
-      if (caseIsActive && heroIsVisible && !document.hidden && reducedMotion) feedback?.blocked();
-      else feedback?.idle();
     }
   }
   if (fullFilm && (!caseIsActive || document.hidden)) fullFilm.pause();
@@ -526,7 +513,7 @@ function setRoute() {
   lastRoutedHash = location.hash;
   const target = views.find((view) => view.dataset.view === route) || views[0];
   target.querySelectorAll('.reveal').forEach(node => node.classList.add('is-visible'));
-  document.title = route.startsWith('case-') ? `${target.dataset.caseTheme === 'blue' ? 'Tianxi AUI 1.0 Experience Design' : target.dataset.caseTheme === 'purple' ? 'Tianxi Generative UI' : target.dataset.caseTheme === 'legion' ? 'Legion Zone Gaming Experience' : 'Tianxi AUI'} · Bill Wang` : 'Bill Wang · AI Native Experience Design';
+  document.title = route.startsWith('case-') ? `${target.dataset.caseTheme === 'blue' ? 'Tianxi AUI 1.0 Experience Design' : target.dataset.caseTheme === 'purple' ? 'Tianxi Generative UI' : target.dataset.caseTheme === 'legion' ? 'Legion Zone Gaming Experience' : target.dataset.caseTheme === 'agent' ? 'Agent Island · macOS AI HUD' : 'Tianxi AUI'} · Bill Wang` : 'Bill Wang · AI Native Experience Design';
   views.forEach((view) => view.classList.toggle('is-active', view === target));
   views.forEach((view) => view.classList.remove('route-entering'));
   if (isRouteTransition) target.classList.add('route-entering');
@@ -589,9 +576,9 @@ function setRoute() {
 }
 
 function wireAuiFilms() {
-  const heroShell = document.querySelector('.aui-hero-film');
-  const heroFilms = [...(heroShell?.querySelectorAll('[data-aui-hero-film]') || [])];
-  let heroFilm = heroFilms.find(video => video.classList.contains('is-active')) || heroFilms[0];
+  const heroFilm = document.querySelector('[data-aui-hero-film]');
+  const heroShell = heroFilm?.closest('.aui-hero-film');
+  const heroSource = heroFilm?.querySelector('[data-aui-hero-source]');
   const caption = heroShell?.querySelector('[data-aui-film-caption]');
   const options = {
     preview: {
@@ -616,21 +603,24 @@ function wireAuiFilms() {
     }
   };
   const buttons = [...(heroShell?.querySelectorAll('[data-aui-film-option]') || [])];
+  let transitionPending = false;
   let transitionTimer = 0;
-  let pendingKey = '';
   let progressFrame = 0;
-  const playHeroWhenReady = (video = heroFilm) => {
-    if (!video || reducedMotion || document.hidden
+  let playRetryTimer = 0;
+  const playHeroWhenReady = () => {
+    if (!heroFilm || reducedMotion || document.hidden
       || document.body.dataset.route !== 'case-workflow'
-      || video !== heroFilm || video.dataset.inViewport === 'false') return;
-    deferredMedia.activate(video, true);
-    video.muted = true;
-    video.defaultMuted = true;
-    const playPromise = video.play();
+      || heroFilm.dataset.inViewport === 'false') return;
+    window.clearTimeout(playRetryTimer);
+    heroFilm.muted = true;
+    heroFilm.defaultMuted = true;
+    deferredMedia.activate(heroFilm, true);
+    const requestedSource = heroSource?.src;
+    const playPromise = heroFilm.play();
     if (playPromise?.catch) playPromise.catch(error => {
-      if (error.name === 'AbortError' || video !== heroFilm || document.hidden
-        || document.body.dataset.route !== 'case-workflow' || video.dataset.inViewport === 'false') return;
-      const feedback = mediaFeedback.attach(video);
+      if (error.name === 'AbortError' || heroSource?.src !== requestedSource || document.hidden
+        || document.body.dataset.route !== 'case-workflow' || heroFilm.dataset.inViewport === 'false') return;
+      const feedback = mediaFeedback.attach(heroFilm);
       if (error.name === 'NotAllowedError') feedback?.blocked();
       else feedback?.failed();
     });
@@ -663,28 +653,17 @@ function wireAuiFilms() {
   };
   const applyOption = (key, shouldPlay = true) => {
     const option = options[key] || options.preview;
-    const nextFilm = heroFilms.find(video => video.dataset.auiHeroFilm === key);
-    if (!nextFilm) return;
+    if (!heroFilm || !heroSource) return;
     stopFilmProgress();
-    heroFilms.forEach(video => {
-      const active = video === nextFilm;
-      video.classList.toggle('is-active', active);
-      video.setAttribute('aria-hidden', String(!active));
-      if (!active) {
-        video.pause();
-        mediaFeedback.attach(video)?.idle();
-      }
-    });
-    heroFilm = nextFilm;
-    deferredMedia.activate(heroFilm, true);
-    heroFilm.loop = option.loop;
-    // Reuse the player's buffer; the browser may still briefly seek or buffer after rewind.
+    heroFilm.pause();
     heroFilm.currentTime = 0;
+    heroSource.dataset.mediaSrc = option.src;
+    if (option.mobileSrc) heroSource.dataset.mediaMobileSrc = option.mobileSrc;
+    else delete heroSource.dataset.mediaMobileSrc;
+    heroFilm.dataset.mediaPoster = option.poster;
+    heroFilm.loop = option.loop;
+    deferredMedia.activate(heroFilm, shouldPlay);
     heroFilm.dataset.auiFilm = key;
-    const feedback = mediaFeedback.attach(heroFilm);
-    if (reducedMotion) feedback?.blocked();
-    else if (heroFilm.readyState >= 3) feedback?.ready();
-    else feedback?.loading();
     updateFilmProgress();
     if (heroShell) heroShell.setAttribute('aria-label', option.label);
     if (caption) {
@@ -698,70 +677,63 @@ function wireAuiFilms() {
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-selected', String(active));
     });
-    if (shouldPlay && !reducedMotion) playHeroWhenReady(heroFilm);
+    if (shouldPlay && !reducedMotion) playHeroWhenReady();
   };
   const transitionTo = (key, shouldPlay = true) => {
-    if (!heroFilm || !heroShell) return;
-    if (pendingKey === key) return;
-    window.clearTimeout(transitionTimer);
-    pendingKey = '';
-    if (heroFilm.dataset.auiFilm === key) {
-      heroShell.classList.remove('is-film-transitioning');
-      return;
-    }
-    pendingKey = key;
+    if (!heroFilm || !heroShell || heroFilm.dataset.auiFilm === key || transitionPending) return;
+    transitionPending = true;
     heroShell.classList.add('is-film-transitioning');
+    window.clearTimeout(transitionTimer);
     transitionTimer = window.setTimeout(() => {
       applyOption(key, shouldPlay);
       heroShell.classList.remove('is-film-transitioning');
-      pendingKey = '';
+      transitionPending = false;
     }, reducedMotion ? 0 : 360);
   };
   buttons.forEach((button) => button.addEventListener('click', () => {
     const key = button.dataset.auiFilmOption;
-    transitionTo(key);
     if (heroFilm?.dataset.auiFilm === key) {
       if (heroFilm.ended) heroFilm.currentTime = 0;
       playHeroWhenReady();
       return;
     }
+    transitionTo(key);
   }));
-  heroFilms.forEach(video => {
-    video.dataset.inViewport = 'true';
-    deferredMedia.activate(video, true);
-    mediaFeedback.attach(video);
-    video.addEventListener('timeupdate', () => {
-      if (video !== heroFilm) return;
-      updateFilmProgress();
-      startFilmProgress();
-      if (heroFilm.dataset.auiFilm === 'preview' && heroFilm.currentTime >= options.preview.progressDuration) transitionTo('effect');
-    });
-    ['loadedmetadata', 'durationchange', 'seeking', 'seeked'].forEach((eventName) => video.addEventListener(eventName, updateFilmProgress));
-    ['loadeddata', 'canplay'].forEach((eventName) => video.addEventListener(eventName, () => {
-      if (video !== heroFilm) return;
+  heroFilm?.addEventListener('timeupdate', () => {
+    updateFilmProgress();
+    startFilmProgress();
+    if (heroFilm.dataset.auiFilm === 'preview' && heroFilm.currentTime >= options.preview.progressDuration) transitionTo('effect');
+  });
+  ['loadedmetadata', 'durationchange', 'seeking', 'seeked'].forEach((eventName) => {
+    heroFilm?.addEventListener(eventName, updateFilmProgress);
+  });
+  ['loadeddata', 'canplay'].forEach((eventName) => {
+    heroFilm?.addEventListener(eventName, () => {
       updateFilmProgress();
       syncAuiFilmPlayback();
-      if (document.body.dataset.route === 'case-workflow' && video.dataset.inViewport !== 'false') playHeroWhenReady(video);
-    }));
-    video.addEventListener('play', () => { if (video === heroFilm) startFilmProgress(); });
-    video.addEventListener('pause', () => { if (video === heroFilm) { stopFilmProgress(); updateFilmProgress(); } });
-    video.addEventListener('ended', () => {
-      if (video !== heroFilm) return;
-      stopFilmProgress();
-      updateFilmProgress();
-      if (heroFilm.dataset.auiFilm === 'effect') transitionTo('preview');
+      if (document.body.dataset.route === 'case-workflow' && heroFilm.dataset.inViewport !== 'false') playHeroWhenReady();
     });
   });
-  if (heroFilms.length && 'IntersectionObserver' in window) {
+  heroFilm?.addEventListener('play', startFilmProgress);
+  heroFilm?.addEventListener('pause', () => {
+    stopFilmProgress();
+    updateFilmProgress();
+  });
+  heroFilm?.addEventListener('ended', () => {
+    stopFilmProgress();
+    updateFilmProgress();
+    if (heroFilm.dataset.auiFilm === 'effect') transitionTo('preview');
+  });
+  if (heroFilm && 'IntersectionObserver' in window) {
     const observer = new IntersectionObserver(([entry]) => {
-      heroFilms.forEach(video => { video.dataset.inViewport = entry.isIntersecting ? 'true' : 'false'; });
+      heroFilm.dataset.inViewport = entry.isIntersecting ? 'true' : 'false';
       syncAuiFilmPlayback();
       updateFilmProgress();
       if (entry.isIntersecting) playHeroWhenReady();
     }, { threshold: .12 });
-    observer.observe(heroShell);
+    observer.observe(heroFilm);
   }
-  applyOption(heroFilm?.dataset.auiHeroFilm || 'effect', false);
+  applyOption(heroFilm?.dataset.auiFilm || 'effect', false);
   updateFilmProgress();
   window.setTimeout(() => {
     if (document.body.dataset.route === 'case-workflow') playHeroWhenReady();
@@ -2856,7 +2828,7 @@ function initGeneratedHomeFocusHover() {
 }
 
 function initCaseTopbarVisibility() {
-  const cases = [...document.querySelectorAll('.case-aui-one, .case-paradigm, .case-legion')]
+  const cases = [...document.querySelectorAll('.case-aui-one, .case-paradigm, .case-legion, .case-agent-island')]
     .map((caseView) => ({
       caseView,
       topbar: caseView.querySelector('.case-topbar')
