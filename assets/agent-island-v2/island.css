@@ -426,7 +426,8 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
 @media (min-width: 1280px) {
   .home-works .case-entry.case-blue { --pic: min(52%, 560px); }
 }
-@media (min-width: 1280px) and (max-width: 1799px) {
+/* Keep wide screens (iMac) as quiet as laptops: no upper bound. */
+@media (min-width: 1280px) {
   .home-works .case-entry.case-blue > .home-role-note + .home-role-note:not(.home-key-note),
   .home-works .case-entry.case-agent > .home-role-note + .home-role-note:not(.home-key-note),
   .home-works .case-entry.case-blue > p,
