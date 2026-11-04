@@ -36,7 +36,7 @@
   <script>
     (() => {
       const requested = location.hash.slice(1).split('/')[0];
-      document.documentElement.dataset.initialView = ['case-workflow', 'case-paradigm', 'case-legion', 'case-agent-island', 'case-aui', 'archive'].includes(requested) ? requested : 'home';
+      document.documentElement.dataset.initialView = ['case-workflow', 'case-paradigm', 'case-legion', 'case-agent-island', 'case-ai-call', 'case-aui', 'archive'].includes(requested) ? requested : 'home';
       window.styleFallbackTimer = window.setTimeout(() => {
         const sheet = document.getElementById('main-styles');
         if (sheet && !document.documentElement.classList.contains('styles-ready')) sheet.media = 'print';
@@ -50,15 +50,17 @@
     html:not(.app-ready)[data-initial-view="case-paradigm"] [data-view="case-paradigm"],
     html:not(.app-ready)[data-initial-view="case-legion"] [data-view="case-legion"],
     html:not(.app-ready)[data-initial-view="case-agent-island"] [data-view="case-agent-island"],
+    html:not(.app-ready)[data-initial-view="case-ai-call"] [data-view="case-ai-call"],
     html:not(.app-ready)[data-initial-view="case-aui"] [data-view="case-aui"],
     html:not(.app-ready)[data-initial-view="archive"] [data-view="archive"] { display: block !important; }
     html:not(.app-ready) .reveal:not(.case-topbar) { opacity: 1 !important; transform: none !important; filter: none !important; }
     html:not(.app-ready) .case-topbar.reveal { opacity: 0 !important; transform: translateY(-10px) !important; filter: none !important; pointer-events: none !important; }
   </style>
-  <link rel="stylesheet" href="fonts.css?v=359" />
-  <link id="main-styles" rel="stylesheet" href="study.css?v=359" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
-  <link rel="stylesheet" href="release.css?v=359" />
-  <link rel="stylesheet" href="assets/agent-island-v2/island.css?v=359" />
+  <link rel="stylesheet" href="fonts.css?v=361" />
+  <link id="main-styles" rel="stylesheet" href="study.css?v=361" onload="clearTimeout(window.styleFallbackTimer);this.media='all';document.documentElement.classList.add('styles-ready')" />
+  <link rel="stylesheet" href="release.css?v=361" />
+  <link rel="stylesheet" href="assets/agent-island-v2/island.css?v=361" />
+  <link rel="stylesheet" href="assets/ai-call/ai-call.css?v=371" />
   <script>
     (function () {
       if (location.origin !== 'https://bill-fei.github.io' || !/^\/bill-portfolio(?:\/|$)/.test(location.pathname)) return;
@@ -72,7 +74,7 @@
       var TRACK_URL = ENDPOINT + '/track';
       var SESSION_KEY = 'bill_analytics_session';
       var session, visitor, visit, visitSequence = 0, timer = null, stopped = false, started = false;
-      var pages = ['home', 'case-workflow', 'case-paradigm', 'case-legion', 'case-agent-island', 'case-aui', 'archive'];
+      var pages = ['home', 'case-workflow', 'case-paradigm', 'case-legion', 'case-agent-island', 'case-ai-call', 'case-aui', 'archive'];
       var documentId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now();
       var listeners = [];
       function pageName() {
@@ -159,9 +161,33 @@
         on(document, 'click', function (ev) {
           var el = ev.target;
           while (el && el !== document && !(el.tagName === 'A')) el = el.parentNode;
-          if (!el || el.tagName !== 'A') return;
+          if (!el || el.tagName !== 'A') {
+            // Feature controls that are not links (e.g. the voice / speed / model picker): data-track names them.
+            var ctl = ev.target && ev.target.closest ? ev.target.closest('[data-track]') : null;
+            if (!ctl) return;
+            var row = ctl.closest('[data-row]');
+            action('action:' + ctl.getAttribute('data-track') + (row ? ':' + row.getAttribute('data-row') : '') + (ctl.getAttribute('data-v') ? ':' + ctl.getAttribute('data-v') : ''));
+            return;
+          }
           send({ type: 'click', page: visit.page, path: location.pathname + '#' + visit.page, visit_id: visit.id, target: safeLink(el.href || el.getAttribute('href') || '') });
         });
+        // Case films: one event when playback starts and when 25 / 50 / 75 / 100% has been watched, once per page visit.
+        var filmSeen = {};
+        function action(name) { if (visit) send({ type: 'click', page: visit.page, path: location.pathname + '#' + visit.page, visit_id: visit.id, target: name }); }
+        function filmMark(v, mark) {
+          var key = visit && visit.id + ':' + (v.closest('figure[id]') || {}).id + ':' + mark;
+          if (!key || filmSeen[key]) return;
+          filmSeen[key] = 1;
+          action('action:film:' + ((v.closest('figure[id]') || {}).id || 'video') + ':' + mark);
+        }
+        on(document, 'play', function (ev) { if (ev.target.tagName === 'VIDEO' && ev.target.controls) filmMark(ev.target, 'play'); }, true);
+        on(document, 'timeupdate', function (ev) {
+          var v = ev.target;
+          if (v.tagName !== 'VIDEO' || !v.controls || !v.duration) return;
+          var p = v.currentTime / v.duration * 100;
+          [25, 50, 75].forEach(function (m) { if (p >= m) filmMark(v, String(m)); });
+        }, true);
+        on(document, 'ended', function (ev) { if (ev.target.tagName === 'VIDEO' && ev.target.controls) filmMark(ev.target, '100'); }, true);
         function resumeVisit() {
           routeChanged();
           if (!document.hidden && visit.activeSince === null) visit.activeSince = Date.now();
@@ -181,8 +207,10 @@
       if (document.readyState === 'loading') on(document, 'DOMContentLoaded', start); else start();
     })();
   </script>
-  <script defer src="study.js?v=359"></script>
-  <script defer src="assets/agent-island-v2/island.js?v=359"></script>
+  <script defer src="study.js?v=361"></script>
+  <script defer src="assets/agent-island-v2/island.js?v=361"></script>
+  <script defer src="assets/ai-call/walkie-demo.js?v=362"></script>
+  <script defer src="assets/ai-call/modes-demo.js?v=367"></script>
 </head>
 <body>
   <a class="skip-content" href="#app">跳至主要内容</a>
@@ -281,13 +309,13 @@
               <h2 class="page-title">精选案例</h2>
               <span class="index-title-en" aria-hidden="true">PROJECT<br />INDEX</span>
             </div>
-            <p class="page-subtitle">从 AI 如何进入系统，到 AI 如何生成界面，再到复杂产品体验的系统重构与独立产品实践。四个案例，呈现我如何把复杂能力转化为可落地、可演进的产品系统。</p>
+            <p class="page-subtitle">从 AI 如何进入系统，到 AI 如何生成界面，再到复杂产品体验的系统重构与独立产品实践。五个案例，呈现我如何把复杂能力转化为可落地、可演进的产品系统。</p>
           </div>
           <div class="index-signature" aria-hidden="true">
             <span>AI NATIVE</span>
-            <b>04</b>
+            <b>05</b>
             <i></i>
-            <small>METHOD<br />GEN UI<br />GAMING<br />OPEN SOURCE</small>
+            <small>METHOD<br />GEN UI<br />GAMING<br />OPEN SOURCE<br />VOICE AI</small>
           </div>
           <p class="micro-copy"><i></i><span>选择一个案例开始</span><b>从 AI presence 到 AI-generated UI，再到系统重构</b></p>
         </div>
@@ -295,7 +323,8 @@
           <a class="case-entry case-blue reveal" href="#case-workflow" data-case="workflow"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 3.5l1.7 6.8 5.8 3.7-5.8 3.7L16 24.5l-1.7-6.8L8.5 14l5.8-3.7L16 3.5Z"/><path d="M25.5 4.5v5M28 7h-5M6 21v4M8 23H4"/></svg></span><strong class="entry-number">01</strong><div class="entry-main"><small>TIANXI / AUI EXPERIENCE DESIGN · PHONE / PAD 已上线</small><h3>联想天禧 AUI 1.0 体验设计</h3></div><span class="home-role-note">ROLE · Phone / Pad 体验设计负责人</span><span class="home-role-note">定义 AUI 伴随态、主动服务分级、状态规则与跨端连续体验。</span><span class="home-role-note home-key-note">核心判断 · 让 AI 进入当前任务，而不是把用户带离任务。</span><p>从问题出发定义 AUI，把 AI 能力转化为可感知、可控、连续的系统体验。</p><span class="entry-visual entry-visual-image" aria-hidden="true"><video muted loop playsinline preload="none" poster="assets/video/aui-effect-showcase-poster.jpg" data-ai-loop="assets/video/aui-effect-showcase-mobile.mp4"></video></span><span class="entry-link">查看案例 <b>→</b></span></a>
           <a class="case-entry case-purple reveal" href="#case-paradigm" data-case="paradigm"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="m11.5 8-7 8 7 8M20.5 8l7 8-7 8M18.5 5 13.5 27"/></svg></span><strong class="entry-number">02</strong><div class="entry-main"><small>TIANXI / 生成式 UI · AGENT-TO-UI · 设计与运行时验证</small><h3>联想天禧生成式 UI</h3></div><span class="home-role-note">ROLE · 创新业务设计牵头</span><span class="home-role-note">负责设计规则转译、A2UI 组件能力、Agent-to-UI 逻辑与跨团队推进。</span><span class="home-role-note home-key-note">核心判断 · AI 理解与选择，客户端校验与渲染。</span><p>让界面根据用户意图动态组合，同时由设计规则与客户端运行时守住体验边界。</p><span class="entry-link">查看案例 <b>→</b></span></a>
           <a class="case-entry case-slate reveal" href="#case-legion" data-case="legion"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9.5 10.5h13a5 5 0 0 1 4.8 3.6l2 7a4 4 0 0 1-6.6 4l-2.5-2.2h-8.4l-2.5 2.2a4 4 0 0 1-6.6-4l2-7a5 5 0 0 1 4.8-3.6Z"/><path d="M10 15v5M7.5 17.5h5M21.5 16h.1M24 19h.1"/></svg></span><strong class="entry-number">03</strong><div class="entry-main"><small>LEGION ZONE / GAMING EXPERIENCE · 客户项目</small><h3>联想 Legion Zone 体验系统重构</h3></div><span class="home-role-note">ROLE · 体验设计负责人 / 核心设计者</span><span class="home-role-note">负责游戏中心重构、信息架构、视觉语言与交互节奏。</span><span class="home-role-note home-key-note">核心判断 · 用清晰的信息层级承接复杂的游戏内容与商业目标。</span><p>完整呈现 Legion Zone 从设计推导到最终结果的系统重构。</p><span class="entry-link">查看案例 <b>→</b></span></a>
-          <a class="case-entry case-agent reveal" href="#case-agent-island" data-case="agent-island"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 11.5h18a4 4 0 0 1 4 4v5a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-5a4 4 0 0 1 4-4Z"/><path d="M10 11.5V8.8A2.8 2.8 0 0 1 12.8 6h6.4A2.8 2.8 0 0 1 22 8.8v2.7M11 17h.1M16 17h.1M21 17h.1M13 21h6"/></svg></span><strong class="entry-number">04</strong><div class="entry-main"><small>AGENT ISLAND / 独立产品 · macOS · 已开源发布</small><h3>Agent 灵动岛</h3></div><span class="home-role-note">ROLE · 独立完成：设计 + 用 AI 开发</span><span class="home-role-note">交互、视觉、原生 App、官网与宣传片，从想法到发布。</span><span class="home-role-note home-key-note">核心判断 · 让 AI 安静地干活，需要我时才开口。</span><p>把多个 AI Agent 的状态收进 Mac 刘海，等你批准时才展开。</p><span class="entry-visual aiv-demo" data-ai-demo="panel" data-ai-float aria-hidden="true"></span><span class="entry-link">查看案例 <b>→</b></span></a>
+          <a class="case-entry case-agent reveal" href="#case-agent-island" data-case="agent-island"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 11.5h18a4 4 0 0 1 4 4v5a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-5a4 4 0 0 1 4-4Z"/><path d="M10 11.5V8.8A2.8 2.8 0 0 1 12.8 6h6.4A2.8 2.8 0 0 1 22 8.8v2.7M11 17h.1M16 17h.1M21 17h.1M13 21h6"/></svg></span><span class="entry-own">个人作品 · AI 开发</span><strong class="entry-number">04</strong><div class="entry-main"><small>AGENT ISLAND / 独立产品 · macOS · 已开源发布</small><h3>Agent 灵动岛</h3></div><span class="home-role-note">ROLE · 独立完成：设计 + 用 AI 开发</span><span class="home-role-note">交互、视觉、原生 App、官网与宣传片，从想法到发布。</span><span class="home-role-note home-key-note">核心判断 · 让 AI 安静地干活，需要我时才开口。</span><p>把多个 AI Agent 的状态收进 Mac 刘海，等你批准时才展开。</p><span class="entry-visual aiv-demo" data-ai-demo="panel" data-ai-float aria-hidden="true"></span><span class="entry-link">查看案例 <b>→</b></span></a>
+          <a class="case-entry case-voice reveal" href="#case-ai-call" data-case="ai-call"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 5v22M5 16h22M8.2 8.2l15.6 15.6M23.8 8.2 8.2 23.8"/></svg></span><span class="entry-own">个人作品 · AI 开发</span><strong class="entry-number">05</strong><div class="entry-main"><small>CLAUDE WALKIE / 独立产品 · macOS · 每天在用</small><h3>Claude 对讲机</h3></div><span class="home-role-note">ROLE · 独立完成：设计 + 用 AI 开发</span><span class="home-role-note home-key-note">核心判断 · 开口说话，就能和 Claude 一起干活。</span><span class="entry-visual wk-demo" aria-hidden="true" data-wk-demo></span><span class="entry-link">查看案例 <b>→</b></span></a>
         </div>
       </div>
     </section>
@@ -1109,7 +1138,7 @@
       <div class="page-wrap case-wrap">
         <div class="case-topbar reveal" aria-hidden="true" inert>
           <a href="#index" class="back-link">← 返回目录</a>
-          <span class="case-current-label">04 / 04 · AGENT ISLAND</span>
+          <span class="case-current-label">04 / 05 · AGENT ISLAND</span>
           <span>INDEPENDENT PRODUCT · macOS</span>
         </div>
 
@@ -1117,6 +1146,7 @@
           <p class="eyebrow accent-agent">AGENT ISLAND / 独立产品 · 已开源发布</p>
           <h2 class="case-title">让 AI 安静地干活，<br /><em>需要我时才开口。</em></h2>
           <p class="case-dek">我常同时开着几个 AI Agent，却总要切回窗口确认“好了没”。Agent 灵动岛把它们的状态收进 Mac 的刘海：平时安静地待在两侧，等我批准时才展开。从发现问题、交互与视觉，到用 AI 写出原生 macOS 应用、做官网和宣传片，都由我一个人完成。</p>
+          <div class="agent-island-links case-hero-links"><a class="button button-primary" href="https://agent-island.pages.dev/" target="_blank" rel="noreferrer">产品官网 · 免费下载 <b>↗</b></a><a class="button button-quiet" href="https://github.com/Bill-Fei/agent-island" target="_blank" rel="noreferrer">GitHub 开源代码 <b>↗</b></a><a class="agent-social-link" href="https://x.com/nihao3640921853/status/2110978067103658416" target="_blank" rel="noreferrer">发布帖 ↗</a></div>
           <div class="case-evidence" aria-label="Agent Island 项目概览">
             <div class="case-evidence-grid">
               <div class="case-evidence-item"><span class="case-evidence-label">CHALLENGE</span><strong>同时跑多个 Agent，不切窗口也知道谁在等我。</strong><p>状态要看得见，又不能抢走注意力；还要让人放心把它装在自己电脑上。</p></div>
@@ -1234,7 +1264,6 @@
                 <div><span class="ai-label">02 · LIVE WITH IT</span><b>装上自己的 Mac，用了再定</b><p>截图里好看不算数。每次改动都装进自己日常用的电脑，不对就推翻重来，详情面板就这样换了四版。</p></div>
                 <div><span class="ai-label">03 · WRITE IT DOWN</span><b>把决定写成规则</b><p>隐私边界、状态词、哪些文字不能翻译，都写进项目文档。换一个 AI 接手，也不会改走样。</p></div>
               </div>
-              <div class="agent-island-links agent-final-links reveal"><a class="button button-primary" href="https://github.com/Bill-Fei/agent-island" target="_blank" rel="noreferrer">VIEW ON GITHUB <b>↗</b></a><a class="button button-quiet" href="https://agent-island.pages.dev/" target="_blank" rel="noreferrer">OPEN PRODUCT SITE <b>↗</b></a><a class="agent-social-link" href="https://x.com/nihao3640921853/status/2110978067103658416" target="_blank" rel="noreferrer">READ THE LAUNCH POST ↗</a></div>
             </article>
 
           </div>
@@ -1242,6 +1271,112 @@
         <div class="case-next reveal"><span>BACK TO INDEX</span><a href="#index">返回 Selected Works →</a></div>
       </div>
     </section>
+    <section class="view case-view case-scroll case-agent-island case-ai-call" data-view="case-ai-call" data-case-theme="voice" data-case-start="01-origin">
+      <div class="page-wrap case-wrap">
+        <div class="case-topbar reveal" aria-hidden="true" inert>
+          <a href="#index" class="back-link">← 返回目录</a>
+          <span class="case-current-label">05 / 05 · CLAUDE WALKIE</span>
+          <span>INDEPENDENT PRODUCT · macOS</span>
+        </div>
+
+        <div class="case-hero reveal">
+          <p class="eyebrow accent-voice">CLAUDE WALKIE / 独立产品 · macOS · 每天在用</p>
+          <h2 class="case-title">和 AI 说话，<br /><em>像和同事说话一样顺。</em></h2>
+          <p class="case-dek">我每天和好几个 AI 一起工作，跟它们说话却只能打字，常用的 Claude 输入框里也没有语音输入。Claude 对讲机让我直接开口：按住右 ⌘ 和带记忆的 Claude 对讲；按住右 ⌥ 把口语整理成书面语，填进任何一个输入框。从发现问题、交互与视觉，到用 AI 写出 Mac App、网页版和官网，都由我一个人完成。</p>
+          <div class="agent-island-links case-hero-links"><a class="button button-primary" href="https://ai-call-b69.pages.dev/" target="_blank" rel="noreferrer">产品官网 <b>↗</b></a><a class="button button-quiet" href="https://ai-call-b69.pages.dev/call/" target="_blank" rel="noreferrer">在线体验网页版 <b>↗</b></a></div>
+          <div class="case-evidence" aria-label="Claude 对讲机项目概览">
+            <div class="case-evidence-grid">
+              <div class="case-evidence-item"><span class="case-evidence-label">CHALLENGE</span><strong>一按即说，最高效。</strong><p>开口就说，说完接着干活；录音在本机识别，不出设备。</p></div>
+              <div class="case-evidence-item"><span class="case-evidence-label">MY ROLE</span><strong>一个人完成，从想法到每天在用。</strong><p>交互、视觉与动效由我设计；由我指挥 AI 写出 Mac 原生 App、网页版、官网和宣传片。</p></div>
+              <div class="case-evidence-item"><span class="case-evidence-label">OUTCOME</span><strong>成了我每天和 AI 协作的方式。</strong><p>对讲、听写校准、网页通话三种用法，共用同一段对话；每天的对话自动记进笔记。</p></div>
+            </div>
+            <div class="ai-numbers ai-numbers-hero">
+              <div><strong>1 天</strong><span>从想法到每天在用</span></div>
+              <div><strong>0.2 秒</strong><span>在本机识别出字，录音不出设备</span></div>
+              <div><strong>2 个键</strong><span>右 ⌘ 对讲，右 ⌥ 听写</span></div>
+              <div><strong>3 种用法</strong><span>对讲 · 听写 · 网页通话，共用一段对话</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ac-stage reveal">
+          <figure class="ai-film" id="ai-call-film">
+            <video controls playsinline preload="none" data-media-poster="assets/ai-call/film-poster.jpg" aria-label="Claude 对讲机宣传片，40 秒，有声音" width="1920" height="1080"><source data-media-src="assets/ai-call/film.mp4?v=374" type="video/mp4" />你的浏览器不支持视频播放。</video>
+          </figure>
+          <p class="ai-film-caption"><span>产品宣传片 · 40 秒 · 有声音</span><a href="https://ai-call-b69.pages.dev/" target="_blank" rel="noopener noreferrer">产品官网 ↗</a></p>
+        </div>
+
+        <div class="case-layout agent-island-layout">
+          <div class="case-body case-scroll-body" data-case-body="ai-call">
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="ac-01-origin" data-chapter="01-origin" data-scroll-chapter="01-origin">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">01 / 起点</p><h3>跟 AI 说话，<br /><em>却只能打字。</em></h3><p>我同时让几个 AI 干活，想到一句话，要先在脑子里组织成书面语，再一个字一个字敲进去。换成语音输入法，口头禅和重复又会原样进去，发之前还得再改一遍。</p></header>
+              <ul class="ai-pains reveal">
+                <li><span class="ai-label">01 · SLOW</span><b>打字跟不上想法</b><span>说一句话几秒钟，打出来要半分钟，想法在等手。</span></li>
+                <li><span class="ai-label">02 · MESSY</span><b>语音输入太口语</b><span>“嗯、那个、就是”原样进了输入框，发之前要逐字删。</span></li>
+                <li><span class="ai-label">03 · SWITCH</span><b>问一句也要切窗口</b><span>得先切到 AI 的窗口、点进输入框，手上的事被打断。</span></li>
+              </ul>
+            </article>
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="ac-02-modes" data-chapter="02-modes" data-scroll-chapter="02-modes">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">02 / 三种用法</p><h3>一段对话，<br /><em>3 种语音交互。</em></h3><p>随手问一句、说话变文字、像打电话一样聊，三种方式连着同一个记得上下文的 Claude。</p></header>
+              <div class="ac-modes reveal">
+                <figure><div class="ac-shot ac-anim ac-anim-light" data-ac-demo="talk" role="img" aria-label="演示：按住右 ⌘ 问一句，Claude 在浮窗里一边显示一边念出回答，说完浮窗收起"></div><figcaption><span class="ai-label">01 · 右 ⌘ 对讲</span><b>按一次，问一句</b><p class="ac-scene">写着东西突然卡住，按住右 ⌘ 问一句，听完答案接着干，不用切窗口。</p><p class="ac-spec"><span class="ac-flow">语音进<i aria-label="变成">→</i>语音 + 文字出</span><span class="ac-rhythm">一问一答</span></p></figcaption></figure>
+                <figure><div class="ac-shot ac-anim ac-anim-light" data-ac-demo="dictate" role="img" aria-label="演示：在输入框里按住右 ⌥ 说话，口头禅被去掉、标点补好，整句填进输入框，Claude 不回答"></div><figcaption><span class="ai-label">02 · 右 ⌥ 听写</span><b>口语进，书面语出</b><p class="ac-scene">按住右 ⌥ 把话说出来，填进去的已经是一段能直接发的文字。</p><p class="ac-spec"><span class="ac-flow">语音进<i aria-label="变成">→</i>文字出</span><span class="ac-rhythm">说完就填</span></p></figcaption></figure>
+                <figure><div class="ac-shot ac-anim ac-anim-dark" data-ac-demo="call" role="img" aria-label="演示：网页通话，不用按键，你一句 Claude 一句，一直聊下去"></div><figcaption><span class="ai-label">03 · 网页通话</span><b>像打电话一样聊</b><p class="ac-scene">面试前一晚，戴上耳机让 Claude 当面试官，一问一答练上半小时。</p><p class="ac-spec"><span class="ac-flow">语音进<i aria-label="变成">→</i>语音出</span><span class="ac-rhythm">连续对话</span></p></figcaption></figure>
+              </div>
+            </article>
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="ac-03-tune" data-chapter="03-tune" data-scroll-chapter="03-tune">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">03 / 细节 · 按自己的习惯聊</p><h3>声音、语速、模型，<br /><em>都能自己挑。</em></h3><p>这是我每天都在用的东西，所以声音要听得舒服，节奏要跟得上，回答要够快。三样都能随时切换，Mac 菜单栏和网页共用同一份设置；聊过的内容，第二天会自动整理进 Obsidian。</p></header>
+              <div class="ac-tune-grid reveal">
+                <figure><div class="ac-tune" data-ac-tune>
+                  <div class="act-preview"><span class="act-orb"><svg class="acd-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5v17M3.5 12h17M6 6l12 12M18 6 6 18"/></svg></span><div><p class="act-say">好，我们先把开场练一遍。</p><p class="act-meta"><span class="act-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="act-meta-text">晓晓 · 1.3× · Opus 5.5</span></p></div></div>
+                  <div class="act-row" data-row="voice"><span class="act-label">声音</span><div class="act-chips">
+                    <button type="button" data-track="tune" data-v="晓晓" aria-pressed="true">晓晓<small>温暖女声</small></button><button type="button" data-track="tune" data-v="晓伊">晓伊<small>活泼女声</small></button><button type="button" data-track="tune" data-v="云希">云希<small>阳光男声</small></button><button type="button" data-track="tune" data-v="云健">云健<small>沉稳男声</small></button><button type="button" data-track="tune" data-v="云扬">云扬<small>播音男声</small></button><button type="button" data-track="tune" data-v="Vivi">Vivi<small>豆包音色</small></button><button type="button" data-track="tune" data-v="Mac 声音">Mac 声音<small>断网可用</small></button>
+                  </div></div>
+                  <div class="act-row" data-row="rate"><span class="act-label">语速</span><div class="act-chips">
+                    <button type="button" data-track="tune" data-v="1">1×</button><button type="button" data-track="tune" data-v="1.15">1.15×</button><button type="button" data-track="tune" data-v="1.3" aria-pressed="true">1.3×</button><button type="button" data-track="tune" data-v="1.5">1.5×</button><button type="button" data-track="tune" data-v="1.75">1.75×</button><button type="button" data-track="tune" data-v="2">2×</button>
+                  </div></div>
+                  <div class="act-row" data-row="model"><span class="act-label">模型</span><div class="act-chips">
+                    <button type="button" data-track="tune" data-v="Opus 5.5" aria-pressed="true">Opus 5.5<small>想得深</small></button><button type="button" data-track="tune" data-v="Sonnet 5.5">Sonnet 5.5<small>均衡</small></button><button type="button" data-track="tune" data-v="Haiku 5.5">Haiku 5.5<small>更快更省</small></button>
+                  </div></div>
+                </div><figcaption><span class="ai-label">01 · 声音 / 语速 / 模型</span><b>点一下就换，可以试试</b><span>5 个免费音色，接上豆包后再多 4 个，断网时用 Mac 自带的声音。语速从 1 倍到 2 倍，分 6 档。模型在 Opus、Sonnet、Haiku 之间切换：要想得深用 Opus，日常闲聊用 Haiku，更快也更省。</span></figcaption></figure>
+                <figure><div class="ac-note" data-ac-note aria-label="示意：一页自动生成的 Obsidian 通话笔记">
+                  <div class="acn-bar"><i></i><i></i><i></i><span>Obsidian · 语音通话 / 2026-11-03</span></div>
+                  <div class="acn-body">
+                    <p class="acn-h1">11 月 3 日 · 语音通话</p>
+                    <p class="acn-lead">明天面试先练开场两分钟；作品集首页今晚改完。</p>
+                    <ul class="acn-todo"><li>Claude：准备三个可能的追问</li><li>Bill：明早把开场过一遍</li></ul>
+                    <p class="acn-raw">原始记录 · 42 条</p>
+                  </div>
+                </div><figcaption><span class="ai-label">02 · 每日笔记</span><b>聊过的，第二天就在笔记里</b><span>每天的通话会被整理成一页 Obsidian 笔记：结论在最前面，下面是待办。不用自己记，也不会忘。</span></figcaption></figure>
+              </div>
+            </article>
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="ac-05-local" data-chapter="05-local" data-scroll-chapter="05-local">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">04 / 决策 · 本地优先</p><h3>能在本机做的，<br /><em>都留在本机。</em></h3><p>录音里有我的声音和正在想的事。语音识别放在 Mac 上完成，0.2 秒就能出字，录音不出设备；只有“想一想、怎么回答”这一步交给 Claude。</p></header>
+              <div class="ai-ledger ac-ledger reveal">
+                <div class="is-yes"><h4>在 Mac 上完成</h4><ul><li>语音识别，0.2 秒出字</li><li>录音本身，不上传</li><li>人名、产品名的纠错词表</li><li>找不到输入框时的剪贴板兜底</li></ul></div>
+                <div class="is-cloud"><h4>交给 Claude</h4><ul><li>理解你说的话，给出回答</li><li>把口语整理成书面语</li><li>记住这段对话的上下文</li></ul></div>
+              </div>
+            </article>
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="ac-07-making" data-chapter="07-making" data-scroll-chapter="07-making">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">05 / 落地 · 和 AI 一起做</p><h3>和 Agent 灵动岛，<br /><em>用的是同一套方法。</em></h3><p>我不写代码。我负责判断它应该是什么样、哪里不对；写代码交给 AI。从想法到每天在用，用了一天，之后在每天的使用里一点点改好。</p></header>
+              <div class="ai-method reveal">
+                <div><span class="ai-label">01 · LIVE WITH IT</span><b>先用起来，再改</b><p>每个版本都马上装进自己的 Mac。抢话、闪烁、声音变小，都是自己用的时候发现、当天改掉的。</p></div>
+                <div><span class="ai-label">02 · DELEGATE</span><b>像带团队一样分工</b><p>在飞书群里给几个 AI 派活：Claude 做 App，Codex 做官网静态版和网页演示，我做最后的验收。</p></div>
+                <div><span class="ai-label">03 · FILM IN CODE</span><b>宣传片也用代码做</b><p>40 秒宣传片的每一帧都是网页渲染出来的，配乐也是程序生成的原创曲子。改一个字，重新导出就行。</p></div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+        <div class="case-next reveal"><span>BACK TO INDEX</span><a href="#index">返回 Selected Works →</a></div>
+      </div>
+    </section>
+
     <section class="view case-view" data-view="case-aui" data-case-theme="slate" data-case-start="10-companion-state"><div class="page-wrap case-wrap"><div class="case-topbar reveal"><a href="#index" class="back-link">← 返回目录</a><span>03 / 03 · SYSTEM</span><span>Figma 10 — 12 / 12</span></div><div class="case-hero reveal"><p class="eyebrow accent-slate">SYSTEM / WHAT I BUILT</p><h2 class="case-title">把主动服务组织成<br /><em>可感知、可控、连续的系统体验。</em></h2><p class="case-dek">从 AUI 定义到跨端全景与伴随态，天禧 AUI 让 AI 在 Phone、Pad、PC 之间保持同一条任务关系，并以不同介入距离回应用户。</p></div><div class="case-layout"><aside class="chapter-nav reveal" data-case-nav="aui"><p>ON THIS CASE</p></aside><div class="case-body" data-case-body="aui"><article class="chapter-panel" data-chapter="10-companion-state"><div class="chapter-kicker">10 / COMPANION STATE</div><div class="chapter-layout"><div><h3>伴随态不是悬浮入口，<br /><em>而是一套 AI 存在方式。</em></h3><p>多模态主动感知、动态界面适配与跨端协同，让服务随任务、设备与环境自然迁移。</p><div class="companion-list"><button class="companion-card active" data-companion="aipc"><b>AI PC</b><span>主动识别 / 一键调优</span></button><button class="companion-card" data-companion="phone"><b>AI 手机</b><span>购物比价 / 导航直达 / 实景翻译</span></button><button class="companion-card" data-companion="pad"><b>AI 平板</b><span>全语音控制 / AI 影片推荐</span></button><button class="companion-card" data-companion="aiot"><b>AIoT</b><span>环境式服务与内容抵达</span></button></div></div><figure class="chapter-image"><img id="companion-visual" data-media-src="assets/shared/aui-roadmap-assets/aipc.png" alt="AI PC 伴随态" width="627" height="375" /></figure></div></article><article class="chapter-panel" data-chapter="11-cross-device"><div class="chapter-kicker">11 / CROSS-DEVICE PANORAMA</div><div class="chapter-layout"><div><h3>同一个意图，<br /><em>在 Phone / Pad / PC 间连续。</em></h3><p><b>AI 随心窗</b> 是用户主动呼唤；<b>AI 如影框</b> 原位进入当前任务；<b>AI 玲珑台</b> 承载天禧主动服务或提醒。形态随场景变化，任务关系不被打断。</p><div class="device-mode-grid"><button class="active" data-device-mode="window"><b>AI 随心窗</b><small>全屏 / 分屏 / 外屏</small></button><button data-device-mode="frame"><b>AI 如影框</b><small>原位 / 自定义尺寸</small></button><button data-device-mode="platform"><b>AI 玲珑台</b><small>轻 / 中 / 重介入</small></button></div><p class="mode-output" id="mode-output">用户主动与天禧交互后出现，适合从一句意图开始。</p></div><figure class="chapter-image"><img data-media-src="assets/shared/figma/r2-cross-device-continuity.png" alt="AUI 各端全景图" width="1920" height="1080" /></figure></div></article><article class="chapter-panel" data-chapter="12-in-context"><div class="chapter-kicker">12 / IN-CONTEXT COMPANION</div><div class="chapter-layout"><div><h3>即问即答，<br /><em>即答即走。</em></h3><p>AI 进入当前上下文，但不夺走主任务。长按电源键或语音唤醒；问题在下、结果在上。简单任务原位完成，复杂任务再进入 App 深度处理。</p><div class="decision-switch"><button class="active" data-decision="one">01 / 下问上答</button><button data-decision="two">02 / 复杂任务升级</button></div><p class="decision-output" id="decision-output">利用自上而下的视觉动线，将问题置于下方、结果置于上方；层次分明，便于用户聚焦核心信息。</p><p class="availability">已上线：Phone / Pad ｜ 设计判断：原位出现、单轮聚焦、复杂任务可升级。</p></div><figure class="chapter-image"><img data-media-src="assets/shared/figma/r2-intervention-distance.png" alt="AUI In-context Companion 交互证据" width="1920" height="1080" /></figure></div></article></div></div><div class="case-next reveal"><span>BACK TO INDEX</span><a href="#index">返回 Selected Works →</a></div></div></section>
   </main>
   <div class="image-lightbox" id="image-lightbox" aria-hidden="true"><button class="lightbox-close" type="button" aria-label="关闭图片预览">×</button><button class="lightbox-zoom" type="button" data-lightbox-zoom aria-label="放大图片" aria-pressed="false"><span aria-hidden="true">⤢</span></button><button class="lightbox-arrow lightbox-prev" type="button" data-lightbox-prev aria-label="查看上一张图片">‹</button><figure class="lightbox-stage"><img id="lightbox-image" src="" alt="" /></figure><button class="lightbox-arrow lightbox-next" type="button" data-lightbox-next aria-label="查看下一张图片">›</button><p id="lightbox-caption"></p><span class="lightbox-count" id="lightbox-count" aria-live="polite"></span></div>

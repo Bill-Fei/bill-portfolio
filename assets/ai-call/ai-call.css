@@ -1,0 +1,336 @@
+/* AI 通话 case — rides on the Agent Island case layout (the view also carries
+   .case-agent-island), only the accent turns Claude orange and a few figures are added.
+   Everything here is scoped to .case-ai-call or the home card .case-voice. */
+
+.case-ai-call { --ac-accent: #dcb8a6; --ac-label: #d79a7e; }
+body[data-route="case-ai-call"] .case-view.case-ai-call.is-active .case-topbar + .case-hero { margin-top: 0; }
+.accent-voice { color: var(--ac-label); }
+.case-ai-call .case-title em,
+.case-ai-call .agent-story-heading h3 em { color: var(--ac-accent); }
+.case-ai-call .case-evidence-label,
+.case-ai-call .ai-label { color: var(--ac-label); }
+
+/* hero film */
+.ac-stage { margin: 0 0 18px; }
+
+/* screenshots: the Mac UI is light, so it sits on a soft light panel */
+.ac-shot {
+  display: grid; place-items: center; aspect-ratio: 16 / 10; overflow: hidden;
+  border-radius: 16px; background: #0d0d0d; box-shadow: inset 0 0 0 1px var(--line);
+}
+.ac-shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ac-shot-light { padding: 6%; background: linear-gradient(140deg, #f3eee8, #dfe4ee); }
+.ac-shot-light img { height: auto; object-fit: contain; border-radius: 12px; }
+.ac-shot-pill img { width: auto; max-width: 46%; }
+
+.ac-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+.ac-modes figure { margin: 0; }
+.ac-modes figcaption { display: grid; gap: 10px; padding-top: 20px; }
+.ac-modes figcaption b { font-size: 16px; font-weight: 500; line-height: 1.5; }
+.ac-modes figcaption span:not(.ai-label) { color: var(--muted); font-size: 13.5px; line-height: 1.8; }
+
+/* chapter 02 live demos (modes-demo.js): same 16:10 panel as the screenshots they replace */
+.ac-shot.ac-anim { position: relative; display: block; color: #1d2129; font-family: var(--aiv-font, -apple-system, "PingFang SC", sans-serif); }
+.ac-anim > span { position: absolute; }
+.ac-anim-light { background: linear-gradient(140deg, #f3eee8, #dfe4ee); }
+.ac-shot.ac-anim-dark { background: radial-gradient(60% 70% at 50% 36%, rgba(217, 119, 87, .1), rgba(0, 0, 0, 0) 70%), #0e0e10; color: #eef1f5; }
+.acd-spark { flex: none; width: 22px; height: 22px; fill: none; stroke: #d97757; stroke-width: 2.4; stroke-linecap: round; }
+.acd-keyrow { left: 0; right: 0; bottom: 9%; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.acd-key {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 46px; height: 40px; border-radius: 9px;
+  background: linear-gradient(#fff, #f1f2f5); color: #3a3f4a; box-shadow: 0 0 0 1px rgba(20, 24, 33, .12), 0 2px 0 rgba(20, 24, 33, .14);
+  transition: transform .12s, background .2s, color .2s, box-shadow .2s;
+}
+.acd-key b { font-weight: 500; font-size: 15px; line-height: 1; }
+.acd-key small { font-size: 7px; line-height: 1; opacity: .7; }
+.acd-key.down { transform: translateY(2px); background: #d97757; color: #fff; box-shadow: 0 0 0 4px rgba(217, 119, 87, .2); }
+.acd-hint { min-width: 10.5em; color: #5b6170; font-size: 11.5px; }
+
+/* 01 talk: the floating window at the top of the screen */
+.acd-float {
+  left: 8%; right: 8%; top: 11%; display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 16px;
+  background: rgba(255, 255, 255, .74); box-shadow: 0 0 0 1px rgba(20, 24, 33, .06), 0 14px 30px -16px rgba(30, 40, 70, .35);
+  opacity: 0; transform: translateY(-6px); transition: opacity .35s, transform .35s;
+}
+.acd-float.on { opacity: 1; transform: none; }
+.acd-float-body { display: grid; flex: 1; gap: 4px; min-width: 0; }
+.acd-status { display: flex; align-items: center; gap: 8px; color: #8a909c; font-size: 10.5px; }
+.acd-status b { font-weight: 400; }
+.acd-wave { display: inline-flex; align-items: center; gap: 2px; height: 10px; }
+.acd-wave i { width: 2px; height: 3px; border-radius: 1px; background: #c3c7cf; }
+.acd-wave.in i, .acd-wave.out i { animation: acd-bar .55s ease-in-out infinite alternate; }
+.acd-wave.in i { background: #8a909c; }
+.acd-wave.out i { background: #d97757; }
+.acd-wave i:nth-child(2) { animation-delay: -.15s; }
+.acd-wave i:nth-child(3) { animation-delay: -.32s; }
+.acd-wave i:nth-child(4) { animation-delay: -.08s; }
+.acd-wave i:nth-child(5) { animation-delay: -.24s; }
+@keyframes acd-bar { to { height: 10px; } }
+.acd-q { min-height: 1.5em; color: #8a909c; font-size: 11px; line-height: 1.5; }
+.acd-a { min-height: 3.1em; color: #1d2129; font-size: 12.5px; line-height: 1.55; }
+
+/* 02 dictate: a pill at the top, words land in an ordinary input box */
+.acd-pill {
+  top: 9%; left: 50%; display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 9px; border-radius: 14px;
+  background: rgba(255, 255, 255, .82); box-shadow: 0 0 0 1px rgba(20, 24, 33, .06), 0 8px 20px -12px rgba(30, 40, 70, .4);
+  font-size: 12px; white-space: nowrap; opacity: 0; transform: translate(-50%, -6px); transition: opacity .3s, transform .35s;
+}
+.acd-pill b { font-weight: 600; }
+.acd-pill .acd-spark { width: 15px; height: 15px; }
+.acd-pill.on { opacity: 1; transform: translate(-50%, 0); }
+.acd-app { left: 9%; right: 9%; top: 29%; overflow: hidden; border-radius: 12px; background: #fff; box-shadow: 0 0 0 1px rgba(20, 24, 33, .07), 0 16px 30px -18px rgba(30, 40, 70, .35); }
+.acd-app > span { display: block; }
+.acd-app-bar { display: flex !important; align-items: center; gap: 5px; height: 20px; padding: 0 10px; border-bottom: 1px solid rgba(20, 24, 33, .06); color: #9aa0ab; font-size: 9px; }
+.acd-app-bar i { width: 6px; height: 6px; border-radius: 50%; background: #dfe1e6; }
+.acd-app-bar span { margin-left: 4px; }
+.acd-field { min-height: 52px; margin: 10px; padding: 7px 10px; border-radius: 9px; border: 1px solid rgba(20, 24, 33, .12); font-size: 12px; line-height: 1.6; transition: border-color .3s, box-shadow .3s; }
+.acd-field.landed { border-color: rgba(217, 119, 87, .7); box-shadow: 0 0 0 3px rgba(217, 119, 87, .15); }
+.acd-ph { color: #a3a8b2; }
+.acd-words .t {
+  display: inline-block; position: relative; overflow: hidden; margin-right: .3em; color: #8a909c; white-space: nowrap; vertical-align: bottom;
+  opacity: 0; transform: translateY(4px);
+  transition: max-width .5s cubic-bezier(.6, 0, .2, 1), opacity .3s, margin .5s cubic-bezier(.6, 0, .2, 1), color .5s, transform .3s;
+}
+.acd-words .t.on { opacity: 1; transform: none; }
+.acd-words .t::after { content: ""; position: absolute; left: 0; top: 56%; width: 0; height: 1.5px; border-radius: 2px; background: #d97757; transition: width .3s cubic-bezier(.6, 0, .2, 1); }
+.acd-words .t.struck::after { width: 100%; }
+.acd-words .t.gone { max-width: 0 !important; margin-right: 0; opacity: 0; }
+.acd-words.joined .t { margin-right: 0; }
+.acd-words .t.a { margin-right: 0; color: #d97757; }
+.acd-field.clean .t, .acd-field.clean .acd-words { color: #1d2129; }
+.acd-caret { display: inline-block; width: 1.5px; height: 12px; margin-left: 1px; vertical-align: -2px; background: #d97757; animation: wk-blink 1s steps(2) infinite; }
+
+/* 03 call: no key; the orb and the subtitles take turns */
+.acd-top { top: 7%; left: 6%; display: flex; align-items: center; gap: 6px; color: #9aa0ab; font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.acd-live { width: 6px; height: 6px; border-radius: 50%; background: #5ad19a; box-shadow: 0 0 6px #5ad19a; }
+.acd-orb { left: 50%; top: 34%; display: grid; place-items: center; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%; background: radial-gradient(circle, rgba(217, 119, 87, .24), rgba(217, 119, 87, .04) 70%); }
+.acd-orb .acd-spark { width: 26px; height: 26px; }
+.acd-orb i { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(217, 119, 87, .4); opacity: 0; }
+.acd-orb.speak .acd-spark { animation: acd-pulse .9s ease-in-out infinite; }
+.acd-orb.speak i { animation: acd-ring 1.8s ease-out infinite; }
+.acd-orb.speak i + i { animation-delay: .9s; }
+.acd-orb.listen i { border-color: rgba(255, 255, 255, .3); animation: acd-ring 1.2s ease-out infinite; }
+.acd-orb.listen i + i { animation-delay: .6s; }
+@keyframes acd-ring { from { opacity: .8; transform: scale(1); } to { opacity: 0; transform: scale(1.9); } }
+@keyframes acd-pulse { 50% { transform: scale(1.14) rotate(10deg); } }
+.acd-who { left: 0; right: 0; top: 57%; color: #9aa0ab; font-size: 10px; letter-spacing: .08em; text-align: center; }
+.acd-line { left: 10%; right: 10%; top: 65%; min-height: 2.4em; font-size: 12.5px; line-height: 1.55; text-align: center; }
+.acd-line.you { color: #b9bec8; }
+.acd-turns { left: 0; right: 0; bottom: 8%; display: flex; justify-content: center; gap: 6px; }
+.acd-turns i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .14); transition: background .3s; }
+.acd-turns i.you { background: #b9bec8; }
+.acd-turns i.claude { background: #d97757; }
+
+/* chapter 03: voice / speed / model picker (left) and the daily Obsidian note (right) */
+.ac-tune-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.ac-tune-grid figure { display: flex; flex-direction: column; margin: 0; }
+.ac-tune-grid figcaption { display: grid; gap: 10px; padding-top: 20px; }
+.ac-tune-grid figcaption b { font-size: 16px; font-weight: 500; line-height: 1.5; }
+.ac-tune-grid figcaption span:not(.ai-label) { color: var(--muted); font-size: 13.5px; line-height: 1.8; }
+/* fixed, equal height: the captions below wrap differently, so stretching would make the two cards uneven */
+.ac-tune, .ac-note { flex: none; height: 360px; border-radius: 16px; box-shadow: inset 0 0 0 1px var(--line); font-family: var(--aiv-font, -apple-system, "PingFang SC", sans-serif); }
+.ac-tune { display: flex; flex-direction: column; justify-content: center; gap: 22px; padding: 26px 28px; background: radial-gradient(70% 60% at 20% 0%, rgba(217, 119, 87, .09), rgba(0, 0, 0, 0) 70%), #0e0e10; color: #eef1f5; }
+.act-preview { display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin-bottom: 6px; border-radius: 12px; background: rgba(255, 255, 255, .04); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06); }
+.act-orb { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 50%; background: radial-gradient(circle, rgba(217, 119, 87, .26), rgba(217, 119, 87, .04) 70%); }
+.act-orb .acd-spark { width: 20px; height: 20px; }
+.act-say { min-height: 1.6em; margin: 0; font-size: 14px; line-height: 1.6; }
+.act-meta { display: flex; align-items: center; gap: 10px; margin: 4px 0 0; color: #9aa0ab; font-size: 11px; }
+.act-wave { --act-speed: .54s; display: inline-flex; align-items: center; gap: 2px; height: 12px; }
+.act-wave i { width: 2px; height: 3px; border-radius: 1px; background: #d97757; animation: acd-bar2 var(--act-speed) ease-in-out infinite alternate; }
+.act-wave i:nth-child(2n) { animation-delay: calc(var(--act-speed) * -.4); }
+.act-wave i:nth-child(3n) { animation-delay: calc(var(--act-speed) * -.7); }
+@keyframes acd-bar2 { to { height: 12px; } }
+.act-row { display: grid; grid-template-columns: 40px 1fr; align-items: start; gap: 12px; }
+.act-label { padding-top: 9px; color: #9aa0ab; font-size: 12px; }
+.act-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.act-chips button {
+  display: inline-flex; align-items: baseline; gap: 5px; height: 34px; padding: 0 13px; border: 0; border-radius: 17px; cursor: pointer;
+  background: rgba(255, 255, 255, .05); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1); color: #c9ced8;
+  font-family: inherit; font-size: 13px; font-weight: 500; line-height: 34px; transition: background .2s, color .2s, box-shadow .2s;
+}
+.act-chips button small { color: #7d8592; font-size: 11px; font-weight: 400; }
+.act-chips button:hover { background: rgba(255, 255, 255, .09); }
+.act-chips button[aria-pressed="true"] { background: rgba(217, 119, 87, .16); box-shadow: inset 0 0 0 1px rgba(217, 119, 87, .65); color: #fff; }
+.act-chips button[aria-pressed="true"] small { color: #eb9a78; }
+.act-chips button:focus-visible { outline: 2px solid #eb9a78; outline-offset: 2px; }
+
+.ac-note { overflow: hidden; background: #fbfaf8; color: #2a2d34; }
+.acn-bar { display: flex; align-items: center; gap: 5px; height: 30px; padding: 0 14px; border-bottom: 1px solid rgba(20, 24, 33, .07); background: #f2f0ec; color: #8a8f99; font-size: 10.5px; }
+.acn-bar i { width: 7px; height: 7px; border-radius: 50%; background: #dcd9d3; }
+.acn-bar span { margin-left: 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acn-body { display: flex; flex-direction: column; justify-content: center; gap: 22px; height: calc(100% - 30px); padding: 26px 30px; font-size: 13px; line-height: 1.65; }
+.acn-body p, .acn-body ul { margin: 0; }
+.acn-body ul { padding-left: 1.1em; }
+.acn-body li::marker { color: #b0a8a0; }
+.acn-h1 { color: #8a8f99; font-size: 12px; letter-spacing: .04em; margin-bottom: -8px !important; }
+.acn-lead { color: #1d2129; font-size: 20px; font-weight: 600; line-height: 1.5; }
+.acn-todo { display: grid; gap: 10px; list-style: none; padding: 18px 0 0 !important; border-top: 1px solid rgba(20, 24, 33, .07); }
+.acn-todo li::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 7px; border: 1px solid #b0a8a0; border-radius: 3px; vertical-align: -1px; }
+.acn-raw { color: #a3a8b2; font-size: 11px; }
+.ac-note .acn-body > *, .ac-note .acn-body li { opacity: 0; transform: translateY(4px); transition: opacity .4s var(--d, 0s), transform .4s var(--d, 0s); }
+.ac-note .acn-body > ul { opacity: 1; transform: none; }
+.ac-note.done .acn-body > *, .ac-note.done .acn-body li { opacity: 1; transform: none; }
+
+@media (max-width: 900px) {
+  .ac-tune-grid { grid-template-columns: 1fr; gap: 40px; }
+  .ac-tune, .ac-note { height: auto; }
+}
+
+/* each way told as a moment of use, then a one-line spec; the part that differs is lit */
+.ac-modes .ac-scene { margin: 0; color: var(--text); font-size: 14px; line-height: 1.75; }
+/* outer pill: the flow (in → out) as one inner pill, then the rhythm that explains it.
+   One colour rule for all three: the flow in white, the rhythm in grey, only the arrow in accent. */
+.ac-spec { display: inline-flex; align-items: center; gap: 10px; justify-self: start; margin: 2px 0 0; padding: 3px 12px 3px 3px; border-radius: 999px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); background: rgba(255, 255, 255, .025); font-size: 12px; line-height: 1.5; }
+.ac-modes figcaption .ac-spec .ac-flow { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px; border-radius: 999px; background: rgba(255, 255, 255, .06); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); color: var(--text); font-size: 12px; line-height: 1.5; white-space: nowrap; }
+.ac-flow i { color: var(--ac-label); font-style: normal; font-size: 13px; line-height: 1; }
+.ac-modes figcaption .ac-flow b { font: inherit; }
+.ac-modes figcaption .ac-spec .ac-rhythm { color: var(--muted); font-size: 12px; line-height: 1.5; white-space: nowrap; }
+
+.ac-ledger .is-cloud li::before { content: "→"; color: var(--ac-accent); }
+
+@media (max-width: 900px) {
+  .ac-modes { grid-template-columns: 1fr; gap: 40px; }
+}
+
+/* ---------- home card: full width under the four cases, picture on the right ---------- */
+/* Card chrome: black base on a 45° diagonal, a faint blue from the top-left corner and a faint warm
+   Claude orange toward the bottom-right (echoing the cover), so it sits with the site's cool cards; the edge follows the same diagonal, a little brighter: blue at top-left, warm at bottom-right. */
+.case-voice .entry-accent { background: #8f86f0; }
+.case-voice .entry-number { color: #a79ff5; }
+.home-works .case-entry.case-voice .entry-link { color: rgb(232, 238, 248); }
+.home-works .case-voice { --glow-primary: 108 142 255; --glow-secondary: 232 135 95; }
+.home-works .case-entry.case-voice {
+  background:
+    radial-gradient(70% 110% at 0% 0%, rgba(94, 141, 255, .12), rgba(0, 0, 0, 0) 62%) padding-box,
+    radial-gradient(70% 110% at 100% 100%, rgba(232, 135, 95, .1), rgba(0, 0, 0, 0) 64%) padding-box,
+    linear-gradient(135deg, rgb(11, 13, 20), rgb(10, 11, 16) 50%, rgb(14, 12, 14)) padding-box,
+    linear-gradient(135deg, rgba(110, 152, 255, .32), rgba(255, 255, 255, .07) 50%, rgba(240, 156, 112, .36)) border-box;
+  border-color: transparent;
+}
+.home-works .case-voice .entry-icon {
+  border-color: rgba(110, 152, 255, .28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), inset 0 0 18px rgba(94, 141, 255, .05);
+  background: radial-gradient(circle at 28% 20%, rgba(167, 159, 245, .18), rgba(0, 0, 0, 0) 48%), linear-gradient(145deg, rgba(255, 255, 255, .055), rgba(143, 134, 240, .035));
+}
+.home-works .case-voice .entry-icon::after { background: #a79ff5; box-shadow: 0 0 9px rgba(167, 159, 245, .72); }
+/* Cover: the dictation demo, live, on a dark wallpaper with orange and blue light ribbons (the counterpart of Agent Island's
+   sky wallpaper). Left: the right-hand end of a Mac keyboard, cropped by the backdrop edge; the right ⌥
+   lights up in Claude orange while held. Right: the Claude window with the input box. */
+.wk-demo {
+  --wk-clay: #d97757; --wk-clay-l: #eb9a78;
+  position: relative; display: grid !important; grid-template-columns: 42% 1fr; align-items: center; gap: 22px;
+  padding: 30px 30px 30px 0; border-radius: 16px; overflow: hidden; isolation: isolate;
+  background: #141a26;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
+  font-family: var(--aiv-font, -apple-system, "PingFang SC", sans-serif);
+}
+/* the wallpaper sits behind a dark veil and is toned down, so it sets the mood without
+   pulling the eye away from the keyboard and the window */
+.wk-demo::before, .wk-demo::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.wk-demo::before { background: url("card-bg-4.webp") 50% 50% / cover no-repeat; }
+.wk-demo::after { background: linear-gradient(180deg, rgba(12, 16, 26, 0), rgba(12, 16, 26, .15)); }
+.wk-demo > span { display: block; min-width: 0; }
+.wk-win {
+  position: relative; border-radius: 12px; overflow: hidden;
+  background: linear-gradient(180deg, #2c3038, #23262d); color: #eef1f5;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .1), 0 26px 50px -22px rgba(60, 20, 10, .75);
+}
+.wk-bar { display: flex; align-items: center; gap: 5px; height: 24px; padding: 0 10px; border-bottom: 1px solid rgba(255, 255, 255, .06); }
+.wk-bar i { width: 7px; height: 7px; border-radius: 50%; background: #4a4f58; }
+.wk-bar > span:not(.wk-pill) { margin-left: 5px; font-size: 9.5px; color: #8b929c; }
+.wk-pill {
+  position: absolute; top: 4px; left: 50%; display: flex; align-items: center; gap: 5px; height: 16px; padding: 0 8px 0 6px;
+  border-radius: 8px; background: rgba(240, 242, 246, .95); color: #1b1d22; font-size: 9px; font-weight: 600; white-space: nowrap;
+  opacity: 0; transform: translate(-50%, -8px); transition: opacity .3s, transform .4s cubic-bezier(.2, .9, .3, 1.3);
+}
+.wk-pill.on { opacity: 1; transform: translate(-50%, 0); }
+.wk-spark { width: 8px; height: 8px; border-radius: 50%; background: radial-gradient(circle, var(--wk-clay) 45%, rgba(217, 119, 87, 0) 70%); }
+.wk-body { display: flex; flex-direction: column; gap: 10px; padding: 14px 14px 12px; }
+.wk-heard { display: block; min-height: 40px; font-size: 12px; line-height: 1.65; letter-spacing: .01em; transition: opacity .25s; }
+.wk-heard .t {
+  display: inline-block; vertical-align: bottom; white-space: nowrap; overflow: hidden; position: relative; margin-right: .3em;
+  opacity: 0; transform: translateY(5px);
+  transition: max-width .5s cubic-bezier(.6, 0, .2, 1), opacity .3s, margin .5s cubic-bezier(.6, 0, .2, 1), color .5s, transform .3s;
+}
+.wk-heard .t.on { opacity: 1; transform: none; }
+.wk-heard .t::after { content: ""; position: absolute; left: 0; top: 56%; height: 2px; width: 0; border-radius: 2px; background: var(--wk-clay); transition: width .3s cubic-bezier(.6, 0, .2, 1); }
+.wk-heard .t.struck { color: #737a85; }
+.wk-heard .t.struck::after { width: 100%; }
+.wk-heard .t.gone { max-width: 0 !important; opacity: 0; margin-right: 0; }
+.wk-heard.joined .t { margin-right: 0; }
+.wk-heard .t.a { color: var(--wk-clay-l); margin-right: 0; }
+.wk-heard .t.a.settle { color: #eef1f5; }
+.wk-input {
+  display: block; min-height: 44px; padding: 7px 10px; border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .04); font-size: 10.5px; line-height: 1.6; color: #eef1f5;
+  transition: border-color .3s, box-shadow .3s;
+}
+.wk-input.landed { border-color: rgba(217, 119, 87, .7); box-shadow: 0 0 0 4px rgba(217, 119, 87, .15); }
+.wk-ph { color: #737a85; }
+.wk-caret { display: inline-block; width: 1.5px; height: 11px; margin-left: 2px; vertical-align: -2px; background: var(--wk-clay-l); animation: wk-blink 1s steps(2) infinite; }
+@keyframes wk-blink { 50% { opacity: 0; } }
+/* keyboard: dark aluminium plate bleeding off the left edge, keys fade in from that side */
+.wk-kbd {
+  display: flex !important; flex-direction: column; gap: 4px; margin-left: -14px; padding: 10px 10px 10px 24px;
+  border-radius: 0 14px 14px 0; background: linear-gradient(180deg, #2b2e35, #1f2227);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 26px 46px -22px rgba(60, 20, 10, .8);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 34%); mask-image: linear-gradient(90deg, transparent 0, #000 34%);
+}
+.wk-row { display: flex; gap: 4px; }
+.wk-k {
+  position: relative; display: flex; align-items: center; justify-content: center; min-width: 0; height: 23px; border-radius: 5px;
+  background: linear-gradient(180deg, #3a3e46, #32353c); color: #9aa1ab; font-size: 8.5px; white-space: nowrap;
+  box-shadow: 0 0 0 .5px rgba(0, 0, 0, .5), 0 1.5px 0 rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .06);
+  transition: transform .12s, background .2s, color .2s, box-shadow .2s;
+}
+.wk-r { justify-content: flex-end; padding-right: 6px; font-size: 7px; }
+.wk-m { justify-content: flex-start; padding-left: 6px; }
+.wk-ud { font-size: 6px; letter-spacing: -.1em; }
+.wk-opt { flex-direction: column; gap: 1px; }
+.wk-opt b { font-weight: 500; font-size: 9px; line-height: 1; }
+.wk-opt small { font-size: 6px; line-height: 1; }
+.wk-opt.down { transform: translateY(1.5px); background: var(--wk-clay); color: #fff; box-shadow: 0 0 0 4px rgba(217, 119, 87, .28), 0 0 18px rgba(217, 119, 87, .55); }
+.wk-tip {
+  position: absolute; bottom: calc(100% + 7px); left: 50%; z-index: 2; transform: translateX(-50%); padding: 3px 7px; border-radius: 5px;
+  background: #eef1f5; color: #1b1d22; font-family: inherit; font-size: 9px; font-weight: 600; line-height: 1.3; font-style: normal; white-space: nowrap;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, .5);
+}
+.wk-tip::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -4px; border: 4px solid transparent; border-top-color: #eef1f5; }
+
+@media (max-width: 700px) {
+  .wk-demo { grid-template-columns: 1fr; gap: 16px; padding: 18px 16px 18px 0; }
+  .wk-demo > .wk-win { order: -1; margin-left: 16px; }
+  .wk-kbd { margin-right: 18%; }
+}
+
+.home-works .case-entry.case-voice .entry-link { margin-top: auto; }
+
+@media (min-width: 701px) {
+  .home-works .case-entry.case-voice { grid-column: 1 / -1; min-height: 0; --pic: clamp(52%, calc(100% - 400px), 860px); --pad: clamp(24px, 3vw, 38px); padding-right: calc(var(--pic) + 2 * var(--pad)); }
+  .home-works .case-entry.case-voice > .entry-visual { position: absolute; right: var(--pad); top: 50%; width: var(--pic); height: auto; margin: 0; transform: translateY(-50%); }
+}
+
+/* Product links right under the case intro, in both own-product cases. */
+.case-agent-island .case-hero-links { margin-top: 30px; }
+.case-agent-island .case-hero-links .button { font-family: var(--aiv-font); letter-spacing: .02em; }
+
+
+/* "个人作品" tag on the two own products (Agent Island, Claude Walkie), beside the card icon;
+   the dot takes each card's own colour. */
+.home-works .case-entry.case-entry > .entry-own.entry-own {
+  position: absolute; top: calc(var(--own-top, 30px) + 11px); left: calc(var(--own-left, 38px) + 56px); display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 10px 0 8px;
+  border-radius: 11px; border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .04);
+  color: #d5dae3; font: 500 11px/1 var(--aiv-font, -apple-system, "PingFang SC", sans-serif); letter-spacing: .04em; white-space: nowrap;
+}
+.home-works .case-entry.case-entry > .entry-own.entry-own::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: rgb(var(--glow-primary)); box-shadow: 0 0 8px rgb(var(--glow-primary) / .7); }
+@media (max-width: 700px) {
+  .home-works .case-entry.case-entry > .entry-own.entry-own { --own-top: 25px; --own-left: 25px; }
+}
+
+/* "查看案例 →": one arrow colour on every home card, the same white as the label, hover included. */
+.home-works .case-entry .entry-link b,
+.home-works .case-entry:hover .entry-link b,
+.home-works .case-entry:focus-visible .entry-link b { color: #e8eef8; }
+@media (max-width: 620px) {
+  .ac-shot.ac-anim { aspect-ratio: 4 / 3; }
+}

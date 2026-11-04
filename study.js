@@ -211,6 +211,9 @@ const caseChapters = {
   ],
   'agent-island': [
     ['01-origin', '01', '起点'], ['02-attention', '02', '注意力分三档'], ['03-privacy', '03', '隐私边界'], ['04-approval', '04', '审批'], ['05-words', '05', '说人话'], ['06-making', '06', '和 AI 一起做']
+  ],
+  'ai-call': [
+    ['01-origin', '01', '起点'], ['02-modes', '02', '三种用法'], ['03-tune', '03', '声音与笔记'], ['05-local', '04', '本地优先'], ['07-making', '05', '和 AI 一起做']
   ]
 };
 const legionChapterAliases = { '02': '01', '08': '07', '09': '07', '10': '11', '13': '12' };
@@ -513,7 +516,7 @@ function setRoute() {
   lastRoutedHash = location.hash;
   const target = views.find((view) => view.dataset.view === route) || views[0];
   target.querySelectorAll('.reveal').forEach(node => node.classList.add('is-visible'));
-  document.title = route.startsWith('case-') ? `${target.dataset.caseTheme === 'blue' ? 'Tianxi AUI 1.0 Experience Design' : target.dataset.caseTheme === 'purple' ? 'Tianxi Generative UI' : target.dataset.caseTheme === 'legion' ? 'Legion Zone Gaming Experience' : target.dataset.caseTheme === 'agent' ? 'Agent Island · macOS AI HUD' : 'Tianxi AUI'} · Bill Wang` : 'Bill Wang · AI Native Experience Design';
+  document.title = route.startsWith('case-') ? `${target.dataset.caseTheme === 'blue' ? 'Tianxi AUI 1.0 Experience Design' : target.dataset.caseTheme === 'purple' ? 'Tianxi Generative UI' : target.dataset.caseTheme === 'legion' ? 'Legion Zone Gaming Experience' : target.dataset.caseTheme === 'agent' ? 'Agent Island · macOS AI HUD' : target.dataset.caseTheme === 'voice' ? 'Claude Walkie · Hold a key, talk to Claude' : 'Tianxi AUI'} · Bill Wang` : 'Bill Wang · AI Native Experience Design';
   views.forEach((view) => view.classList.toggle('is-active', view === target));
   views.forEach((view) => view.classList.remove('route-entering'));
   if (isRouteTransition) target.classList.add('route-entering');
