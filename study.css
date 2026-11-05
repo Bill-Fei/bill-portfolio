@@ -5482,7 +5482,7 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
   filter: drop-shadow(0 24px 34px rgba(0, 0, 0, .34));
   transform: translateZ(0);
 }
-.case-aui-one .aui-design-marquee-card img {
+.case-aui-one .aui-design-marquee-card > img {
   display: block;
   width: 100%;
   height: 100%;
@@ -5524,7 +5524,7 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
 .case-aui-one .aui-design-marquee-card figcaption span { grid-row: span 2; align-self: center; color: #85a8d8; font-size: 10px; }
 .case-aui-one .aui-design-marquee-card figcaption b { font-weight: 500; }
 .case-aui-one .aui-design-marquee-card figcaption small { color: rgba(186, 201, 221, .58); font: inherit; }
-.case-aui-one .aui-design-marquee-stage:not(.is-dragging) .aui-design-marquee-card:hover img { filter: saturate(1) contrast(1.02) brightness(1.01); transform: scale(1.018); }
+.case-aui-one .aui-design-marquee-stage:not(.is-dragging) .aui-design-marquee-card:hover > img { filter: saturate(1) contrast(1.02) brightness(1.01); transform: scale(1.018); }
 .case-aui-one .aui-design-marquee-curve {
   position: absolute;
   z-index: 5;
@@ -5569,6 +5569,214 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
   mask-image: linear-gradient(-90deg, #000 0%, rgba(0, 0, 0, .76) 42%, transparent 100%);
 }
 @keyframes auiMarqueeGuide { from { transform: translateX(-3px); opacity: .45; } to { transform: translateX(3px); opacity: 1; } }
+
+/* V362 — looping motion cards inside the AUI mobile marquee */
+.case-aui-one .aui-motion {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 6.8% / 2.8%;
+  pointer-events: none;
+  filter: saturate(.9) contrast(1.01) brightness(.96);
+  transition: filter .55s ease, transform .8s var(--ease);
+}
+.case-aui-one .aui-design-marquee-stage:not(.is-dragging) .aui-design-marquee-card:hover .aui-motion { filter: saturate(1) contrast(1.02) brightness(1.01); transform: scale(1.018); }
+.case-aui-one .aui-motion:not(.is-ready) { visibility: hidden; }
+.case-aui-one .aui-motion > *,
+.case-aui-one .aui-motion img { position: absolute; display: block; margin: 0; }
+.case-aui-one .aui-motion *,
+.case-aui-one .aui-motion { animation-play-state: running; }
+.case-aui-one .is-motion-paused .aui-motion,
+.case-aui-one .is-motion-paused .aui-motion * { animation-play-state: paused; }
+.case-aui-one .aui-motion .m-tap {
+  width: 15%;
+  aspect-ratio: 1;
+  margin: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(72, 108, 255, .34) 0 38%, rgba(72, 108, 255, .14) 39% 62%, transparent 63%);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.4);
+}
+
+/* Home: tap the input, the whole stack rises while the attachment tray grows in from below */
+.case-aui-one .aui-motion .m-layer { inset: 0; width: 100%; height: 100%; }
+.case-aui-one .aui-motion-home-expand .m-home-stack { animation: auiHomeStack 7.5s infinite; will-change: transform; }
+.case-aui-one .aui-motion-home-expand .m-home-glow { transform-origin: 50% 73.13%; animation: auiHomeGlow 7.5s infinite; }
+.case-aui-one .aui-motion-home-expand .m-home-shell-mid { transform-origin: 50% 76.53%; animation: auiHomeShellMid 7.5s infinite; }
+.case-aui-one .aui-motion-home-expand .m-home-shell-bottom { animation: auiHomeShellBottom 7.5s infinite; }
+.case-aui-one .aui-motion-home-expand .m-home-panel { animation: auiHomePanel 7.5s infinite; }
+.case-aui-one .aui-motion-home-expand .m-home-col { transform: translateY(-15.76%); animation: auiHomeCol 7.5s linear infinite; }
+.case-aui-one .aui-motion-home-expand .m-home-exp { animation: auiHomeExp 7.5s linear infinite; }
+.case-aui-one .aui-motion-home-expand .m-home-hint { animation: auiHomeHint 7.5s ease infinite; }
+.case-aui-one .aui-motion-home-expand .m-tap-open { left: 88.6%; top: 92.3%; width: 11%; animation: auiTapOpen 7.5s linear infinite; }
+.case-aui-one .aui-motion-home-expand .m-tap-close { left: 87.2%; top: 81%; width: 11%; animation: auiTapClose 7.5s linear infinite; }
+@keyframes auiHomeStack {
+  0%, 15% { transform: translateY(15.76%); animation-timing-function: cubic-bezier(.2, .85, .25, 1); }
+  24%, 67% { transform: translateY(0); animation-timing-function: cubic-bezier(.45, 0, .2, 1); }
+  75%, 100% { transform: translateY(15.76%); }
+}
+@keyframes auiHomeGlow {
+  0%, 15% { transform: scaleY(.6); animation-timing-function: cubic-bezier(.2, .85, .25, 1); }
+  24%, 67% { transform: scaleY(1); animation-timing-function: cubic-bezier(.45, 0, .2, 1); }
+  75%, 100% { transform: scaleY(.6); }
+}
+@keyframes auiHomeShellMid {
+  0%, 15% { transform: scaleY(0); animation-timing-function: cubic-bezier(.2, .85, .25, 1); }
+  24%, 67% { transform: scaleY(1); animation-timing-function: cubic-bezier(.45, 0, .2, 1); }
+  75%, 100% { transform: scaleY(0); }
+}
+@keyframes auiHomeShellBottom {
+  0%, 15% { transform: translateY(-4.535%); animation-timing-function: cubic-bezier(.2, .85, .25, 1); }
+  24%, 67% { transform: translateY(0); animation-timing-function: cubic-bezier(.45, 0, .2, 1); }
+  75%, 100% { transform: translateY(-4.535%); }
+}
+@keyframes auiHomePanel {
+  0%, 15% { opacity: 0; transform: translateY(2.2%); animation-timing-function: cubic-bezier(.2, .85, .25, 1); }
+  19% { opacity: 1; }
+  24%, 69% { opacity: 1; transform: translateY(0); animation-timing-function: cubic-bezier(.45, 0, .2, 1); }
+  75%, 100% { opacity: 0; transform: translateY(2.2%); }
+}
+@keyframes auiHomeCol {
+  0%, 15.5% { opacity: 1; }
+  19%, 68.5% { opacity: 0; }
+  71.5%, 100% { opacity: 1; }
+}
+@keyframes auiHomeExp {
+  0%, 17.5% { opacity: 0; }
+  21.5%, 67% { opacity: 1; }
+  70%, 100% { opacity: 0; }
+}
+@keyframes auiHomeHint {
+  0%, 15% { opacity: 1; filter: blur(0); }
+  24%, 67% { opacity: .55; filter: blur(1.4px); }
+  75%, 100% { opacity: 1; filter: blur(0); }
+}
+@keyframes auiTapOpen {
+  0%, 12%, 18%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
+  14% { opacity: 1; transform: translate(-50%, -50%) scale(.9); }
+  17% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
+}
+@keyframes auiTapClose {
+  0%, 63%, 69%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
+  65% { opacity: 1; transform: translate(-50%, -50%) scale(.9); }
+  68% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
+}
+
+/* Live island: one shape morphs capsule ↔ control bar; contents only swap while the shape is moving */
+.case-aui-one .aui-motion-island .m-island-shape {
+  background: #000;
+  clip-path: inset(.873% 34.956% 95.633% 36.16% round 3.883% / 1.747%);
+  animation: auiIslandShape 6s infinite;
+}
+.case-aui-one .aui-motion-island { container-type: size; }
+.case-aui-one .aui-motion-island .m-island-time,
+.case-aui-one .aui-motion-island .m-island-label {
+  position: absolute;
+  color: #fff;
+  font-family: "PingFang SC", "HarmonyOS Sans SC", "Noto Sans SC", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.case-aui-one .aui-motion-island .m-island-time-pill { left: 54.85%; top: 2.03%; font-size: 1.31cqh; line-height: 1.31cqh; font-weight: 500; }
+.case-aui-one .aui-motion-island .m-island-label { left: 18.93%; top: 8.024%; font-size: 1.747cqh; line-height: 2.402cqh; font-weight: 500; }
+.case-aui-one .aui-motion-island .m-island-label .m-island-time { position: static; margin-left: .62em; }
+.case-aui-one .aui-motion-island .m-island-pill { transform-origin: 50.49% 2.62%; animation: auiIslandPill 6s infinite; will-change: opacity, transform, filter; }
+.case-aui-one .aui-motion-island .m-island-bar { opacity: 0; transform-origin: 50% 9.22%; animation: auiIslandBar 6s infinite; will-change: opacity, transform, filter; }
+@keyframes auiIslandShape {
+  0%, 19% { clip-path: inset(.873% 34.956% 95.633% 36.16% round 3.883% / 1.747%); background-color: #000; animation-timing-function: cubic-bezier(.3, 1.32, .55, 1); }
+  27%, 73% { clip-path: inset(5.295% 3.883% 86.845% 3.883% round 5.825% / 2.62%); background-color: #262a32; animation-timing-function: cubic-bezier(.42, 0, .28, 1.12); }
+  81%, 100% { clip-path: inset(.873% 34.956% 95.633% 36.16% round 3.883% / 1.747%); background-color: #000; }
+}
+@keyframes auiIslandPill {
+  0%, 16% { opacity: 1; transform: scale(1); filter: blur(0); }
+  18.5%, 79.5% { opacity: 0; transform: scale(.9); filter: blur(2px); }
+  84%, 100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+@keyframes auiIslandBar {
+  0%, 23.5% { opacity: 0; transform: scale(.94); filter: blur(3px); }
+  28.5%, 70% { opacity: 1; transform: scale(1); filter: blur(0); }
+  72.5%, 100% { opacity: 0; transform: scale(.95); filter: blur(2px); }
+}
+
+/* Type → send: keyboard drops, the message lifts into a bubble, the page dips to white and the answer streams in */
+.case-aui-one .aui-motion-compose .m-compose-white { background: #fff; }
+.case-aui-one .aui-motion-compose .m-compose-home > span { position: absolute; display: block; }
+.case-aui-one .aui-motion-compose .m-compose-home { animation: auiComposeHome 10s linear infinite; }
+.case-aui-one .aui-motion-compose .m-compose-text { clip-path: inset(0 61.6% 0 0); animation: auiComposeType 10s steps(8, end) infinite; }
+.case-aui-one .aui-motion-compose .m-caret {
+  left: 38.47%;
+  top: 52.6%;
+  width: .42%;
+  height: 2.05%;
+  border-radius: 1px;
+  background: #3b6cff;
+  animation: auiComposeCaret 10s steps(8, end) infinite, auiComposeBlink .9s steps(1) infinite;
+}
+.case-aui-one .aui-motion-compose .m-compose-kb { animation: auiComposeKb 10s infinite; will-change: transform; }
+.case-aui-one .aui-motion-compose .m-compose-chat { opacity: 0; animation: auiComposeChat 10s linear infinite; }
+.case-aui-one .aui-motion-compose .m-compose-bubble { opacity: 0; transform-origin: 58.6% 14.29%; animation: auiComposeBubble 10s infinite; will-change: transform, opacity; }
+.case-aui-one .aui-motion-compose .m-compose-answer {
+  -webkit-mask-image: linear-gradient(180deg, #000 0 47%, transparent 51%);
+  mask-image: linear-gradient(180deg, #000 0 47%, transparent 51%);
+  -webkit-mask-size: 100% 200%;
+  mask-size: 100% 200%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 0 80%;
+  mask-position: 0 80%;
+  opacity: 0;
+  animation: auiComposeStream 10s linear infinite;
+}
+.case-aui-one .aui-motion-compose .m-tap-send { left: 90.14%; top: 58.67%; width: 11%; animation: auiTapSend 10s linear infinite; }
+@keyframes auiComposeHome {
+  0%, 37% { opacity: 1; }
+  39.5%, 95% { opacity: 0; }
+  99%, 100% { opacity: 1; }
+}
+@keyframes auiComposeType {
+  0%, 10% { clip-path: inset(0 61.6% 0 0); opacity: 1; }
+  30%, 36% { clip-path: inset(0 24.2% 0 0); opacity: 1; }
+  36.01%, 100% { clip-path: inset(0 24.2% 0 0); opacity: 0; }
+}
+@keyframes auiComposeCaret {
+  0%, 10% { left: 38.47%; opacity: 1; }
+  30%, 35.9% { left: 75.7%; opacity: 1; }
+  36%, 91% { left: 75.7%; opacity: 0; }
+  91.01%, 100% { left: 38.47%; opacity: 1; }
+}
+@keyframes auiComposeBlink { 0%, 49% { visibility: visible; } 50%, 100% { visibility: hidden; } }
+@keyframes auiComposeKb {
+  0%, 36% { opacity: 1; transform: translateY(0); animation-timing-function: cubic-bezier(.3, 0, .25, 1); }
+  40% { opacity: 1; transform: translateY(36.7%); animation-timing-function: step-end; }
+  40.1%, 95% { opacity: 0; transform: translateY(0); animation-timing-function: linear; }
+  99%, 100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes auiComposeChat {
+  0%, 40% { opacity: 0; }
+  42.5%, 92% { opacity: 1; }
+  95%, 100% { opacity: 0; }
+}
+@keyframes auiComposeBubble {
+  0%, 36% { opacity: 0; transform: translate(-16.67%, 39.29%) scale(.94); }
+  36.7% { opacity: 1; transform: translate(-16.67%, 39.29%) scale(.94); animation-timing-function: cubic-bezier(.3, .7, .2, 1); }
+  41.5%, 92% { opacity: 1; transform: translate(0, 0) scale(1); animation-timing-function: linear; }
+  95%, 100% { opacity: 0; transform: translate(0, 0) scale(1); }
+}
+@keyframes auiComposeStream {
+  0%, 43% { -webkit-mask-position: 0 80%; mask-position: 0 80%; opacity: 0; }
+  43.5% { -webkit-mask-position: 0 79%; mask-position: 0 79%; opacity: 1; }
+  72%, 92% { -webkit-mask-position: 0 23%; mask-position: 0 23%; opacity: 1; }
+  95% { -webkit-mask-position: 0 23%; mask-position: 0 23%; opacity: 0; }
+  95.1%, 100% { -webkit-mask-position: 0 80%; mask-position: 0 80%; opacity: 0; }
+}
+@keyframes auiTapSend {
+  0%, 33.5%, 39%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
+  35.5% { opacity: 1; transform: translate(-50%, -50%) scale(.9); }
+  38% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .case-aui-one .aui-motion { display: none; }
+}
 @media (max-width: 900px) {
   .case-aui-one .aui-design-marquee-stage { height: clamp(540px, 78vw, 620px); }
   .case-aui-one .aui-design-marquee-track { gap: clamp(24px, 4vw, 34px); padding-right: 28px; padding-left: 28px; }
@@ -5595,7 +5803,7 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
 }
 @media (prefers-reduced-motion: reduce) {
   .case-aui-one .aui-design-marquee-head i { animation: none; }
-  .case-aui-one .aui-design-marquee-card img { transition: none; }
+  .case-aui-one .aui-design-marquee-card > img { transition: none; }
 }
 
 

@@ -231,11 +231,12 @@ const mobileSystemFrames = [
 ];
 const auiDesignFrames = [
   {
-    title: 'Companion Home',
-    meta: 'AUI HOME',
-    alt: '天禧 AUI 首页主动聚合知识、天气与内容服务',
+    title: 'Home Expand',
+    meta: 'INPUT PANEL',
+    alt: '天禧 AUI 首页点击输入框后展开附件面板，可直接调用相机、相册、文件与通话',
     ratio: 720 / 1764,
-    src: 'assets/responsive-media/images/marquee-04-companion-home-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-04-companion-home-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/04-companion-home.webp'
+    src: 'assets/aui-motion/home-file.webp', mobileSrc: 'assets/aui-motion/home-file-mobile.webp', fullSrc: 'assets/aui-motion/home-file.webp',
+    motion: 'home-expand'
   },
   {
     title: 'Morning Brief',
@@ -243,6 +244,14 @@ const auiDesignFrames = [
     alt: 'AUI 主动提供次日天气并协助设置出发闹钟',
     ratio: 824 / 1832,
     src: 'assets/responsive-media/images/marquee-02-morning-brief-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-02-morning-brief-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/02-morning-brief.webp'
+  },
+  {
+    title: 'Live Island',
+    meta: 'LIVE ACTIVITY',
+    alt: 'AI 妙记录音时，灵动岛从胶囊展开为带暂停、结束与展开控制的实时状态条',
+    ratio: 824 / 1832,
+    src: 'assets/aui-motion/island-expanded.webp', mobileSrc: 'assets/aui-motion/island-expanded.webp', fullSrc: 'assets/aui-motion/island-expanded.webp',
+    motion: 'island'
   },
   {
     title: 'AI Podcast',
@@ -259,11 +268,12 @@ const auiDesignFrames = [
     src: 'assets/responsive-media/images/marquee-03-travel-plan-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-03-travel-plan-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/03-travel-plan.webp'
   },
   {
-    title: 'Voice Composer',
-    meta: 'VOICE FIRST',
-    alt: '天禧 AUI 首页语音输入与实时声波反馈状态',
+    title: 'Ask Agent',
+    meta: 'TYPE · SEND · ANSWER',
+    alt: '在首页输入框向办公助手提问，发送后进入对话页并流式生成回答',
     ratio: 720 / 1764,
-    src: 'assets/responsive-media/images/marquee-05-voice-composer-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-05-voice-composer-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/05-voice-composer.webp'
+    src: 'assets/aui-motion/compose-answer.webp', mobileSrc: 'assets/aui-motion/compose-answer-mobile.webp', fullSrc: 'assets/aui-motion/compose-answer.webp',
+    motion: 'compose'
   },
   {
     title: 'Live Companion Call',
@@ -271,6 +281,13 @@ const auiDesignFrames = [
     alt: '天禧实时语音陪伴通话界面，支持字幕、麦克风、共享与视频控制',
     ratio: 1236 / 2742,
     src: 'assets/responsive-media/images/marquee-06-live-companion-call-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-06-live-companion-call-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/06-live-companion-call.webp'
+  },
+  {
+    title: 'Main Agent',
+    meta: 'TASK EXECUTION',
+    alt: '主智能体展示思考与工具执行过程，并直接交付生成的 PDF 文件',
+    ratio: 720 / 1764,
+    src: 'assets/aui-motion/main-agent.webp', mobileSrc: 'assets/aui-motion/main-agent-mobile.webp', fullSrc: 'assets/aui-motion/main-agent.webp'
   },
   {
     title: 'AI Image Studio',
@@ -1024,6 +1041,46 @@ function initMobileSystemCarousel() {
 }
 
 
+const auiMarqueeMotion = {
+  'home-expand': `
+    <img class="m-layer" data-src="assets/aui-motion/layers/H_bg.webp" alt="" decoding="async" draggable="false">
+    <img class="m-layer m-home-hint" data-src="assets/aui-motion/layers/H_hint.webp" alt="" decoding="async" draggable="false">
+    <div class="m-layer m-home-stack">
+      <img class="m-layer m-home-glow" data-src="assets/aui-motion/layers/H_glow.webp" alt="" decoding="async" draggable="false">
+      <img class="m-layer" data-src="assets/aui-motion/layers/H_chips.webp" alt="" decoding="async" draggable="false">
+      <img class="m-layer m-home-panel" data-src="assets/aui-motion/layers/H_panel.webp" alt="" decoding="async" draggable="false">
+      <img class="m-layer" data-src="assets/aui-motion/layers/H_shell_top.webp" alt="" decoding="async" draggable="false">
+      <img class="m-layer m-home-shell-mid" data-src="assets/aui-motion/layers/H_shell_mid.webp" alt="" decoding="async" draggable="false">
+      <img class="m-layer m-home-shell-bottom" data-src="assets/aui-motion/layers/H_shell_bottom.webp" alt="" decoding="async" draggable="false">
+      <img class="m-layer m-home-col" data-src="assets/aui-motion/layers/H_colContent.webp" alt="" decoding="async" draggable="false">
+      <img class="m-layer m-home-exp" data-src="assets/aui-motion/layers/H_expContent.webp" alt="" decoding="async" draggable="false">
+    </div>
+    <i class="m-tap m-tap-open"></i><i class="m-tap m-tap-close"></i>`,
+  island: `
+    <img class="m-layer" data-src="assets/aui-motion/layers/I_bg.webp" alt="" decoding="async" draggable="false">
+    <span class="m-layer m-island-shape"></span>
+    <div class="m-layer m-island-pill">
+      <img class="m-layer" data-src="assets/aui-motion/layers/I_pill.webp" alt="" decoding="async" draggable="false">
+      <span class="m-island-time m-island-time-pill" data-island-timer>00:32</span>
+    </div>
+    <div class="m-layer m-island-bar">
+      <img class="m-layer" data-src="assets/aui-motion/layers/I_bar.webp" alt="" decoding="async" draggable="false">
+      <span class="m-island-label">AI妙记<span class="m-island-time" data-island-timer>00:32</span></span>
+    </div>`,
+  compose: `
+    <span class="m-layer m-compose-white"></span>
+    <div class="m-layer m-compose-home">
+      <img class="m-layer" data-src="assets/aui-motion/layers/C_home.webp" alt="" decoding="async" draggable="false">
+      <img class="m-layer m-compose-text" data-src="assets/aui-motion/layers/C_text.webp" alt="" decoding="async" draggable="false">
+      <span class="m-caret"></span>
+    </div>
+    <img class="m-layer m-compose-kb" data-src="assets/aui-motion/layers/C_kb.webp" alt="" decoding="async" draggable="false">
+    <img class="m-layer m-compose-chat" data-src="assets/aui-motion/layers/A_bg.webp" alt="" decoding="async" draggable="false">
+    <img class="m-layer m-compose-answer" data-src="assets/aui-motion/layers/A_answer.webp" alt="" decoding="async" draggable="false">
+    <img class="m-layer m-compose-bubble" data-src="assets/aui-motion/layers/A_bubble.webp" alt="" decoding="async" draggable="false">
+    <i class="m-tap m-tap-send"></i>`
+};
+
 function initAuiDesignMarquee() {
   const root = document.querySelector('[data-aui-design-marquee]');
   const stage = root?.querySelector('[data-aui-marquee-stage]');
@@ -1049,7 +1106,18 @@ function initAuiDesignMarquee() {
 
     const caption = document.createElement('figcaption');
     caption.innerHTML = `<span>${String((index % auiDesignFrames.length) + 1).padStart(2, '0')}</span><b>${frame.title}</b><small>${frame.meta}</small>`;
-    figure.append(image, caption);
+    figure.append(image);
+    if (frame.motion && auiMarqueeMotion[frame.motion]) {
+      figure.classList.add('has-motion');
+      if (frame.motion === 'compose') image.dataset.mediaSrc = image.dataset.mediaMobileSrc = 'assets/aui-motion/compose-keyboard.webp';
+      if (frame.motion === 'home-expand') image.dataset.mediaSrc = image.dataset.mediaMobileSrc = 'assets/aui-motion/layers/home-collapsed.webp';
+      const motion = document.createElement('div');
+      motion.className = `aui-motion aui-motion-${frame.motion}`;
+      motion.setAttribute('aria-hidden', 'true');
+      motion.innerHTML = auiMarqueeMotion[frame.motion];
+      figure.append(motion);
+    }
+    figure.append(caption);
     track.appendChild(figure);
     return figure;
   });
@@ -1067,6 +1135,25 @@ function initAuiDesignMarquee() {
   let lastFrameTime = 0;
   const autoSpeed = -0.46;
   let lastPreparation = 0;
+  let islandSeconds = 32;
+  let islandTimer = 0;
+  const tickIslandTimer = () => {
+    islandSeconds += 1;
+    const label = `${String(Math.floor(islandSeconds / 60) % 100).padStart(2, '0')}:${String(islandSeconds % 60).padStart(2, '0')}`;
+    track.querySelectorAll('[data-island-timer]').forEach(node => { node.textContent = label; });
+  };
+  const activateMotion = (card) => {
+    const motion = card.querySelector('.aui-motion');
+    if (!motion || motion.dataset.ready) return;
+    motion.dataset.ready = 'loading';
+    const layers = [...motion.querySelectorAll('img[data-src]')];
+    layers.forEach(layer => { layer.src = layer.dataset.src; });
+    const base = card.querySelector(':scope > img');
+    Promise.all([base, ...layers].map(layer => layer?.decode ? layer.decode().catch(() => {}) : Promise.resolve())).then(() => {
+      motion.dataset.ready = 'true';
+      motion.classList.add('is-ready');
+    });
+  };
   const prepareCards = () => {
     const bounds = stage.getBoundingClientRect();
     if (bounds.bottom < -920 || bounds.top > window.innerHeight + 920) return;
@@ -1074,6 +1161,7 @@ function initAuiDesignMarquee() {
       const rectangle = card.getBoundingClientRect();
       if (rectangle.right > bounds.left - bounds.width && rectangle.left < bounds.right + bounds.width) {
         deferredMedia.activate(card.querySelector('img'));
+        activateMotion(card);
       }
     });
   };
@@ -1182,6 +1270,9 @@ function initAuiDesignMarquee() {
   });
   const observer = new IntersectionObserver(([entry]) => {
     isInView = entry.isIntersecting && entry.intersectionRatio > 0.08;
+    root.classList.toggle('is-motion-paused', !entry.isIntersecting);
+    if (entry.isIntersecting && !islandTimer) islandTimer = setInterval(tickIslandTimer, 1000);
+    if (!entry.isIntersecting && islandTimer) { clearInterval(islandTimer); islandTimer = 0; }
     if (isInView) startAnimation();
     else stopAnimation();
   }, { threshold: [0, 0.08, 0.35] });
