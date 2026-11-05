@@ -1151,7 +1151,7 @@ function initAuiDesignMarquee() {
   const ease = bezier(.25, .1, .25, 1);
   const springOut = bezier(.3, 1.32, .55, 1);
   const springIn = bezier(.42, 0, .28, 1.12);
-  const pill = [36.16, .873, 28.884, 3.494, 50, 50, 0, 0, 0];
+  const pill = [36.16, .873, 28.884, 3.494, 13.445, 50, 0, 0, 0]; // radius = half the height: 16 / 119 wide, 16 / 32 tall
   const bar = [3.883, 5.295, 92.234, 7.86, 6.316, 33.333, 38, 42, 50];
   const track4 = (p, stops) => { // stops: [[pct, values, easeToNext]]
     for (let i = 0; i < stops.length - 1; i += 1) {
