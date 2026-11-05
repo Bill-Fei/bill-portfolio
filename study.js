@@ -1135,6 +1135,48 @@ function initAuiDesignMarquee() {
   let lastFrameTime = 0;
   const autoSpeed = -0.46;
   let lastPreparation = 0;
+  // Live island runs on one rAF clock: Safari drives geometry and opacity animations on different
+  // threads, so separate CSS animations drift apart while the page is busy loading.
+  const islandCycle = 6000;
+  const bezier = (x1, y1, x2, y2) => (x) => {
+    let t = x;
+    for (let i = 0; i < 8; i += 1) {
+      const cx = 3 * x1 * t * (1 - t) ** 2 + 3 * x2 * t * t * (1 - t) + t ** 3 - x;
+      const dx = 3 * x1 * (1 - t) ** 2 + 6 * (x2 - x1) * t * (1 - t) + 3 * (1 - x2) * t * t;
+      if (Math.abs(cx) < 1e-5 || !dx) break;
+      t = Math.min(1, Math.max(0, t - cx / dx));
+    }
+    return 3 * y1 * t * (1 - t) ** 2 + 3 * y2 * t * t * (1 - t) + t ** 3;
+  };
+  const ease = bezier(.25, .1, .25, 1);
+  const springOut = bezier(.3, 1.32, .55, 1);
+  const springIn = bezier(.42, 0, .28, 1.12);
+  const pill = [36.16, .873, 28.884, 3.494, 50, 50, 0, 0, 0];
+  const bar = [3.883, 5.295, 92.234, 7.86, 6.316, 33.333, 38, 42, 50];
+  const track4 = (p, stops) => { // stops: [[pct, values, easeToNext]]
+    for (let i = 0; i < stops.length - 1; i += 1) {
+      const [a, va, fn] = stops[i]; const [b, vb] = stops[i + 1];
+      if (p <= b) { const k = b === a ? 1 : (fn || ease)((p - a) / (b - a)); return va.map((v, j) => v + (vb[j] - v) * k); }
+    }
+    return stops[stops.length - 1][1];
+  };
+  const islandStart = performance.now();
+  const renderIsland = (now) => {
+    const p = (((now - islandStart) % islandCycle) / islandCycle) * 100;
+    const g = track4(p, [[0, pill], [19, pill, springOut], [27, bar], [73, bar, springIn], [81, pill], [100, pill]]);
+    const pv = track4(p, [[0, [1, 1, 0]], [16, [1, 1, 0]], [18.5, [0, .9, 2]], [79.5, [0, .9, 2]], [84, [1, 1, 0]], [100, [1, 1, 0]]]);
+    const bv = track4(p, [[0, [0, .94, 3]], [23.5, [0, .94, 3]], [28.5, [1, 1, 0]], [70, [1, 1, 0]], [72.5, [0, .95, 2]], [100, [0, .95, 2]]]);
+    track.querySelectorAll('.aui-motion-island.is-ready').forEach(node => {
+      const shape = node.querySelector('.m-island-shape');
+      shape.style.left = `${g[0]}%`; shape.style.top = `${g[1]}%`; shape.style.width = `${g[2]}%`; shape.style.height = `${g[3]}%`;
+      shape.style.borderRadius = `${g[4]}% / ${g[5]}%`;
+      shape.style.backgroundColor = `rgb(${g[6]}, ${g[7]}, ${g[8]})`;
+      const [po, ps, pb] = pv; const pillNode = node.querySelector('.m-island-pill');
+      pillNode.style.opacity = po; pillNode.style.transform = `scale(${ps})`; pillNode.style.filter = pb > .05 ? `blur(${pb}px)` : 'none';
+      const [bo, bs, bb] = bv; const barNode = node.querySelector('.m-island-bar');
+      barNode.style.opacity = bo; barNode.style.transform = `scale(${bs})`; barNode.style.filter = bb > .05 ? `blur(${bb}px)` : 'none';
+    });
+  };
   let islandSeconds = 32;
   let islandTimer = 0;
   const tickIslandTimer = () => {
@@ -1194,6 +1236,7 @@ function initAuiDesignMarquee() {
       lastPreparation = time;
       prepareCards();
     }
+    renderIsland(time);
     const frameScale = lastFrameTime ? Math.min(2.4, (time - lastFrameTime) / (1000 / 60)) : 1;
     lastFrameTime = time;
 

@@ -5664,9 +5664,13 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
 
 /* Live island: one shape morphs capsule ↔ control bar; contents only swap while the shape is moving */
 .case-aui-one .aui-motion-island .m-island-shape {
+  inset: auto;
+  left: 36.16%;
+  top: .873%;
+  width: 28.884%;
+  height: 3.494%;
+  border-radius: 50% / 50%;
   background: #000;
-  clip-path: inset(.873% 34.956% 95.633% 36.16% round 3.883% / 1.747%);
-  animation: auiIslandShape 6s infinite;
 }
 .case-aui-one .aui-motion-island { container-type: size; }
 .case-aui-one .aui-motion-island .m-island-time,
@@ -5680,12 +5684,12 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
 .case-aui-one .aui-motion-island .m-island-time-pill { left: 54.85%; top: 2.03%; font-size: 1.31cqh; line-height: 1.31cqh; font-weight: 500; }
 .case-aui-one .aui-motion-island .m-island-label { left: 18.93%; top: 8.024%; font-size: 1.747cqh; line-height: 2.402cqh; font-weight: 500; }
 .case-aui-one .aui-motion-island .m-island-label .m-island-time { position: static; margin-left: .62em; }
-.case-aui-one .aui-motion-island .m-island-pill { transform-origin: 50.49% 2.62%; animation: auiIslandPill 6s infinite; will-change: opacity, transform, filter; }
-.case-aui-one .aui-motion-island .m-island-bar { opacity: 0; transform-origin: 50% 9.22%; animation: auiIslandBar 6s infinite; will-change: opacity, transform, filter; }
+.case-aui-one .aui-motion-island .m-island-pill { transform-origin: 50.49% 2.62%; will-change: opacity, transform; }
+.case-aui-one .aui-motion-island .m-island-bar { opacity: 0; transform-origin: 50% 9.22%; will-change: opacity, transform; }
 @keyframes auiIslandShape {
-  0%, 19% { clip-path: inset(.873% 34.956% 95.633% 36.16% round 3.883% / 1.747%); background-color: #000; animation-timing-function: cubic-bezier(.3, 1.32, .55, 1); }
-  27%, 73% { clip-path: inset(5.295% 3.883% 86.845% 3.883% round 5.825% / 2.62%); background-color: #262a32; animation-timing-function: cubic-bezier(.42, 0, .28, 1.12); }
-  81%, 100% { clip-path: inset(.873% 34.956% 95.633% 36.16% round 3.883% / 1.747%); background-color: #000; }
+  0%, 19% { left: 36.16%; top: .873%; width: 28.884%; height: 3.494%; border-radius: 50% / 50%; background-color: #000; animation-timing-function: cubic-bezier(.3, 1.32, .55, 1); }
+  27%, 73% { left: 3.883%; top: 5.295%; width: 92.234%; height: 7.86%; border-radius: 6.316% / 33.333%; background-color: #262a32; animation-timing-function: cubic-bezier(.42, 0, .28, 1.12); }
+  81%, 100% { left: 36.16%; top: .873%; width: 28.884%; height: 3.494%; border-radius: 50% / 50%; background-color: #000; }
 }
 @keyframes auiIslandPill {
   0%, 16% { opacity: 1; transform: scale(1); filter: blur(0); }
