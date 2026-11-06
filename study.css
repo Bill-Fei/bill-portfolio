@@ -5673,6 +5673,7 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
   background: #000;
 }
 .case-aui-one .aui-motion-island { container-type: size; }
+.case-aui-one .aui-motion-wake .m-video { inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .case-aui-one .aui-motion-island .m-island-time,
 .case-aui-one .aui-motion-island .m-island-label {
   position: absolute;

@@ -231,19 +231,20 @@ const mobileSystemFrames = [
 ];
 const auiDesignFrames = [
   {
+    title: 'Morning Brief',
+    meta: 'PROACTIVE BRIEF',
+    alt: 'AUI 主动提供次日天气并协助设置出发闹钟',
+    ratio: 824 / 1832,
+    src: 'assets/responsive-media/images/marquee-02-morning-brief-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-02-morning-brief-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/02-morning-brief.webp',
+    motion: 'wake'
+  },
+  {
     title: 'Home Expand',
     meta: 'INPUT PANEL',
     alt: '天禧 AUI 首页点击输入框后展开附件面板，可直接调用相机、相册、文件与通话',
     ratio: 720 / 1764,
     src: 'assets/aui-motion/home-file.webp', mobileSrc: 'assets/aui-motion/home-file-mobile.webp', fullSrc: 'assets/aui-motion/home-file.webp',
     motion: 'home-expand'
-  },
-  {
-    title: 'Morning Brief',
-    meta: 'PROACTIVE BRIEF',
-    alt: 'AUI 主动提供次日天气并协助设置出发闹钟',
-    ratio: 824 / 1832,
-    src: 'assets/responsive-media/images/marquee-02-morning-brief-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-02-morning-brief-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/02-morning-brief.webp'
   },
   {
     title: 'Live Island',
@@ -1042,6 +1043,8 @@ function initMobileSystemCarousel() {
 
 
 const auiMarqueeMotion = {
+  // voice wake → listening → answer card, recorded from the final motion prototype (824×1832, 10.8s loop)
+  wake: `<video class="m-video" data-src="assets/aui-motion/morning-brief-wake.mp4?v=3" muted loop autoplay playsinline disablepictureinpicture preload="none"></video>`,
   'home-expand': `
     <img class="m-layer" data-src="assets/aui-motion/layers/H_bg.webp" alt="" decoding="async" draggable="false">
     <img class="m-layer m-home-hint" data-src="assets/aui-motion/layers/H_hint.webp" alt="" decoding="async" draggable="false">
@@ -1184,14 +1187,32 @@ function initAuiDesignMarquee() {
     const label = `${String(Math.floor(islandSeconds / 60) % 100).padStart(2, '0')}:${String(islandSeconds % 60).padStart(2, '0')}`;
     track.querySelectorAll('[data-island-timer]').forEach(node => { node.textContent = label; });
   };
+  // Safari may pause a muted inline video on its own (offscreen moments, power saving); keep it looping while the section is in view
+  let wakeInView = false;
+  const keepWakeLooping = (video) => {
+    video.addEventListener('pause', () => { if (wakeInView && !document.hidden) setTimeout(() => { if (wakeInView && video.paused) video.play().catch(() => {}); }, 120); });
+    video.addEventListener('ended', () => { video.currentTime = 0; video.play().catch(() => {}); });
+  };
+  setInterval(() => {
+    if (!wakeInView || document.hidden) return;
+    track.querySelectorAll('.aui-motion-wake video[src]').forEach(video => { if (video.paused) video.play().catch(() => {}); });
+  }, 1500);
   const activateMotion = (card) => {
     const motion = card.querySelector('.aui-motion');
     if (!motion || motion.dataset.ready) return;
     motion.dataset.ready = 'loading';
     const layers = [...motion.querySelectorAll('img[data-src]')];
     layers.forEach(layer => { layer.src = layer.dataset.src; });
+    const videos = [...motion.querySelectorAll('video[data-src]')].map(video => new Promise(resolve => {
+      video.muted = true;
+      keepWakeLooping(video);
+      video.addEventListener('loadeddata', resolve, { once: true });
+      video.addEventListener('error', resolve, { once: true });
+      video.src = video.dataset.src;
+      video.play().catch(() => {});
+    }));
     const base = card.querySelector(':scope > img');
-    Promise.all([base, ...layers].map(layer => layer?.decode ? layer.decode().catch(() => {}) : Promise.resolve())).then(() => {
+    Promise.all([...[base, ...layers].map(layer => layer?.decode ? layer.decode().catch(() => {}) : Promise.resolve()), ...videos]).then(() => {
       motion.dataset.ready = 'true';
       motion.classList.add('is-ready');
     });
@@ -1314,6 +1335,8 @@ function initAuiDesignMarquee() {
   const observer = new IntersectionObserver(([entry]) => {
     isInView = entry.isIntersecting && entry.intersectionRatio > 0.08;
     root.classList.toggle('is-motion-paused', !entry.isIntersecting);
+    wakeInView = entry.isIntersecting;
+    track.querySelectorAll('.aui-motion-wake video[src]').forEach(video => { if (entry.isIntersecting) video.play().catch(() => {}); else video.pause(); });
     if (entry.isIntersecting && !islandTimer) islandTimer = setInterval(tickIslandTimer, 1000);
     if (!entry.isIntersecting && islandTimer) { clearInterval(islandTimer); islandTimer = 0; }
     if (isInView) startAnimation();
