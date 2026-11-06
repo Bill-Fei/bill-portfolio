@@ -281,7 +281,8 @@ const auiDesignFrames = [
     meta: 'REAL-TIME COMPANION',
     alt: '天禧实时语音陪伴通话界面，支持字幕、麦克风、共享与视频控制',
     ratio: 1236 / 2742,
-    src: 'assets/responsive-media/images/marquee-06-live-companion-call-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-06-live-companion-call-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/06-live-companion-call.webp'
+    src: 'assets/responsive-media/images/marquee-06-live-companion-call-desktop.webp', mobileSrc: 'assets/responsive-media/images/marquee-06-live-companion-call-mobile.webp', fullSrc: 'assets/aui-lossless/aui-marquee/06-live-companion-call.webp',
+    motion: 'orb'
   },
   {
     title: 'Main Agent',
@@ -1045,6 +1046,8 @@ function initMobileSystemCarousel() {
 const auiMarqueeMotion = {
   // voice wake → listening → answer card, recorded from the final motion prototype (824×1832, 10.8s loop)
   wake: `<video class="m-video" data-src="assets/aui-motion/morning-brief-wake.mp4?v=3" muted loop autoplay playsinline disablepictureinpicture preload="none"></video>`,
+  // companion orb from the Tianxi identity deck (black background), laid over the still orb; 17.2s seamless loop
+  orb: `<video class="m-video m-orb" data-src="assets/aui-motion/companion-orb.mp4?v=1" muted loop autoplay playsinline disablepictureinpicture preload="none"></video>`,
   'home-expand': `
     <img class="m-layer" data-src="assets/aui-motion/layers/H_bg.webp" alt="" decoding="async" draggable="false">
     <img class="m-layer m-home-hint" data-src="assets/aui-motion/layers/H_hint.webp" alt="" decoding="async" draggable="false">
@@ -1195,7 +1198,7 @@ function initAuiDesignMarquee() {
   };
   setInterval(() => {
     if (!wakeInView || document.hidden) return;
-    track.querySelectorAll('.aui-motion-wake video[src]').forEach(video => { if (video.paused) video.play().catch(() => {}); });
+    track.querySelectorAll('.aui-motion video[src]').forEach(video => { if (video.paused) video.play().catch(() => {}); });
   }, 1500);
   const activateMotion = (card) => {
     const motion = card.querySelector('.aui-motion');
@@ -1336,7 +1339,7 @@ function initAuiDesignMarquee() {
     isInView = entry.isIntersecting && entry.intersectionRatio > 0.08;
     root.classList.toggle('is-motion-paused', !entry.isIntersecting);
     wakeInView = entry.isIntersecting;
-    track.querySelectorAll('.aui-motion-wake video[src]').forEach(video => { if (entry.isIntersecting) video.play().catch(() => {}); else video.pause(); });
+    track.querySelectorAll('.aui-motion video[src]').forEach(video => { if (entry.isIntersecting) video.play().catch(() => {}); else video.pause(); });
     if (entry.isIntersecting && !islandTimer) islandTimer = setInterval(tickIslandTimer, 1000);
     if (!entry.isIntersecting && islandTimer) { clearInterval(islandTimer); islandTimer = 0; }
     if (isInView) startAnimation();

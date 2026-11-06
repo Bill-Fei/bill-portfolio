@@ -5674,6 +5674,14 @@ body[data-route="case-agent-island"] .case-view.case-agent-island.is-active .cas
 }
 .case-aui-one .aui-motion-island { container-type: size; }
 .case-aui-one .aui-motion-wake .m-video { inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Safari stops repainting (and can stall the marquee) when a <video> sits under a CSS filter: keep video cards filter-free, video on its own layer */
+.case-aui-one .aui-motion-wake, .case-aui-one .aui-motion-orb,
+.case-aui-one .aui-design-marquee-stage:not(.is-dragging) .aui-design-marquee-card:hover .aui-motion-wake,
+.case-aui-one .aui-design-marquee-stage:not(.is-dragging) .aui-design-marquee-card:hover .aui-motion-orb { filter: none; }
+.case-aui-one .aui-motion .m-video { transform: translateZ(0); }
+/* orb video sits exactly over the still orb (measured on the 1236x2742 frame); black edges feathered away */
+.case-aui-one .aui-motion-orb .m-orb { left: .57%; top: 21.97%; width: 100%; height: 45.08%; object-fit: cover;
+  -webkit-mask-image: radial-gradient(closest-side, #000 60%, transparent 94%); mask-image: radial-gradient(closest-side, #000 60%, transparent 94%); }
 .case-aui-one .aui-motion-island .m-island-time,
 .case-aui-one .aui-motion-island .m-island-label {
   position: absolute;
