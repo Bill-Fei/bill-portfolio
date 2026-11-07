@@ -62,7 +62,7 @@
   <link rel="stylesheet" href="release.css?v=361" />
   <link rel="stylesheet" href="assets/agent-island-v2/island.css?v=361" />
   <link rel="stylesheet" href="assets/ai-call/ai-call.css?v=371" />
-  <link rel="stylesheet" href="assets/lucent/lucent.css?v=13" />
+  <link rel="stylesheet" href="assets/lucent/lucent.css?v=14" />
   <link rel="stylesheet" href="assets/lucent/home.css?v=6" />
   <script>
     (function () {
@@ -77,7 +77,7 @@
       var TRACK_URL = ENDPOINT + '/track';
       var SESSION_KEY = 'bill_analytics_session';
       var session, visitor, visit, visitSequence = 0, timer = null, stopped = false, started = false;
-      var pages = ['home', 'case-workflow', 'case-paradigm', 'case-legion', 'case-agent-island', 'case-ai-call', 'case-aui', 'archive'];
+      var pages = ['home', 'case-workflow', 'case-paradigm', 'case-legion', 'case-agent-island', 'case-ai-call', 'case-lucent', 'case-aui', 'archive'];
       var documentId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now();
       var listeners = [];
       function pageName() {

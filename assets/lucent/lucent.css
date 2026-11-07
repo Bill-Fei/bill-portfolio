@@ -30,9 +30,9 @@
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
 .case-lucent .lu-ring-core { --lu-pad: 3px; filter: blur(.6px); }
-.case-lucent .lu-ring-glow { --lu-pad: var(--lu-w); filter: blur(calc(var(--lu-w) * .55)); opacity: .9; }
+.case-lucent .lu-ring-glow { --lu-pad: calc(var(--lu-w) * var(--lu-k, 1)); filter: blur(calc(var(--lu-w) * var(--lu-k, 1) * .55)); opacity: .9; }
 .case-lucent .lu-ring-wave {
-  --lu-pad: calc(var(--lu-w) * 1.5); filter: blur(calc(var(--lu-w) * .7)); opacity: .75;
+  --lu-pad: calc(var(--lu-w) * var(--lu-k, 1) * 1.5); filter: blur(calc(var(--lu-w) * var(--lu-k, 1) * .7)); opacity: .75;
   -webkit-mask: conic-gradient(from var(--lu-b), #000 0 6%, transparent 18% 32%, #000 42% 50%, transparent 62% 76%, #000 88% 100%);
   mask: conic-gradient(from var(--lu-b), #000 0 6%, transparent 18% 32%, #000 42% 50%, transparent 62% 76%, #000 88% 100%);
 }
@@ -88,7 +88,8 @@ body .case-view.case-lucent.is-active .case-topbar + .case-hero { margin-top: 18
 @media (max-width: 700px) {
   .case-lucent .lu-grid { grid-template-columns: 1fr; }
   .case-lucent .lu-slide img, .case-lucent .lu-cover img { border-radius: 12px; }
-  .case-lucent .lu-key-frame { --lu-r: 18px; }
+  /* the glow is sized in px, so on a phone-width frame it reads far too thick: 60% narrower there */
+  .case-lucent .lu-key-frame { --lu-r: 18px; --lu-k: .4; }
   .case-lucent .lu-phone { border-radius: 12px; }
 }
 
