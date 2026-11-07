@@ -1,0 +1,52 @@
+/* Lucent Entity (流光体) home card, and the six-card bento around it.
+   >=1280px  6 columns: AUI 4 + Lucent 2 / Gen UI 2 + Island 4 / Walkie 4 + Legion 2
+   701-1279 2 columns: AUI, Lucent, Island, Walkie full width; Gen UI + Legion share a row
+   <=700    1 column, pictures in the card's flow (DOM order) */
+
+.home-works .case-lucent { --card-edge-a: 138 120 232; --card-edge-b: 91 214 255; --glow-primary: 138 120 232; --glow-secondary: 79 209 165; }
+.case-lucent .entry-accent { background: linear-gradient(180deg, #5b8def, #8a78e8, #f0607a, #f39a45, #4fd1a5); }
+
+.home-works .case-entry.case-lucent > .entry-visual-image {
+  aspect-ratio: 16 / 9; overflow: hidden; border-radius: 16px; background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06);
+}
+.home-works .case-entry.case-lucent > .entry-visual-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.home-works .case-entry.case-lucent:hover > .entry-visual-image img { transform: scale(1.03); }
+.home-works .case-entry.case-lucent .entry-link { margin-top: auto; }
+
+@media (min-width: 1280px) {
+  /* All three rows share one height; the Lucent picture area takes the space left, so it never sets the row.
+     Inside it the cover keeps its own 16:9 and is as large as the area allows (card width or the height
+     left, whichever runs out first); the rounded frame hugs the cover, no letterbox bars. */
+  .home-works .case-list { grid-auto-rows: 1fr; }
+  .home-works .case-entry.case-lucent { grid-column: span 2; }
+  .home-works .case-entry.case-lucent > .entry-visual-image {
+    flex: 1 1 0; min-height: 0; aspect-ratio: auto; container-type: size;
+    overflow: visible; border-radius: 0; background: none; box-shadow: none;
+  }
+  .home-works .case-entry.case-lucent > .entry-visual-image img {
+    /* 4% over the height left: it eats into the gap above the link, never past the card width */
+    width: min(100cqw, 100cqh * 16 / 9 * 1.04); height: auto; aspect-ratio: 16 / 9;
+    border-radius: 14px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .06);
+  }
+  .home-works .case-entry.case-lucent .entry-link { padding-top: 16px; }
+  .home-works .case-entry.case-voice { grid-column: span 4; --pic: calc(min(52%, 560px) + 15px); }
+  /* Narrow card: eyebrow, title, picture, link; the picture carries the card. */
+  .home-works .case-entry.case-lucent > .home-role-note,
+  .home-works .case-entry.case-lucent > p { display: none; }
+  .home-works .case-entry.case-lucent > .entry-visual { margin: 18px 0 0; }
+}
+
+@media (min-width: 701px) and (max-width: 1279px) {
+  .home-works .case-entry.case-lucent { grid-column: 1 / -1; min-height: 320px; }
+  /* Gen UI and Legion pair up in one row. */
+  .home-works .case-entry.case-agent,
+  .home-works .case-entry.case-voice { order: 2; }
+  .home-works .case-entry.case-slate { order: 1; }
+}
+
+/* Picture beside the copy when the card runs full width (tablet). */
+@media (min-width: 701px) and (max-width: 1279px) {
+  .home-works .case-entry.case-lucent { --pic: min(46%, 460px); --pad: clamp(24px, 3vw, 38px); padding-right: calc(var(--pic) + 2 * var(--pad)); }
+  .home-works .case-entry.case-lucent > .entry-visual { position: absolute; right: var(--pad); top: 50%; width: var(--pic); margin: 0; transform: translateY(-50%); }
+}

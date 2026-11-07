@@ -212,6 +212,9 @@ const caseChapters = {
   'agent-island': [
     ['01-origin', '01', '起点'], ['02-attention', '02', '注意力分三档'], ['03-privacy', '03', '隐私边界'], ['04-approval', '04', '审批'], ['05-words', '05', '说人话'], ['06-making', '06', '和 AI 一起做']
   ],
+  lucent: [
+    ['01-why', '01', '从 1.0 到 2.0'], ['02-hammer', '02', '全谱流光'], ['03-foundations', '03', '基础规范'], ['05-together', '04', '贯穿全场景']
+  ],
   'ai-call': [
     ['01-origin', '01', '起点'], ['02-modes', '02', '三种用法'], ['03-tune', '03', '声音与笔记'], ['05-local', '04', '本地优先'], ['07-making', '05', '和 AI 一起做']
   ]
@@ -535,7 +538,7 @@ function setRoute() {
   lastRoutedHash = location.hash;
   const target = views.find((view) => view.dataset.view === route) || views[0];
   target.querySelectorAll('.reveal').forEach(node => node.classList.add('is-visible'));
-  document.title = route.startsWith('case-') ? `${target.dataset.caseTheme === 'blue' ? 'Tianxi AUI 1.0 Experience Design' : target.dataset.caseTheme === 'purple' ? 'Tianxi Generative UI' : target.dataset.caseTheme === 'legion' ? 'Legion Zone Gaming Experience' : target.dataset.caseTheme === 'agent' ? 'Agent Island · macOS AI HUD' : target.dataset.caseTheme === 'voice' ? 'Claude Walkie · Hold a key, talk to Claude' : 'Tianxi AUI'} · Bill Wang` : 'Bill Wang · AI Native Experience Design';
+  document.title = route.startsWith('case-') ? `${target.dataset.caseTheme === 'blue' ? 'Tianxi AUI 1.0 Experience Design' : target.dataset.caseTheme === 'purple' ? 'Tianxi Generative UI' : target.dataset.caseTheme === 'legion' ? 'Legion Zone Gaming Experience' : target.dataset.caseTheme === 'agent' ? 'Agent Island · macOS AI HUD' : target.dataset.caseTheme === 'voice' ? 'Claude Walkie · Hold a key, talk to Claude' : target.dataset.caseTheme === 'lucent' ? 'Lucent Entity · Tianxi AUI 2.0 Visual Upgrade' : 'Tianxi AUI'} · Bill Wang` : 'Bill Wang · AI Native Experience Design';
   views.forEach((view) => view.classList.toggle('is-active', view === target));
   views.forEach((view) => view.classList.remove('route-entering'));
   if (isRouteTransition) target.classList.add('route-entering');
@@ -1371,7 +1374,7 @@ function wireInteractiveStates() {
     if (mode) { activateWithin(mode.closest('.device-mode-grid'), mode); const out = document.querySelector('#mode-output'); if (out) out.textContent = modeDetails[mode.dataset.deviceMode]; return; }
     const supplementButton = event.target.closest('.legion-supplement-zoom');
     if (supplementButton) { openLightbox(supplementButton.querySelector('img')); return; }
-    const image = event.target.closest('.chapter-image img, .aui-figma-frame img, .proof-image img, .large-proof img, .presence-visual img, .about-focus img, .legion-figure img, .mobile-system-slide-board, .gen-component-translation-stage img, .gen-component-library-stage img, .gen-implementation-output img');
+    const image = event.target.closest('.lu-slide img, .chapter-image img, .aui-figma-frame img, .proof-image img, .large-proof img, .presence-visual img, .about-focus img, .legion-figure img, .mobile-system-slide-board, .gen-component-translation-stage img, .gen-component-library-stage img, .gen-implementation-output img');
     if (image) openLightbox(image);
   });
 }
@@ -3218,4 +3221,16 @@ const billAnalytics = (() => {
   window.BillAnalytics = { optOut: () => { window.localStorage?.setItem(optOutKey, 'true'); closeVisit(); window.clearInterval(timer); } };
   window.setTimeout(initialize, 0);
   return window.BillAnalytics;
+})();
+
+(() => {
+  const video = document.querySelector('.case-lucent .lu-phone video');
+  if (!video || !('IntersectionObserver' in window)) return;
+  let inView = false;
+  const play = () => { if (inView && !document.hidden && video.paused) video.play().catch(() => {}); };
+  video.addEventListener('ended', () => { video.currentTime = 0; play(); });
+  video.addEventListener('pause', () => setTimeout(play, 150));
+  video.addEventListener('canplay', play);
+  new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; if (inView) play(); else video.pause(); }, { threshold: 0.2 }).observe(video);
+  setInterval(play, 1500);
 })();

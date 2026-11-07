@@ -36,7 +36,7 @@
   <script>
     (() => {
       const requested = location.hash.slice(1).split('/')[0];
-      document.documentElement.dataset.initialView = ['case-workflow', 'case-paradigm', 'case-legion', 'case-agent-island', 'case-ai-call', 'case-aui', 'archive'].includes(requested) ? requested : 'home';
+      document.documentElement.dataset.initialView = ['case-workflow', 'case-lucent', 'case-paradigm', 'case-legion', 'case-agent-island', 'case-ai-call', 'case-aui', 'archive'].includes(requested) ? requested : 'home';
       window.styleFallbackTimer = window.setTimeout(() => {
         const sheet = document.getElementById('main-styles');
         if (sheet && !document.documentElement.classList.contains('styles-ready')) sheet.media = 'print';
@@ -47,6 +47,7 @@
     html:not(.app-ready)[data-initial-view] .view { display: none !important; }
     html:not(.app-ready)[data-initial-view="home"] [data-view="home"],
     html:not(.app-ready)[data-initial-view="case-workflow"] [data-view="case-workflow"],
+    html:not(.app-ready)[data-initial-view="case-lucent"] [data-view="case-lucent"],
     html:not(.app-ready)[data-initial-view="case-paradigm"] [data-view="case-paradigm"],
     html:not(.app-ready)[data-initial-view="case-legion"] [data-view="case-legion"],
     html:not(.app-ready)[data-initial-view="case-agent-island"] [data-view="case-agent-island"],
@@ -61,6 +62,8 @@
   <link rel="stylesheet" href="release.css?v=361" />
   <link rel="stylesheet" href="assets/agent-island-v2/island.css?v=361" />
   <link rel="stylesheet" href="assets/ai-call/ai-call.css?v=371" />
+  <link rel="stylesheet" href="assets/lucent/lucent.css?v=13" />
+  <link rel="stylesheet" href="assets/lucent/home.css?v=6" />
   <script>
     (function () {
       if (location.origin !== 'https://bill-fei.github.io' || !/^\/bill-portfolio(?:\/|$)/.test(location.pathname)) return;
@@ -207,7 +210,7 @@
       if (document.readyState === 'loading') on(document, 'DOMContentLoaded', start); else start();
     })();
   </script>
-  <script defer src="study.js?v=364-1107a"></script>
+  <script defer src="study.js?v=365-1107a"></script>
   <script defer src="assets/agent-island-v2/island.js?v=361"></script>
   <script defer src="assets/ai-call/walkie-demo.js?v=362"></script>
   <script defer src="assets/ai-call/modes-demo.js?v=367"></script>
@@ -309,11 +312,11 @@
               <h2 class="page-title">精选案例</h2>
               <span class="index-title-en" aria-hidden="true">PROJECT<br />INDEX</span>
             </div>
-            <p class="page-subtitle">从 AI 如何进入系统，到 AI 如何生成界面，再到复杂产品体验的系统重构与独立产品实践。五个案例，呈现我如何把复杂能力转化为可落地、可演进的产品系统。</p>
+            <p class="page-subtitle">从 AI 如何进入系统，到 AI 如何生成界面，再到复杂产品体验的系统重构与独立产品实践。六个案例，呈现我如何把复杂能力转化为可落地、可演进的产品系统。</p>
           </div>
           <div class="index-signature" aria-hidden="true">
             <span>AI NATIVE</span>
-            <b>05</b>
+            <b>06</b>
             <i></i>
             <small>METHOD<br />GEN UI<br />GAMING<br />OPEN SOURCE<br />VOICE AI</small>
           </div>
@@ -321,10 +324,11 @@
         </div>
           <div class="case-list">
           <a class="case-entry case-blue reveal" href="#case-workflow" data-case="workflow"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 3.5l1.7 6.8 5.8 3.7-5.8 3.7L16 24.5l-1.7-6.8L8.5 14l5.8-3.7L16 3.5Z"/><path d="M25.5 4.5v5M28 7h-5M6 21v4M8 23H4"/></svg></span><strong class="entry-number">01</strong><div class="entry-main"><small>TIANXI / AUI EXPERIENCE DESIGN · PHONE / PAD 已上线</small><h3>联想天禧 AUI 1.0 体验设计</h3></div><span class="home-role-note">ROLE · Phone / Pad 体验设计负责人</span><span class="home-role-note">定义 AUI 伴随态、主动服务分级、状态规则与跨端连续体验。</span><span class="home-role-note home-key-note">核心判断 · 让 AI 进入当前任务，而不是把用户带离任务。</span><p>从问题出发定义 AUI，把 AI 能力转化为可感知、可控、连续的系统体验。</p><span class="entry-visual entry-visual-image" aria-hidden="true"><video muted loop playsinline preload="none" poster="assets/video/aui-effect-showcase-poster.jpg" data-ai-loop="assets/video/aui-effect-showcase-mobile.mp4"></video></span><span class="entry-link">查看案例 <b>→</b></span></a>
+          <a class="case-entry case-lucent reveal" href="#case-lucent" data-case="lucent"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5"/><path d="M16 10a6 6 0 0 1 6 6"/></svg></span><strong class="entry-number">02</strong><div class="entry-main"><small>TIANXI / AUI 2.0 VISUAL UPGRADE · 视觉语言</small><h3>流光体 · AUI 2.0 视觉升级</h3></div><span class="home-role-note">ROLE · 概念、关键视觉与规范</span><span class="home-role-note">从品牌光球推导出一圈光，定下色彩、字体、光边构造、动效与材质。</span><span class="home-role-note home-key-note">核心判断 · 不做形象，只留一圈光，让智能被看见。</span><p>一套光、玻璃与胶囊的视觉语言，贯穿天禧全场景。</p><span class="entry-visual entry-visual-image" aria-hidden="true"><img src="assets/lucent/card-cover-pdf.webp" alt="" width="1600" height="900" loading="lazy" decoding="async" /></span><span class="entry-link">查看案例 <b>→</b></span></a>
           <a class="case-entry case-purple reveal" href="#case-paradigm" data-case="paradigm"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="m11.5 8-7 8 7 8M20.5 8l7 8-7 8M18.5 5 13.5 27"/></svg></span><strong class="entry-number">02</strong><div class="entry-main"><small>TIANXI / 生成式 UI · AGENT-TO-UI · 设计与运行时验证</small><h3>联想天禧生成式 UI</h3></div><span class="home-role-note">ROLE · 创新业务设计牵头</span><span class="home-role-note">负责设计规则转译、A2UI 组件能力、Agent-to-UI 逻辑与跨团队推进。</span><span class="home-role-note home-key-note">核心判断 · AI 理解与选择，客户端校验与渲染。</span><p>让界面根据用户意图动态组合，同时由设计规则与客户端运行时守住体验边界。</p><span class="entry-link">查看案例 <b>→</b></span></a>
-          <a class="case-entry case-slate reveal" href="#case-legion" data-case="legion"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9.5 10.5h13a5 5 0 0 1 4.8 3.6l2 7a4 4 0 0 1-6.6 4l-2.5-2.2h-8.4l-2.5 2.2a4 4 0 0 1-6.6-4l2-7a5 5 0 0 1 4.8-3.6Z"/><path d="M10 15v5M7.5 17.5h5M21.5 16h.1M24 19h.1"/></svg></span><strong class="entry-number">03</strong><div class="entry-main"><small>LEGION ZONE / GAMING EXPERIENCE · 客户项目</small><h3>联想 Legion Zone 体验系统重构</h3></div><span class="home-role-note">ROLE · 体验设计负责人 / 核心设计者</span><span class="home-role-note">负责游戏中心重构、信息架构、视觉语言与交互节奏。</span><span class="home-role-note home-key-note">核心判断 · 用清晰的信息层级承接复杂的游戏内容与商业目标。</span><p>完整呈现 Legion Zone 从设计推导到最终结果的系统重构。</p><span class="entry-link">查看案例 <b>→</b></span></a>
           <a class="case-entry case-agent reveal" href="#case-agent-island" data-case="agent-island"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 11.5h18a4 4 0 0 1 4 4v5a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-5a4 4 0 0 1 4-4Z"/><path d="M10 11.5V8.8A2.8 2.8 0 0 1 12.8 6h6.4A2.8 2.8 0 0 1 22 8.8v2.7M11 17h.1M16 17h.1M21 17h.1M13 21h6"/></svg></span><span class="entry-own">个人作品 · AI 开发</span><strong class="entry-number">04</strong><div class="entry-main"><small>AGENT ISLAND / 独立产品 · macOS · 已开源发布</small><h3>Agent 灵动岛</h3></div><span class="home-role-note">ROLE · 独立完成：设计 + 用 AI 开发</span><span class="home-role-note">交互、视觉、原生 App、官网与宣传片，从想法到发布。</span><span class="home-role-note home-key-note">核心判断 · 让 AI 安静地干活，需要我时才开口。</span><p>把多个 AI Agent 的状态收进 Mac 刘海，等你批准时才展开。</p><span class="entry-visual aiv-demo" data-ai-demo="panel" data-ai-float aria-hidden="true"></span><span class="entry-link">查看案例 <b>→</b></span></a>
           <a class="case-entry case-voice reveal" href="#case-ai-call" data-case="ai-call"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 5v22M5 16h22M8.2 8.2l15.6 15.6M23.8 8.2 8.2 23.8"/></svg></span><span class="entry-own">个人作品 · AI 开发</span><strong class="entry-number">05</strong><div class="entry-main"><small>CLAUDE WALKIE / 独立产品 · macOS · 每天在用</small><h3>Claude 对讲机</h3></div><span class="home-role-note">ROLE · 独立完成：设计 + 用 AI 开发</span><span class="home-role-note home-key-note">核心判断 · 开口说话，就能和 Claude 一起干活。</span><span class="entry-visual wk-demo" aria-hidden="true" data-wk-demo></span><span class="entry-link">查看案例 <b>→</b></span></a>
+          <a class="case-entry case-slate reveal" href="#case-legion" data-case="legion"><span class="case-glow" aria-hidden="true"></span><span class="entry-accent"></span><span class="entry-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9.5 10.5h13a5 5 0 0 1 4.8 3.6l2 7a4 4 0 0 1-6.6 4l-2.5-2.2h-8.4l-2.5 2.2a4 4 0 0 1-6.6-4l2-7a5 5 0 0 1 4.8-3.6Z"/><path d="M10 15v5M7.5 17.5h5M21.5 16h.1M24 19h.1"/></svg></span><strong class="entry-number">03</strong><div class="entry-main"><small>LEGION ZONE / GAMING EXPERIENCE · 客户项目</small><h3>联想 Legion Zone 体验系统重构</h3></div><span class="home-role-note">ROLE · 体验设计负责人 / 核心设计者</span><span class="home-role-note">负责游戏中心重构、信息架构、视觉语言与交互节奏。</span><span class="home-role-note home-key-note">核心判断 · 用清晰的信息层级承接复杂的游戏内容与商业目标。</span><p>完整呈现 Legion Zone 从设计推导到最终结果的系统重构。</p><span class="entry-link">查看案例 <b>→</b></span></a>
         </div>
       </div>
     </section>
@@ -389,7 +393,7 @@
       <div class="page-wrap case-wrap">
         <div class="case-topbar reveal" aria-hidden="true" inert>
           <a href="#index" class="back-link">← 返回目录</a>
-          <span class="case-current-label">01 / 03 · AUI EXPERIENCE DESIGN</span>
+          <span class="case-current-label">01 / 06 · AUI EXPERIENCE DESIGN</span>
           <span>FIGMA 05 — 14</span>
         </div>
 
@@ -593,7 +597,7 @@
           <p class="aui-learning-claim"><span>DESIGN JUDGEMENT</span>跨端连续不是把同一界面复制到不同设备，而是让每台设备在同一任务中承担最适合的角色。</p>
         </section>
 
-        <div class="case-next reveal"><span>BACK TO INDEX</span><a href="#index">返回 Selected Works →</a></div>
+        <div class="case-next reveal"><span>NEXT · AUI 2.0 视觉升级</span><a href="#case-lucent">下一篇：流光体 →</a></div>
       </div>
     </section>
 
@@ -609,7 +613,7 @@
       <div class="page-wrap gen-case-nav-wrap">
         <div class="case-topbar reveal" aria-hidden="true" inert>
           <a href="#index" class="back-link">← 返回目录</a>
-          <span class="case-current-label">02 / 03 · 生成式 UI / AGENT-TO-UI</span>
+          <span class="case-current-label">03 / 06 · 生成式 UI / AGENT-TO-UI</span>
           <span>STREAMING / DECLARATIVE / NATIVE</span>
         </div>
       </div>
@@ -895,7 +899,7 @@
       <div class="page-wrap legion-case-nav-wrap">
         <div class="case-topbar reveal" aria-hidden="true" inert>
           <a href="#index" class="back-link">← 返回目录</a>
-          <span class="case-current-label">03 / 03 · LEGION ZONE</span>
+          <span class="case-current-label">06 / 06 · LEGION ZONE</span>
           <span>PC / PHONE + 8 SECTIONS</span>
         </div>
       </div>
@@ -1138,7 +1142,7 @@
       <div class="page-wrap case-wrap">
         <div class="case-topbar reveal" aria-hidden="true" inert>
           <a href="#index" class="back-link">← 返回目录</a>
-          <span class="case-current-label">04 / 05 · AGENT ISLAND</span>
+          <span class="case-current-label">04 / 06 · AGENT ISLAND</span>
           <span>INDEPENDENT PRODUCT · macOS</span>
         </div>
 
@@ -1275,7 +1279,7 @@
       <div class="page-wrap case-wrap">
         <div class="case-topbar reveal" aria-hidden="true" inert>
           <a href="#index" class="back-link">← 返回目录</a>
-          <span class="case-current-label">05 / 05 · CLAUDE WALKIE</span>
+          <span class="case-current-label">05 / 06 · CLAUDE WALKIE</span>
           <span>INDEPENDENT PRODUCT · macOS</span>
         </div>
 
@@ -1374,6 +1378,71 @@
           </div>
         </div>
         <div class="case-next reveal"><span>BACK TO INDEX</span><a href="#index">返回 Selected Works →</a></div>
+      </div>
+    </section>
+
+
+    <section class="view case-view case-scroll case-agent-island case-lucent" data-view="case-lucent" data-case-theme="lucent" data-case-start="01-why">
+      <div class="page-wrap case-wrap">
+        <div class="case-topbar reveal" aria-hidden="true" inert>
+          <a href="#index" class="back-link">← 返回目录</a>
+          <span class="case-current-label">02 / 06 · LUCENT ENTITY</span>
+          <span>TIANXI AUI 2.0 · VISUAL UPGRADE</span>
+        </div>
+
+        <div class="case-hero reveal">
+          <p class="eyebrow accent-voice">TIANXI / AUI 2.0 VISUAL UPGRADE · 流光体 Lucent Entity</p>
+          <figure class="lu-key"><span class="lu-key-frame"><img src="assets/lucent/key-visual.webp" srcset="assets/lucent/key-visual-m.webp 1280w, assets/lucent/key-visual.webp 2560w" sizes="(max-width: 700px) 100vw, 1160px" alt="让智能被看见 Make intelligence visible" width="2560" height="1440" decoding="async" /><span class="lu-ring lu-ring-glow" aria-hidden="true"><i></i></span><span class="lu-ring lu-ring-wave" aria-hidden="true"><i></i></span><span class="lu-ring lu-ring-core" aria-hidden="true"><i></i></span><span class="lu-key-lead">从「AI 若水」，到</span><span class="lu-key-en">Make intelligence visible.</span></span></figure>
+          <p class="case-dek">天禧 AUI 1.0 定下的基调是「AI 若水，大象无形」：没有形象，智能像水一样无处不在。到了天禧 2.0，它已经能感知、规划、跨应用执行，用户却看不出它在听、在想还是在做。流光体是 AUI 2.0 的视觉升级：保留水，加上光，从品牌光球里抽出一圈流动的光，让智能被看见。</p>
+          <div class="case-evidence" aria-label="流光体项目概览">
+            <div class="case-evidence-grid">
+              <div class="case-evidence-item"><span class="case-evidence-label">CHALLENGE</span><strong>能力变强了，却看不见。</strong><p>从 L2 走向 L3，AI 能替你跨应用做事；可界面上没有任何信号告诉你它正在做什么。</p></div>
+              <div class="case-evidence-item"><span class="case-evidence-label">MY ROLE</span><strong>概念、关键视觉与规范。</strong><p>从概念推导、视觉锤，到色彩、字体、光边构造、动效与材质规范，再落到每个功能。</p></div>
+              <div class="case-evidence-item"><span class="case-evidence-label">OUTCOME</span><strong>一套语言，贯穿全场景。</strong><p>唤醒、看世界、圈图、回答，以及输入框、胶囊和卡片，都用同一圈光、同一种玻璃。</p></div>
+            </div>
+          </div>
+        </div>
+
+        <figure class="lu-cover reveal"><img data-media-src="assets/lucent/slide-01.webp" data-media-mobile-src="assets/lucent/slide-01-m.webp" alt="流光体 Lucent Entity：天禧 AUI 2.0 视觉升级，从水到光" width="1920" height="1080" /></figure>
+
+        <div class="case-layout agent-island-layout">
+          <div class="case-body case-scroll-body" data-case-body="lucent">
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="lu-01-why" data-chapter="01-why" data-scroll-chapter="01-why">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">01 / 背景 · 从 1.0 到 2.0</p><h3>1.0 让 AI 像水一样无形，<br /><em>2.0 要让它被看见。</em></h3><p>同一个时刻：助手在屏幕上被唤醒。1.0 用一段从蓝到橙、经过紫和粉的渐变；2.0 把它收成一整条光谱，一圈贴着屏幕边缘的光，把内容留给用户。概念只有一句：水是底下智能的流动，光是你看到它的方式。</p></header>
+              <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-03.webp" data-media-mobile-src="assets/lucent/slide-03-m.webp" data-lightbox-src="assets/lucent/slide-03.webp" data-lightbox-group="lucent" alt="AUI 1.0 若水流光与 AUI 2.0 全谱流光的前后对比" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>BEFORE / AFTER · 若水流光 → 全谱流光</figcaption></figure>
+              <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-04.webp" data-media-mobile-src="assets/lucent/slide-04-m.webp" data-lightbox-src="assets/lucent/slide-04.webp" data-lightbox-group="lucent" alt="水在里面，光在边缘：水光同源，智能可见" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>CONCEPT · 水光同源，智能可见</figcaption><p class="lu-note">水是本体，光是被看见的水。水承载智能，光让它显形：水决定 AI 如何存在于界面中，光决定你何时感知到它。两者同源，所以 AI 有了可感知的存在，却不挡住你正在做的事。</p><p class="lu-note">这正是「AI 若水，大象无形」：水无形，故能随器成形；AI 无相，故能随境而在。它不占据一块固定的界面，而是贴着内容的形状流淌；你不需要去找它，在你需要时，它已经在那里。玻璃只是水的容器，光只是水被看见的方式。液态玻璃正在成为新一代系统界面的材质。苹果在 iOS 26 推出 Liquid Glass，控件像一层会折射、会透光的玻璃浮在内容上：界面退后，内容在前。流光体把这层玻璃当作「水」，再让光沿着水的边缘流动。</p></figure>
+            </article>
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="lu-02-hammer" data-chapter="02-hammer" data-scroll-chapter="02-hammer">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">02 / 视觉符号 · 全谱流光</p></header>
+              <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-05.webp" data-media-mobile-src="assets/lucent/slide-05-m.webp" data-lightbox-src="assets/lucent/slide-05.webp" data-lightbox-group="lucent" alt="从品牌光球到光环，再到贴合容器的光边" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>DERIVATION · 品牌光球 → 抽出光环 → 贴合容器</figcaption></figure>
+              <div class="lu-motion reveal">
+                <figure><div class="lu-phone"><video muted loop autoplay playsinline disablepictureinpicture preload="none" aria-label="唤醒动效：水波荡开，光沿屏幕边缘长出，收音后展开回答卡片"><source data-media-src="assets/aui-motion/morning-brief-wake.mp4?v=3" type="video/mp4" /></video></div><figcaption>WAKE · 唤醒 → 收音 → 回答</figcaption></figure>
+                <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-10.webp" data-media-mobile-src="assets/lucent/slide-10-m.webp" data-lightbox-src="assets/lucent/slide-10.webp" data-lightbox-group="lucent" alt="动效规范：起始、渐变 A 顺时针一周、渐变 B 顺时针一周、定格" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>MOTION SPEC · 起始 → 渐变 A → 渐变 B → 定格</figcaption></figure>
+              </div>
+              <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-06.webp" data-media-mobile-src="assets/lucent/slide-06-m.webp" data-lightbox-src="assets/lucent/slide-06.webp" data-lightbox-group="lucent" alt="伴随态、图标与输入框里的流光" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>COMPANION · 伴随态 / 图标 / 输入框</figcaption></figure>
+            </article>
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="lu-03-foundations" data-chapter="03-foundations" data-scroll-chapter="03-foundations">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">03 / 基础规范</p><h3>色彩取自光，<br /><em>字重分层，材质如玻璃。</em></h3><p>1.0 取「上善若水」，为一位助手调出一种心绪：魔法般的紫、粉与橙。2.0 取「一生万物」：多个智能体各司其职、同屏协作，颜色也由一色化开，成为一整条光谱。</p></header>
+              <div class="lu-grid">
+                <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-07.webp" data-media-mobile-src="assets/lucent/slide-07-m.webp" data-lightbox-src="assets/lucent/slide-07.webp" data-lightbox-group="lucent" alt="色彩：取自光的六色光谱与 HSB 推导" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>COLOUR · 六色光谱</figcaption></figure>
+                <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-08.webp" data-media-mobile-src="assets/lucent/slide-08-m.webp" data-lightbox-src="assets/lucent/slide-08.webp" data-lightbox-group="lucent" alt="字体：汉仪旗黑四个字重的层级" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>TYPE · 字重分层，不靠颜色</figcaption></figure>
+                <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-09.webp" data-media-mobile-src="assets/lucent/slide-09-m.webp" data-lightbox-src="assets/lucent/slide-09.webp" data-lightbox-group="lucent" alt="光边构造：核心、光带、光晕、泛光四层" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>LIGHT EDGE · 四层描边，一条光</figcaption></figure>
+                <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-11.webp" data-media-mobile-src="assets/lucent/slide-11-m.webp" data-lightbox-src="assets/lucent/slide-11.webp" data-lightbox-group="lucent" alt="液态玻璃材质：折射 0.8、深度 16、光 0.5" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>FLUID GLASS · 水即液态玻璃</figcaption></figure>
+              </div>
+            </article>
+
+            <article class="chapter-panel scroll-chapter agent-story-panel" id="lu-05-together" data-chapter="05-together" data-scroll-chapter="05-together">
+              <header class="agent-story-heading reveal"><p class="chapter-kicker">04 / 落地 · 贯穿全场景</p><h3>一套语言，<br /><em>贯穿全场景。</em></h3><p>从唤醒到看世界、圈图和回答，同一圈光贯穿每个功能：光从底部升起铺满边缘，框住镜头画面，跟着手指圈住要问的东西，最后收进答案卡片。输入框、状态胶囊和设置卡片，也用同一套光、玻璃与胶囊。</p></header>
+              <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-12.webp" data-media-mobile-src="assets/lucent/slide-12-m.webp" data-lightbox-src="assets/lucent/slide-12.webp" data-lightbox-group="lucent" alt="同一圈光贯穿唤醒、看世界、圈图、回答四个功能" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>IN EVERY FEATURE · 唤醒 / 看世界 / 圈图 / 回答</figcaption></figure>
+              <figure class="lu-slide reveal"><img data-media-src="assets/lucent/slide-13.webp" data-media-mobile-src="assets/lucent/slide-13-m.webp" data-lightbox-src="assets/lucent/slide-13.webp" data-lightbox-group="lucent" alt="光、玻璃与胶囊组成的一套语言，用在全部场景" width="1920" height="1080" loading="lazy" decoding="async" /><figcaption>TOGETHER · 一套语言，贯穿全场景</figcaption></figure>
+            </article>
+
+          </div>
+        </div>
+        <div class="case-next reveal"><span>PREVIOUS · AUI 1.0</span><a href="#case-workflow">← 回到天禧 AUI 1.0</a></div>
       </div>
     </section>
 
